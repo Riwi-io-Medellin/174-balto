@@ -9,20 +9,55 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthRepository _repository;
 
   Future<void> register({
-    required String fullName,
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+    required String idNumber,
+    required String idType,
+    required String phone,
+  }) async {
+    emit(const AuthLoading());
+    try {
+      final tokens = await _repository.register(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password,
+        idNumber: idNumber,
+        idType: idType,
+        phone: phone,
+      );
+      emit(AuthAuthenticated(tokens));
+    } on AuthFailure catch (e) {
+      emit(AuthError(e.code, e.message));
+    }
+  }
+
+  Future<void> login({
     required String email,
     required String password,
   }) async {
     emit(const AuthLoading());
     try {
-      final tokens = await _repository.register(
-        fullName: fullName,
-        email: email,
-        password: password,
-      );
+      final tokens = await _repository.login(email: email, password: password);
       emit(AuthAuthenticated(tokens));
     } on AuthFailure catch (e) {
       emit(AuthError(e.code, e.message));
+    }
+  }
+
+  Future<void> logout() async {
+    await _repository.logout();
+    emit(const AuthInitial());
+  }
+
+  Future<void> checkStoredAuth() async {
+    final tokens = await _repository.restoreSession();
+    if (tokens != null) {
+      emit(AuthAuthenticated(tokens));
+    } else {
+      emit(const AuthInitial());
     }
   }
 

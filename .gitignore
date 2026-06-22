@@ -78,7 +78,19 @@ app.*.map.json
 /ios/.symlinks/
 /ios/DerivedData/
 
-# AI agent instructions
+# AI agent instructions & config
+CLAUDE.md
+AGENT.md
+AGENTS.md
+.claude/
+.cursor/
+.aider*
+.continue/
+.codeium/
+.github/copilot-instructions.md
+.windsurfrules
+.roomodes
+.clinerules
 **/agent.md
 **/claude.md
 **/clade.md

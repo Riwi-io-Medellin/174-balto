@@ -51,7 +51,7 @@ class BaltoBottomNavBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(40),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.10),
+              color: Colors.black.withValues(alpha: 0.10),
               blurRadius: 20,
               spreadRadius: 0,
               offset: const Offset(0, 4),

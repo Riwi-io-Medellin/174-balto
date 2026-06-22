@@ -28,18 +28,27 @@ class _RegisterView extends StatefulWidget {
 
 class _RegisterViewState extends State<_RegisterView> {
   final _formKey = GlobalKey<FormState>();
-  final _nameCtrl = TextEditingController();
+  final _firstNameCtrl = TextEditingController();
+  final _lastNameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
+  final _idNumberCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
 
-  final FocusNode _emailFocus = FocusNode();
-  final FocusNode _passwordFocus = FocusNode();
-  final FocusNode _confirmFocus = FocusNode();
+  final _lastNameFocus = FocusNode();
+  final _emailFocus = FocusNode();
+  final _passwordFocus = FocusNode();
+  final _confirmFocus = FocusNode();
+  final _idNumberFocus = FocusNode();
+  final _phoneFocus = FocusNode();
 
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _acceptTerms = false;
+  String _selectedIdType = 'CC';
+
+  static const List<String> _idTypes = ['CC', 'CE', 'Passport', 'TI'];
 
   static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
@@ -52,13 +61,19 @@ class _RegisterViewState extends State<_RegisterView> {
 
   @override
   void dispose() {
-    _nameCtrl.dispose();
+    _firstNameCtrl.dispose();
+    _lastNameCtrl.dispose();
     _emailCtrl.dispose();
     _passwordCtrl.dispose();
     _confirmCtrl.dispose();
+    _idNumberCtrl.dispose();
+    _phoneCtrl.dispose();
+    _lastNameFocus.dispose();
     _emailFocus.dispose();
     _passwordFocus.dispose();
     _confirmFocus.dispose();
+    _idNumberFocus.dispose();
+    _phoneFocus.dispose();
     super.dispose();
   }
 
@@ -70,9 +85,13 @@ class _RegisterViewState extends State<_RegisterView> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     context.read<AuthCubit>().register(
-          fullName: _nameCtrl.text.trim(),
+          firstName: _firstNameCtrl.text.trim(),
+          lastName: _lastNameCtrl.text.trim(),
           email: _emailCtrl.text.trim(),
           password: _passwordCtrl.text,
+          idNumber: _idNumberCtrl.text.trim(),
+          idType: _selectedIdType,
+          phone: _phoneCtrl.text.trim(),
         );
   }
 
@@ -206,9 +225,32 @@ class _RegisterViewState extends State<_RegisterView> {
             ),
           ),
           const SizedBox(height: 28),
-          _fieldLabel('Full Name'),
-          const SizedBox(height: 8),
-          _nameField(),
+          // Name row
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _fieldLabel('First Name'),
+                    const SizedBox(height: 8),
+                    _firstNameField(),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _fieldLabel('Last Name'),
+                    const SizedBox(height: 8),
+                    _lastNameField(),
+                  ],
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 20),
           _fieldLabel('Email Address'),
           const SizedBox(height: 8),
@@ -221,6 +263,36 @@ class _RegisterViewState extends State<_RegisterView> {
           _fieldLabel('Confirm Password'),
           const SizedBox(height: 8),
           _confirmPasswordField(),
+          const SizedBox(height: 20),
+          // ID row
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _fieldLabel('ID Type'),
+                  const SizedBox(height: 8),
+                  _idTypeDropdown(),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _fieldLabel('ID Number'),
+                    const SizedBox(height: 8),
+                    _idNumberField(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _fieldLabel('Phone'),
+          const SizedBox(height: 8),
+          _phoneField(),
           const SizedBox(height: 16),
           _termsRow(),
           const SizedBox(height: 20),
@@ -267,18 +339,32 @@ class _RegisterViewState extends State<_RegisterView> {
     );
   }
 
-  Widget _nameField() {
+  Widget _firstNameField() {
     return TextFormField(
-      controller: _nameCtrl,
+      controller: _firstNameCtrl,
+      keyboardType: TextInputType.name,
+      textCapitalization: TextCapitalization.words,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (_) => _lastNameFocus.requestFocus(),
+      style: const TextStyle(fontSize: 14, color: _textDark),
+      decoration: _decoration(hint: 'First', icon: Icons.person_outline),
+      validator: (v) =>
+          (v == null || v.trim().isEmpty) ? 'Required.' : null,
+    );
+  }
+
+  Widget _lastNameField() {
+    return TextFormField(
+      controller: _lastNameCtrl,
+      focusNode: _lastNameFocus,
       keyboardType: TextInputType.name,
       textCapitalization: TextCapitalization.words,
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (_) => _emailFocus.requestFocus(),
       style: const TextStyle(fontSize: 14, color: _textDark),
-      decoration: _decoration(hint: 'Your name', icon: Icons.person_outline),
-      validator: (v) => (v == null || v.trim().isEmpty)
-          ? 'Enter your name.'
-          : null,
+      decoration: _decoration(hint: 'Last', icon: Icons.person_outline),
+      validator: (v) =>
+          (v == null || v.trim().isEmpty) ? 'Required.' : null,
     );
   }
 
@@ -353,8 +439,8 @@ class _RegisterViewState extends State<_RegisterView> {
       obscureText: _obscureConfirm,
       autocorrect: false,
       enableSuggestions: false,
-      textInputAction: TextInputAction.done,
-      onFieldSubmitted: (_) => _submit(),
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (_) => _idNumberFocus.requestFocus(),
       style: const TextStyle(fontSize: 14, color: _textDark),
       decoration: _decoration(
         hint: '••••••••',
@@ -373,6 +459,67 @@ class _RegisterViewState extends State<_RegisterView> {
       ),
       validator: (v) =>
           (v ?? '') == _passwordCtrl.text ? null : 'Passwords do not match.',
+    );
+  }
+
+  Widget _idTypeDropdown() {
+    return Container(
+      height: 54,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: _inputFill,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _selectedIdType,
+          items: _idTypes
+              .map(
+                (t) => DropdownMenuItem(
+                  value: t,
+                  child: Text(
+                    t,
+                    style: const TextStyle(fontSize: 14, color: _textDark),
+                  ),
+                ),
+              )
+              .toList(),
+          onChanged: (v) => setState(() => _selectedIdType = v ?? 'CC'),
+          icon: const Icon(Icons.arrow_drop_down, color: _textMuted),
+          style: const TextStyle(fontSize: 14, color: _textDark),
+          dropdownColor: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _idNumberField() {
+    return TextFormField(
+      controller: _idNumberCtrl,
+      focusNode: _idNumberFocus,
+      keyboardType: TextInputType.number,
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: (_) => _phoneFocus.requestFocus(),
+      style: const TextStyle(fontSize: 14, color: _textDark),
+      decoration:
+          _decoration(hint: '1234567890', icon: Icons.badge_outlined),
+      validator: (v) =>
+          (v == null || v.trim().isEmpty) ? 'Required.' : null,
+    );
+  }
+
+  Widget _phoneField() {
+    return TextFormField(
+      controller: _phoneCtrl,
+      focusNode: _phoneFocus,
+      keyboardType: TextInputType.phone,
+      textInputAction: TextInputAction.done,
+      onFieldSubmitted: (_) => _submit(),
+      style: const TextStyle(fontSize: 14, color: _textDark),
+      decoration:
+          _decoration(hint: '3001234567', icon: Icons.phone_outlined),
+      validator: (v) =>
+          (v == null || v.trim().isEmpty) ? 'Required.' : null,
     );
   }
 

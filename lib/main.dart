@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 
 import 'core/di/injection.dart';
+import 'core/storage/token_storage.dart';
 import 'presentation/screens/auth/login_screen.dart';
 import 'presentation/widgets/bottom_nav/balto_bottom_nav_bar.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   setupDependencies();
-  runApp(const BaltoApp());
+  final token = await sl<TokenStorage>().readAccessToken();
+  runApp(BaltoApp(isLoggedIn: token != null));
 }
 
 class BaltoApp extends StatelessWidget {
-  const BaltoApp({super.key});
+  const BaltoApp({super.key, required this.isLoggedIn});
+
+  final bool isLoggedIn;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +26,7 @@ class BaltoApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3A80C2)),
         useMaterial3: true,
       ),
-      home: const LoginScreen(),
+      home: isLoggedIn ? const MainShell() : const LoginScreen(),
     );
   }
 }

@@ -2,10 +2,25 @@ import '../entities/auth_tokens.dart';
 
 abstract class AuthRepository {
   Future<AuthTokens> register({
-    required String fullName,
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+    required String idNumber,
+    required String idType,
+    required String phone,
+  });
+
+  Future<AuthTokens> login({
     required String email,
     required String password,
   });
+
+  Future<AuthTokens> refresh({required String refreshToken});
+
+  Future<void> logout();
+
+  Future<AuthTokens?> restoreSession();
 }
 
 class AuthFailure implements Exception {

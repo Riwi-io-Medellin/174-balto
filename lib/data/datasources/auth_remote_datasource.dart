@@ -9,23 +9,63 @@ class AuthRemoteDataSource {
   final Dio _dio;
 
   Future<AuthTokensDto> register({
-    required String fullName,
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+    required String idNumber,
+    required String idType,
+    required String phone,
+  }) async {
+    final response = await _dio.post<dynamic>(
+      '/auth/register',
+      data: {
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'password': password,
+        'idNumber': idNumber,
+        'idType': idType,
+        'phone': phone,
+      },
+    );
+    return _parseTokenResponse(response, expectedStatus: 201);
+  }
+
+  Future<AuthTokensDto> login({
     required String email,
     required String password,
   }) async {
-    final Response<dynamic> response = await _dio.post(
-      '/auth/register',
-      data: {
-        'fullName': fullName,
-        'email': email,
-        'password': password,
-      },
+    final response = await _dio.post<dynamic>(
+      '/auth/login',
+      data: {'email': email, 'password': password},
     );
+    return _parseTokenResponse(response, expectedStatus: 200);
+  }
 
+  Future<AuthTokensDto> refresh({required String refreshToken}) async {
+    final response = await _dio.post<dynamic>(
+      '/auth/refresh',
+      data: {'refreshToken': refreshToken},
+    );
+    return _parseTokenResponse(response, expectedStatus: 200);
+  }
+
+  Future<void> logout({required String refreshToken}) async {
+    await _dio.post<dynamic>(
+      '/auth/logout',
+      data: {'refreshToken': refreshToken},
+    );
+  }
+
+  AuthTokensDto _parseTokenResponse(
+    Response<dynamic> response, {
+    required int expectedStatus,
+  }) {
     final status = response.statusCode ?? 0;
     final data = response.data;
 
-    if (status == 201 && data is Map<String, dynamic>) {
+    if (status == expectedStatus && data is Map<String, dynamic>) {
       return AuthTokensDto.fromJson(data);
     }
 
@@ -35,6 +75,6 @@ class AuthRemoteDataSource {
       throw AuthFailure(data['code'] as String, data['error'] as String);
     }
 
-    throw AuthFailure('REGISTRATION_FAILED', 'Unexpected response ($status).');
+    throw AuthFailure('AUTH_FAILED', 'Unexpected response ($status).');
   }
 }

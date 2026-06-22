@@ -1,9 +1,15 @@
 import 'package:dio/dio.dart';
 
 import '../config/env.dart';
+import '../storage/token_storage.dart';
+import 'auth_interceptor.dart';
 
 class ApiClient {
-  ApiClient() : dio = _build();
+  ApiClient(TokenStorage tokenStorage) : dio = _build() {
+    dio.interceptors.add(
+      AuthInterceptor(tokenStorage: tokenStorage, dio: dio),
+    );
+  }
 
   final Dio dio;
 

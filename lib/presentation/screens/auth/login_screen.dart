@@ -1,16 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../../core/di/injection.dart';
+import '../../../main.dart';
+import '../../bloc/auth/auth_cubit.dart';
+import '../../bloc/auth/auth_state.dart';
 import 'forgot_password_screen.dart';
 import 'register_screen.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider<AuthCubit>(
+      create: (_) => sl<AuthCubit>(),
+      child: const _LoginView(),
+    );
+  }
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginView extends StatefulWidget {
+  const _LoginView();
+
+  @override
+  State<_LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<_LoginView> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
+  final _passwordFocus = FocusNode();
+
   bool _obscurePassword = true;
   bool _rememberDevice = false;
 
@@ -21,26 +44,82 @@ class _LoginScreenState extends State<LoginScreen> {
   static const Color _textMuted = Color(0xFF6B7280);
   static const Color _textLight = Color(0xFF9AA0B2);
   static const Color _divider = Color(0xFFE0E4F0);
+  static final RegExp _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
+  @override
+  void dispose() {
+    _emailCtrl.dispose();
+    _passwordCtrl.dispose();
+    _passwordFocus.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    context.read<AuthCubit>().login(
+          email: _emailCtrl.text.trim(),
+          password: _passwordCtrl.text,
+        );
+  }
+
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
+    );
+  }
+
+  String _mapErrorMessage(String code, String fallback) {
+    switch (code) {
+      case 'INVALID_CREDENTIALS':
+        return 'Invalid email or password.';
+      case 'NETWORK_ERROR':
+        return 'Could not reach the server.';
+      default:
+        return fallback;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _bg,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-          child: Column(
-            children: [
-              _buildLogo(),
-              const SizedBox(height: 32),
-              _buildCard(),
-              const SizedBox(height: 28),
-              _buildFooter(),
-              const SizedBox(height: 16),
-            ],
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is AuthAuthenticated) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute<void>(builder: (_) => const MainShell()),
+            (route) => false,
+          );
+        } else if (state is AuthError) {
+          _showSnack(_mapErrorMessage(state.code, state.message));
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is AuthLoading;
+        return Scaffold(
+          backgroundColor: _bg,
+          body: SafeArea(
+            child: AbsorbPointer(
+              absorbing: isLoading,
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      _buildLogo(),
+                      const SizedBox(height: 32),
+                      _buildCard(isLoading),
+                      const SizedBox(height: 28),
+                      _buildFooter(),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -70,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildCard() {
+  Widget _buildCard(bool isLoading) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
@@ -118,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 12),
           _rememberRow(),
           const SizedBox(height: 20),
-          _signInButton(),
+          _signInButton(isLoading),
           const SizedBox(height: 24),
           _orDivider(),
           const SizedBox(height: 20),
@@ -141,25 +220,42 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  InputDecoration _decoration({
+    required String hint,
+    required IconData icon,
+    Widget? suffix,
+  }) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: _textLight, fontSize: 14),
+      prefixIcon: Icon(icon, color: _textMuted, size: 20),
+      suffixIcon: suffix,
+      filled: true,
+      fillColor: _inputFill,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      contentPadding: const EdgeInsets.symmetric(vertical: 16),
+    );
+  }
+
   Widget _emailField() {
-    return TextField(
+    return TextFormField(
+      controller: _emailCtrl,
       keyboardType: TextInputType.emailAddress,
       autocorrect: false,
       enableSuggestions: false,
       textInputAction: TextInputAction.next,
+      onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
       style: const TextStyle(fontSize: 14, color: _textDark),
-      decoration: InputDecoration(
-        hintText: 'name@email.com',
-        hintStyle: const TextStyle(color: _textLight, fontSize: 14),
-        prefixIcon: const Icon(Icons.mail_outline, color: _textMuted, size: 20),
-        filled: true,
-        fillColor: _inputFill,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16),
-      ),
+      decoration: _decoration(hint: 'name@email.com', icon: Icons.mail_outline),
+      validator: (v) {
+        final value = v?.trim() ?? '';
+        if (value.isEmpty) return 'Enter your email.';
+        if (!_emailRegex.hasMatch(value)) return 'Invalid email.';
+        return null;
+      },
     );
   }
 
@@ -197,21 +293,19 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _passwordField() {
-    return TextField(
+    return TextFormField(
+      controller: _passwordCtrl,
+      focusNode: _passwordFocus,
       obscureText: _obscurePassword,
       autocorrect: false,
       enableSuggestions: false,
       textInputAction: TextInputAction.done,
+      onFieldSubmitted: (_) => _submit(),
       style: const TextStyle(fontSize: 14, color: _textDark),
-      decoration: InputDecoration(
-        hintText: '••••••••',
-        hintStyle: const TextStyle(
-          color: _textMuted,
-          fontSize: 18,
-          letterSpacing: 2,
-        ),
-        prefixIcon: const Icon(Icons.lock_outline, color: _textMuted, size: 20),
-        suffixIcon: IconButton(
+      decoration: _decoration(
+        hint: '••••••••',
+        icon: Icons.lock_outline,
+        suffix: IconButton(
           icon: Icon(
             _obscurePassword
                 ? Icons.visibility_outlined
@@ -222,14 +316,9 @@ class _LoginScreenState extends State<LoginScreen> {
           onPressed: () =>
               setState(() => _obscurePassword = !_obscurePassword),
         ),
-        filled: true,
-        fillColor: _inputFill,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16),
       ),
+      validator: (v) =>
+          (v == null || v.isEmpty) ? 'Enter your password.' : null,
     );
   }
 
@@ -266,12 +355,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _signInButton() {
+  Widget _signInButton(bool isLoading) {
     return SizedBox(
       width: double.infinity,
       height: 54,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: isLoading ? null : _submit,
         style: ElevatedButton.styleFrom(
           backgroundColor: _primary,
           foregroundColor: Colors.white,
@@ -280,21 +369,30 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           elevation: 0,
         ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Sign In',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+        child: isLoading
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Sign In',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Icon(Icons.arrow_forward, color: Colors.white, size: 18),
+                ],
               ),
-            ),
-            SizedBox(width: 8),
-            Icon(Icons.arrow_forward, color: Colors.white, size: 18),
-          ],
-        ),
       ),
     );
   }
@@ -376,11 +474,11 @@ class _LoginScreenState extends State<LoginScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _FooterLink('Privacy Policy'),
+            _footerLink('Privacy Policy'),
             _footerSeparator(),
-            _FooterLink('Terms of Service'),
+            _footerLink('Terms of Service'),
             _footerSeparator(),
-            _FooterLink('Help Center'),
+            _footerLink('Help Center'),
           ],
         ),
         const SizedBox(height: 8),
@@ -399,7 +497,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _FooterLink(String text) {
+  Widget _footerLink(String text) {
     return GestureDetector(
       onTap: () {},
       child: Text(
@@ -446,4 +544,3 @@ class _SocialButton extends StatelessWidget {
     );
   }
 }
-

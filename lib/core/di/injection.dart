@@ -11,11 +11,11 @@ import '../storage/token_storage.dart';
 final GetIt sl = GetIt.instance;
 
 void setupDependencies() {
-  sl.registerLazySingleton<ApiClient>(() => ApiClient());
   sl.registerLazySingleton<FlutterSecureStorage>(
     () => const FlutterSecureStorage(),
   );
   sl.registerLazySingleton<TokenStorage>(() => TokenStorage(sl()));
+  sl.registerLazySingleton<ApiClient>(() => ApiClient(sl<TokenStorage>()));
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSource(sl<ApiClient>().dio),
   );

@@ -13,15 +13,23 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<AuthTokens> register({
-    required String fullName,
+    required String firstName,
+    required String lastName,
     required String email,
     required String password,
+    required String idNumber,
+    required String idType,
+    required String phone,
   }) async {
     try {
       final dto = await _remote.register(
-        fullName: fullName,
+        firstName: firstName,
+        lastName: lastName,
         email: email,
         password: password,
+        idNumber: idNumber,
+        idType: idType,
+        phone: phone,
       );
       await _tokenStorage.save(
         accessToken: dto.accessToken,
@@ -34,5 +42,65 @@ class AuthRepositoryImpl implements AuthRepository {
         e.message ?? 'Could not reach the server.',
       );
     }
+  }
+
+  @override
+  Future<AuthTokens> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final dto = await _remote.login(email: email, password: password);
+      await _tokenStorage.save(
+        accessToken: dto.accessToken,
+        refreshToken: dto.refreshToken,
+      );
+      return dto.toEntity();
+    } on DioException catch (e) {
+      throw AuthFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
+
+  @override
+  Future<AuthTokens> refresh({required String refreshToken}) async {
+    try {
+      final dto = await _remote.refresh(refreshToken: refreshToken);
+      await _tokenStorage.save(
+        accessToken: dto.accessToken,
+        refreshToken: dto.refreshToken,
+      );
+      return dto.toEntity();
+    } on DioException catch (e) {
+      throw AuthFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
+
+  @override
+  Future<void> logout() async {
+    final refreshToken = await _tokenStorage.readRefreshToken();
+    if (refreshToken != null) {
+      try {
+        await _remote.logout(refreshToken: refreshToken);
+      } catch (_) {}
+    }
+    await _tokenStorage.clear();
+  }
+
+  @override
+  Future<AuthTokens?> restoreSession() async {
+    final accessToken = await _tokenStorage.readAccessToken();
+    final refreshToken = await _tokenStorage.readRefreshToken();
+    if (accessToken == null || refreshToken == null) return null;
+    return AuthTokens(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      expiresAt: DateTime.now().add(const Duration(hours: 1)),
+    );
   }
 }
