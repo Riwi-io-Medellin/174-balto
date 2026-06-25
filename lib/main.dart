@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'core/di/injection.dart';
 import 'core/storage/token_storage.dart';
@@ -9,6 +10,8 @@ import 'presentation/widgets/bottom_nav/balto_bottom_nav_bar.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupDependencies();
+  // TEMP: clear stale tokens from previous backend. Remove after first run.
+  await sl<TokenStorage>().clear();
   final token = await sl<TokenStorage>().readAccessToken();
   runApp(BaltoApp(isLoggedIn: token != null));
 }
@@ -20,12 +23,19 @@ class BaltoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final base = ThemeData(
+      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3A80C2)),
+      useMaterial3: true,
+    );
     return MaterialApp(
       title: 'Balto',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3A80C2)),
-        useMaterial3: true,
+      theme: base.copyWith(
+        textTheme: GoogleFonts.interTextTheme(base.textTheme).apply(
+          fontFamilyFallback: const ['Ubuntu', 'Roboto'],
+        ),
+        primaryTextTheme: GoogleFonts.interTextTheme(base.primaryTextTheme)
+            .apply(fontFamilyFallback: const ['Ubuntu', 'Roboto']),
       ),
       home: isLoggedIn ? const MainShell() : const LoginScreen(),
     );

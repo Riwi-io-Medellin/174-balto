@@ -22,8 +22,8 @@ class User extends Equatable {
   final String email;
   final String idNumber;
   final String idType;
-  final int phone;
-  final int? phoneExtra;
+  final String phone;
+  final String? phoneExtra;
   final String? location;
   final String? address;
   final String? photoUrl;

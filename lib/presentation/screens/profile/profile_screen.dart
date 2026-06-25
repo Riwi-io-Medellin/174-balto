@@ -1,13 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ProfileScreen extends StatefulWidget {
+import '../../../core/di/injection.dart';
+import '../../../domain/entities/pet.dart';
+import '../../../domain/repositories/auth_repository.dart';
+import '../../bloc/profile/profile_cubit.dart';
+import '../../bloc/profile/profile_state.dart';
+import '../auth/login_screen.dart';
+import '../../screens/pets/create_pet_screen.dart';
+import '../../screens/pets/pet_detail_screen.dart';
+import 'edit_profile_screen.dart';
+import 'privacy_settings_screen.dart';
+import 'profile_settings_screen.dart';
+import 'support_screen.dart';
+
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider<ProfileCubit>(
+      create: (_) => sl<ProfileCubit>()..load(),
+      child: const _ProfileView(),
+    );
+  }
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileView extends StatefulWidget {
+  const _ProfileView();
+
+  @override
+  State<_ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<_ProfileView> {
   bool _twoFactor = true;
 
   static const Color _textDark = Color(0xFF1F2937);
@@ -56,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   _buildHeader(),
                   const SizedBox(height: 16),
-                  _buildIdentityRow(),
+                  _buildIdentityRowFromState(),
                   const SizedBox(height: 18),
                   _buildStatsCard(),
                   const SizedBox(height: 18),
@@ -64,33 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 22),
                   _buildMyPets(),
                   const SizedBox(height: 18),
-                  _buildSectionTitle('PERSONAL INFORMATION'),
-                  const SizedBox(height: 8),
-                  _buildListCard([
-                    _buildIconRow(
-                      icon: Icons.mail_outline,
-                      iconBgColor: _bgBlueTint,
-                      iconColor: _blue,
-                      title: 'Email',
-                      trailingValue: 'diego.m@email.com',
-                    ),
-                    _divider(),
-                    _buildIconRow(
-                      icon: Icons.phone_outlined,
-                      iconBgColor: _bgGreenTint,
-                      iconColor: _green,
-                      title: 'Phone Number',
-                      trailingValue: '+52 55 1234 5678',
-                    ),
-                    _divider(),
-                    _buildIconRow(
-                      icon: Icons.place_outlined,
-                      iconBgColor: _bgOrangeTint,
-                      iconColor: _orange,
-                      title: 'Address',
-                      trailingValue: 'Polanco, CDMX',
-                    ),
-                  ]),
+                  _buildPersonalInformationFromState(),
                   const SizedBox(height: 18),
                   _buildSectionTitle('PREFERENCES'),
                   const SizedBox(height: 8),
@@ -148,6 +148,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       iconBgColor: _bgPurpleTint,
                       iconColor: _purple,
                       title: 'Privacy Settings',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const PrivacySettingsScreen(),
+                        ),
+                      ),
                     ),
                   ]),
                   const SizedBox(height: 18),
@@ -161,6 +166,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       iconBgColor: _bgBlueTint,
                       iconColor: _blue,
                       title: 'Help Center',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const SupportScreen(),
+                        ),
+                      ),
                     ),
                     _divider(),
                     _buildIconRow(
@@ -168,6 +178,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       iconBgColor: _bgGreenTint,
                       iconColor: _green,
                       title: 'Contact Support',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const SupportScreen(),
+                        ),
+                      ),
                     ),
                     _divider(),
                     _buildIconRow(
@@ -175,6 +190,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       iconBgColor: _bgPurpleTint,
                       iconColor: _purple,
                       title: 'FAQs',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const SupportScreen(),
+                        ),
+                      ),
                     ),
                   ]),
                   const SizedBox(height: 18),
@@ -192,52 +212,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const Text(
-          'Welcome back, Diego 👋',
-          style: TextStyle(fontSize: 13, color: _textMid),
-        ),
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE5E7EB)),
-          ),
-          child: const Icon(Icons.tune, size: 18, color: _textDark),
-        ),
-      ],
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        final name = state is ProfileLoaded ? state.user.firstName : 'there';
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Welcome back, $name 👋',
+              style: const TextStyle(fontSize: 13, color: _textMid),
+            ),
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const ProfileSettingsScreen(),
+                ),
+              ),
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                ),
+                child: const Icon(Icons.tune, size: 18, color: _textDark),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildIdentityRow() {
+  Widget _buildIdentityRow({
+    required String firstName,
+    required String fullName,
+    required DateTime? createdAt,
+    String? errorMessage,
+  }) {
     return Row(
       children: [
-        _buildAvatar('Diego', size: 64, withCheck: true),
+        _buildAvatar(firstName, size: 64, withCheck: true),
         const SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Diego Morales',
-                style: TextStyle(
+              Text(
+                fullName,
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
                   color: _textDark,
                 ),
               ),
               const SizedBox(height: 2),
-              const Text(
-                'Member since January 2026',
-                style: TextStyle(fontSize: 12, color: _textMuted),
+              Text(
+                errorMessage ??
+                    (createdAt != null
+                        ? 'Member since ${_formatMonthYear(createdAt)}'
+                        : '—'),
+                style: const TextStyle(fontSize: 12, color: _textMuted),
               ),
               const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: _bgGoldTint,
                   borderRadius: BorderRadius.circular(99),
@@ -256,6 +299,155 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  String _formatMonthYear(DateTime date) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return '${months[date.month - 1]} ${date.year}';
+  }
+
+  Widget _buildIdentityRowFromState() {
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        if (state is ProfileLoaded) {
+          return _buildIdentityRow(
+            firstName: state.user.firstName,
+            fullName: state.user.fullName,
+            createdAt: state.user.createdAt,
+          );
+        }
+        if (state is ProfileError) {
+          return _buildIdentityRow(
+            firstName: '—',
+            fullName: 'Could not load profile',
+            createdAt: null,
+            errorMessage: state.message,
+          );
+        }
+        return _buildIdentitySkeleton();
+      },
+    );
+  }
+
+  Widget _buildPersonalInformationFromState() {
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        String email = '—';
+        String phone = '—';
+        String address = '—';
+        if (state is ProfileLoaded) {
+          email = state.user.email;
+          phone = _formatPhone(state.user.phone, state.user.phoneExtra);
+          address = _formatAddress(state.user.address, state.user.location);
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle('PERSONAL INFORMATION'),
+            const SizedBox(height: 8),
+            _buildListCard([
+              _buildIconRow(
+                icon: Icons.mail_outline,
+                iconBgColor: _bgBlueTint,
+                iconColor: _blue,
+                title: 'Email',
+                trailingValue: email,
+              ),
+              _divider(),
+              _buildIconRow(
+                icon: Icons.phone_outlined,
+                iconBgColor: _bgGreenTint,
+                iconColor: _green,
+                title: 'Phone Number',
+                trailingValue: phone,
+              ),
+              _divider(),
+              _buildIconRow(
+                icon: Icons.place_outlined,
+                iconBgColor: _bgOrangeTint,
+                iconColor: _orange,
+                title: 'Address',
+                trailingValue: address,
+              ),
+            ]),
+          ],
+        );
+      },
+    );
+  }
+
+  String _formatPhone(String phone, String? extra) {
+    return extra == null || extra.isEmpty ? phone : '$phone · $extra';
+  }
+
+  String _formatAddress(String? address, String? location) {
+    final parts = <String>[
+      if (address != null && address.isNotEmpty) address,
+      if (location != null && location.isNotEmpty) location,
+    ];
+    return parts.isEmpty ? '—' : parts.join(', ');
+  }
+
+  Widget _buildIdentitySkeleton() {
+    return Row(
+      children: [
+        Container(
+          width: 64,
+          height: 64,
+          decoration: const BoxDecoration(
+            color: Color(0xFFE5E7EB),
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 160,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE5E7EB),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                width: 110,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEDEFF3),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _onSignOut() async {
+    await sl<AuthRepository>().logout();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
+      (_) => false,
     );
   }
 
@@ -301,52 +493,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildStatsCard() {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        final petCount = state is ProfileLoaded ? state.petCount : 0;
+        final walkCount = state is ProfileLoaded ? state.walkCount : 0;
+        final avgRating = state is ProfileLoaded ? state.averageRating : 0.0;
+        return Container(
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 14,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildStatCell(
-              icon: Icons.pets,
-              iconBg: _bgPurpleTint,
-              iconColor: _purple,
-              value: '3',
-              label: 'Dogs Registered',
-            ),
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildStatCell(
+                  icon: Icons.pets,
+                  iconBg: _bgPurpleTint,
+                  iconColor: _purple,
+                  value: '$petCount',
+                  label: 'Dogs Registered',
+                ),
+              ),
+              _statDivider(),
+              Expanded(
+                child: _buildStatCell(
+                  icon: Icons.directions_walk,
+                  iconBg: _bgGreenTint,
+                  iconColor: _green,
+                  value: '$walkCount',
+                  label: 'Completed Walks',
+                ),
+              ),
+              _statDivider(),
+              Expanded(
+                child: _buildStatCell(
+                  icon: Icons.star,
+                  iconBg: _bgGoldTint,
+                  iconColor: _gold,
+                  value: avgRating.toStringAsFixed(1),
+                  label: 'Average Rating',
+                ),
+              ),
+            ],
           ),
-          _statDivider(),
-          Expanded(
-            child: _buildStatCell(
-              icon: Icons.directions_walk,
-              iconBg: _bgGreenTint,
-              iconColor: _green,
-              value: '147',
-              label: 'Completed Walks',
-            ),
-          ),
-          _statDivider(),
-          Expanded(
-            child: _buildStatCell(
-              icon: Icons.star,
-              iconBg: _bgGoldTint,
-              iconColor: _gold,
-              value: '4.9',
-              label: 'Average Rating',
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -400,6 +599,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             iconBg: _bgPurpleTint,
             iconColor: _indigo,
             label: 'Edit Profile',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<ProfileCubit>(),
+                  child: const EditProfileScreen(),
+                ),
+              ),
+            ),
           ),
         ),
         Expanded(
@@ -437,9 +644,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required Color iconColor,
     required String label,
     bool hasDot = false,
+    VoidCallback? onTap,
   }) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap ?? () {},
       child: Column(
         children: [
           Stack(
@@ -481,133 +689,169 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildMyPets() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text(
-              'My Pets',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: _textDark,
-              ),
-            ),
-            Text(
-              '3 registered',
-              style: TextStyle(fontSize: 12, color: _textMuted),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        _buildPetCard(
-          name: 'Max',
-          status: 'Walking',
-          statusColor: _green,
-          statusBg: _bgGreenTint,
-          breed: 'Golden Retriever',
-          age: '3 yr',
-        ),
-        const SizedBox(height: 10),
-        _buildPetCard(
-          name: 'Luna',
-          status: 'Resting',
-          statusColor: _blue,
-          statusBg: _bgBlueTint,
-          breed: 'French Bulldog',
-          age: '2 yr',
-        ),
-        const SizedBox(height: 10),
-        _buildPetCard(
-          name: 'Rocky',
-          status: 'Resting',
-          statusColor: _blue,
-          statusBg: _bgBlueTint,
-          breed: 'Labrador',
-          age: '5 yr',
-        ),
-        const SizedBox(height: 12),
-        _buildAddPetButton(),
-      ],
-    );
-  }
-
-  Widget _buildPetCard({
-    required String name,
-    required String status,
-    required Color statusColor,
-    required Color statusBg,
-    required String breed,
-    required String age,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(13),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          _buildAvatar(name, size: 44),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        final pets = state is ProfileLoaded ? state.pets : <Pet>[];
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: _textDark,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: statusBg,
-                        borderRadius: BorderRadius.circular(99),
-                      ),
-                      child: Text(
-                        status,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: statusColor,
-                        ),
-                      ),
-                    ),
-                  ],
+                const Text(
+                  'My Pets',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: _textDark,
+                  ),
                 ),
-                const SizedBox(height: 3),
                 Text(
-                  '$breed · $age',
+                  '${pets.length} registered',
                   style: const TextStyle(fontSize: 12, color: _textMuted),
                 ),
               ],
             ),
+            const SizedBox(height: 10),
+            if (pets.isEmpty)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Text(
+                  'No pets registered yet',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
+                ),
+              )
+            else
+              ...pets.map((pet) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _buildPetCard(pet: pet),
+                  )),
+            const SizedBox(height: 12),
+            _buildAddPetButton(),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildPetCard({required Pet pet}) {
+    final age = pet.birthDate != null
+        ? '${DateTime.now().year - pet.birthDate!.year} yr'
+        : '—';
+    final subtitle = [
+      if (pet.breed != null) pet.breed!,
+      age,
+    ].join(' · ');
+
+    return InkWell(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: context.read<ProfileCubit>(),
+            child: PetDetailScreen(petId: pet.id),
           ),
-          const Icon(Icons.chevron_right, color: _textMuted),
-        ],
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(13),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            _buildPetAvatar(pet),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        pet.name,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: _textDark,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: _bgGreenTint,
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                        child: const Text(
+                          'Active',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: _green,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 12, color: _textMuted),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: _textMuted),
+          ],
+        ),
       ),
     );
   }
 
+  Widget _buildPetAvatar(Pet pet) {
+    if (pet.photoUrl != null && pet.photoUrl!.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.network(
+          pet.photoUrl!,
+          width: 44,
+          height: 44,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => _buildAvatar(pet.name, size: 44),
+          loadingBuilder: (_, child, progress) {
+            if (progress == null) return child;
+            return _buildAvatar(pet.name, size: 44);
+          },
+        ),
+      );
+    }
+    return _buildAvatar(pet.name, size: 44);
+  }
+
   Widget _buildAddPetButton() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: context.read<ProfileCubit>(),
+            child: const CreatePetScreen(),
+          ),
+        ),
+      ),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 13),
@@ -679,9 +923,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String title,
     String? trailingValue,
     Widget? trailing,
+    VoidCallback? onTap,
   }) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap ?? () {},
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Row(
@@ -848,7 +1093,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: () {},
+        onPressed: _onSignOut,
         icon: const Icon(Icons.logout, size: 18, color: _red),
         label: const Text(
           'Sign Out',
