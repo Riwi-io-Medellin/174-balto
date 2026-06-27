@@ -4,7 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'core/di/injection.dart';
 import 'core/storage/token_storage.dart';
 import 'presentation/screens/auth/login_screen.dart';
+import 'presentation/screens/home/home_page.dart';
 import 'presentation/screens/profile/profile_screen.dart';
+import 'presentation/screens/services/services_page.dart';
 import 'presentation/widgets/bottom_nav/balto_bottom_nav_bar.dart';
 
 void main() async {
@@ -60,18 +62,29 @@ class _MainShellState extends State<MainShell> {
     'Profile',
   ];
 
+  Widget _buildBody() {
+    switch (_currentIndex) {
+      case 0:
+        return const HomeScreen();
+      case 2:
+        return const ServicesPage();
+      case 4:
+        return const ProfileScreen();
+      default:
+        return Center(
+          child: Text(
+            _pageTitles[_currentIndex],
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          ),
+        );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      body: _currentIndex == 4
-          ? const ProfileScreen()
-          : Center(
-              child: Text(
-                _pageTitles[_currentIndex],
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-            ),
+      body: _buildBody(),
       bottomNavigationBar: BaltoBottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
