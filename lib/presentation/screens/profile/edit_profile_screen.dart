@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/di/injection.dart';
+import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/user.dart';
 import '../../../domain/repositories/user_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
@@ -104,15 +105,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       await context.read<ProfileCubit>().load();
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully')),
-      );
+      BaltoToast.success(context, 'Profile updated successfully.');
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      BaltoToast.error(context, 'Error: ${e.toString()}');
     } finally {
       if (mounted) setState(() => _saving = false);
     }

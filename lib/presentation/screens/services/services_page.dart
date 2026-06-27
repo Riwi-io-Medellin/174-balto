@@ -4,6 +4,7 @@ import '../../../data/services_mock.dart';
 import '../../../data/walkers_mock.dart';
 import '../../../domain/entities/business.dart';
 import '../../../domain/entities/walker.dart';
+import '../../screens/walkers/walker_profile_page.dart';
 import 'business_profile_page.dart';
 import 'widgets/business_card.dart';
 import 'widgets/compact_walker_card.dart';
@@ -47,11 +48,10 @@ class _ServicesPageState extends State<ServicesPage> {
     );
   }
 
-  void _showWalkerSnackBar() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Walker profiles are coming soon.'),
-        behavior: SnackBarBehavior.floating,
+  void _openWalkerProfile(Walker walker) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => WalkerProfilePage(walker: walker),
       ),
     );
   }
@@ -100,7 +100,7 @@ class _ServicesPageState extends State<ServicesPage> {
                         if (item is Walker) {
                           return CompactWalkerCard(
                             walker: item,
-                            onTap: _showWalkerSnackBar,
+                            onTap: () => _openWalkerProfile(item),
                           );
                         }
                         return const SizedBox.shrink();

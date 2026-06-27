@@ -24,7 +24,7 @@ class BaltoBottomNavBar extends StatelessWidget {
       accentColor: AppColors.navWalks,
     ),
     NavItemModel(
-      label: 'Walkers',
+      label: 'Services',
       icon: Icons.people_rounded,
       accentColor: AppColors.navWalkers,
     ),

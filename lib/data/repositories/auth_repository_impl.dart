@@ -35,6 +35,7 @@ class AuthRepositoryImpl implements AuthRepository {
         accessToken: dto.accessToken,
         refreshToken: dto.refreshToken,
       );
+      await _tokenStorage.saveRememberMe(true);
       return dto.toEntity();
     } on DioException catch (e) {
       throw AuthFailure(
@@ -48,6 +49,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthTokens> login({
     required String email,
     required String password,
+    required bool rememberMe,
   }) async {
     try {
       final dto = await _remote.login(email: email, password: password);
@@ -55,6 +57,7 @@ class AuthRepositoryImpl implements AuthRepository {
         accessToken: dto.accessToken,
         refreshToken: dto.refreshToken,
       );
+      await _tokenStorage.saveRememberMe(rememberMe);
       return dto.toEntity();
     } on DioException catch (e) {
       throw AuthFailure(

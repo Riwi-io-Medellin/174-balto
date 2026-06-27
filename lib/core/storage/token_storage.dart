@@ -5,6 +5,7 @@ class TokenStorage {
 
   static const _accessKey = 'auth_access_token';
   static const _refreshKey = 'auth_refresh_token';
+  static const _rememberKey = 'auth_remember_me';
 
   final FlutterSecureStorage _storage;
 
@@ -19,8 +20,18 @@ class TokenStorage {
   Future<String?> readAccessToken() => _storage.read(key: _accessKey);
   Future<String?> readRefreshToken() => _storage.read(key: _refreshKey);
 
+  Future<void> saveRememberMe(bool value) =>
+      _storage.write(key: _rememberKey, value: value.toString());
+
+  Future<bool?> readRememberMe() async {
+    final v = await _storage.read(key: _rememberKey);
+    if (v == null) return null;
+    return v == 'true';
+  }
+
   Future<void> clear() async {
     await _storage.delete(key: _accessKey);
     await _storage.delete(key: _refreshKey);
+    await _storage.delete(key: _rememberKey);
   }
 }

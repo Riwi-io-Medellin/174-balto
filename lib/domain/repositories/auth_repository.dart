@@ -14,6 +14,7 @@ abstract class AuthRepository {
   Future<AuthTokens> login({
     required String email,
     required String password,
+    required bool rememberMe,
   });
 
   Future<AuthTokens> refresh({required String refreshToken});

@@ -7,14 +7,18 @@ import 'presentation/screens/auth/login_screen.dart';
 import 'presentation/screens/home/home_page.dart';
 import 'presentation/screens/profile/profile_screen.dart';
 import 'presentation/screens/services/services_page.dart';
+import 'presentation/screens/walks/walks_page.dart';
 import 'presentation/widgets/bottom_nav/balto_bottom_nav_bar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupDependencies();
-  // TEMP: clear stale tokens from previous backend. Remove after first run.
-  await sl<TokenStorage>().clear();
-  final token = await sl<TokenStorage>().readAccessToken();
+  final tokenStorage = sl<TokenStorage>();
+  final rememberMe = await tokenStorage.readRememberMe();
+  if (rememberMe != true) {
+    await tokenStorage.clear();
+  }
+  final token = await tokenStorage.readAccessToken();
   runApp(BaltoApp(isLoggedIn: token != null));
 }
 
@@ -66,6 +70,8 @@ class _MainShellState extends State<MainShell> {
     switch (_currentIndex) {
       case 0:
         return const HomeScreen();
+      case 1:
+        return const WalksPage();
       case 2:
         return const ServicesPage();
       case 4:

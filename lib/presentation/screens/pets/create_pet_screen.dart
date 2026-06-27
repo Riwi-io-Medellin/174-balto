@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/di/injection.dart';
+import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../../domain/repositories/upload_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
@@ -109,15 +110,11 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
       await context.read<ProfileCubit>().load();
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pet added successfully')),
-      );
+      BaltoToast.success(context, 'Pet added successfully.');
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      BaltoToast.error(context, 'Error: ${e.toString()}');
     } finally {
       if (mounted) setState(() => _saving = false);
     }

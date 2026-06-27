@@ -10,6 +10,16 @@ class Walker extends Equatable {
     required this.imageUrl,
     required this.priceLabel,
     this.topRated = false,
+    this.isVerified = false,
+    this.yearsOfExperience = 0,
+    this.biography,
+    this.specialties = const [],
+    this.galleryImages = const [],
+    this.pricePerWalk,
+    this.serviceArea,
+    this.maxDogs,
+    this.completedWalks,
+    this.avatarUrl,
   });
 
   final String name;
@@ -20,6 +30,16 @@ class Walker extends Equatable {
   final String imageUrl;
   final String priceLabel;
   final bool topRated;
+  final bool isVerified;
+  final int yearsOfExperience;
+  final String? biography;
+  final List<String> specialties;
+  final List<String> galleryImages;
+  final double? pricePerWalk;
+  final String? serviceArea;
+  final int? maxDogs;
+  final int? completedWalks;
+  final String? avatarUrl;
 
   @override
   List<Object?> get props => [
