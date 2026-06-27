@@ -1,31 +1,104 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/di/injection.dart';
 import '../../../domain/entities/pet.dart';
+import '../../../domain/repositories/pet_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
+import 'edit_pet_screen.dart';
 
-class PetDetailScreen extends StatelessWidget {
+class PetDetailScreen extends StatefulWidget {
   const PetDetailScreen({super.key, required this.petId});
 
   final String petId;
 
+  @override
+  State<PetDetailScreen> createState() => _PetDetailScreenState();
+}
+
+class _PetDetailScreenState extends State<PetDetailScreen> {
   static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _textDark = Color(0xFF1A1A2E);
   static const Color _textMuted = Color(0xFF6B7280);
+  static const Color _danger = Color(0xFFE5544B);
 
-  Pet _findPet(BuildContext context) {
+  bool _deleting = false;
+
+  Pet? _findPet() {
     final state = context.read<ProfileCubit>().state;
     if (state is ProfileLoaded) {
-      return state.pets.firstWhere((p) => p.id == petId);
+      try {
+        return state.pets.firstWhere((p) => p.id == widget.petId);
+      } catch (_) {
+        return null;
+      }
     }
-    throw StateError('Pet not found');
+    return null;
+  }
+
+  Future<void> _onEdit(Pet pet) async {
+    final cubit = context.read<ProfileCubit>();
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: cubit,
+          child: EditPetScreen(pet: pet),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onDelete(Pet pet) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete pet?'),
+        content: Text('This will permanently remove ${pet.name}.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(foregroundColor: _danger),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    if (!mounted) return;
+
+    setState(() => _deleting = true);
+    final cubit = context.read<ProfileCubit>();
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await sl<PetRepository>().delete(pet.id);
+      navigator.pop();
+      messenger.showSnackBar(
+        SnackBar(content: Text('${pet.name} deleted')),
+      );
+      cubit.load();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _deleting = false);
+      messenger.showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final pet = _findPet(context);
+    final pet = _findPet();
+    if (pet == null) {
+      return const Scaffold(
+        backgroundColor: _bg,
+        body: SizedBox.shrink(),
+      );
+    }
 
     final age = pet.birthDate != null
         ? '${DateTime.now().year - pet.birthDate!.year} years'
@@ -38,6 +111,18 @@ class PetDetailScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: _textDark,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Edit',
+            onPressed: _deleting ? null : () => _onEdit(pet),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: _danger),
+            tooltip: 'Delete',
+            onPressed: _deleting ? null : () => _onDelete(pet),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),

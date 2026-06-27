@@ -93,6 +93,26 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      await _remote.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+    } on AuthFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw AuthFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
+
+  @override
   Future<AuthTokens?> restoreSession() async {
     final accessToken = await _tokenStorage.readAccessToken();
     final refreshToken = await _tokenStorage.readRefreshToken();

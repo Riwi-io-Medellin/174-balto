@@ -11,6 +11,16 @@ abstract class PetRepository {
     String? description,
     String? photoUrl,
   });
+  Future<Pet> update({
+    required String id,
+    required String name,
+    String? species,
+    String? breed,
+    DateTime? birthDate,
+    String? description,
+    String? photoUrl,
+  });
+  Future<void> delete(String id);
 }
 
 class PetFailure implements Exception {

@@ -69,4 +69,50 @@ class PetRepositoryImpl implements PetRepository {
       );
     }
   }
+
+  @override
+  Future<Pet> update({
+    required String id,
+    required String name,
+    String? species,
+    String? breed,
+    DateTime? birthDate,
+    String? description,
+    String? photoUrl,
+  }) async {
+    try {
+      final request = <String, dynamic>{
+        'name': name,
+        if (species case final v?) 'species': v,
+        if (breed case final v?) 'breed': v,
+        if (birthDate case final v?)
+          'birthDate': v.toIso8601String().split('T').first,
+        if (description case final v?) 'description': v,
+        if (photoUrl case final v?) 'photoUrl': v,
+      };
+      final dto = await _remote.update(id, request);
+      return dto.toEntity();
+    } on PetFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw PetFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    try {
+      await _remote.delete(id);
+    } on PetFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw PetFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
 }

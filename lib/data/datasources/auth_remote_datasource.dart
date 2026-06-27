@@ -58,6 +58,29 @@ class AuthRemoteDataSource {
     );
   }
 
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final response = await _dio.post<dynamic>(
+      '/auth/change-password',
+      data: {
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+      },
+    );
+    final status = response.statusCode ?? 0;
+    if (status == 204) return;
+
+    final data = response.data;
+    if (data is Map<String, dynamic> &&
+        data['code'] is String &&
+        data['error'] is String) {
+      throw AuthFailure(data['code'] as String, data['error'] as String);
+    }
+    throw AuthFailure('CHANGE_PASSWORD_FAILED', 'Unexpected response ($status).');
+  }
+
   AuthTokensDto _parseTokenResponse(
     Response<dynamic> response, {
     required int expectedStatus,

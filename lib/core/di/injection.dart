@@ -2,19 +2,28 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../data/datasources/auth_remote_datasource.dart';
+import '../../data/datasources/feedback_remote_datasource.dart';
+import '../../data/datasources/me_remote_datasource.dart';
 import '../../data/datasources/pet_remote_datasource.dart';
 import '../../data/datasources/upload_remote_datasource.dart';
 import '../../data/datasources/user_remote_datasource.dart';
+import '../../data/datasources/walker_remote_datasource.dart';
 import '../../data/datasources/walking_history_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
+import '../../data/repositories/feedback_repository_impl.dart';
+import '../../data/repositories/me_repository_impl.dart';
 import '../../data/repositories/pet_repository_impl.dart';
 import '../../data/repositories/upload_repository_impl.dart';
 import '../../data/repositories/user_repository_impl.dart';
+import '../../data/repositories/walker_repository_impl.dart';
 import '../../data/repositories/walking_history_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../domain/repositories/feedback_repository.dart';
+import '../../domain/repositories/me_repository.dart';
 import '../../domain/repositories/pet_repository.dart';
 import '../../domain/repositories/upload_repository.dart';
 import '../../domain/repositories/user_repository.dart';
+import '../../domain/repositories/walker_repository.dart';
 import '../../domain/repositories/walking_history_repository.dart';
 import '../../presentation/bloc/auth/auth_cubit.dart';
 import '../../presentation/bloc/profile/profile_cubit.dart';
@@ -59,6 +68,24 @@ void setupDependencies() {
   sl.registerLazySingleton<UploadRepository>(
     () => UploadRepositoryImpl(sl<UploadRemoteDataSource>()),
   );
+  sl.registerLazySingleton<MeRemoteDataSource>(
+    () => MeRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<MeRepository>(
+    () => MeRepositoryImpl(sl<MeRemoteDataSource>()),
+  );
+  sl.registerLazySingleton<WalkerRemoteDataSource>(
+    () => WalkerRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<WalkerRepository>(
+    () => WalkerRepositoryImpl(sl<WalkerRemoteDataSource>()),
+  );
+  sl.registerLazySingleton<FeedbackRemoteDataSource>(
+    () => FeedbackRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<FeedbackRepository>(
+    () => FeedbackRepositoryImpl(sl<FeedbackRemoteDataSource>()),
+  );
   sl.registerFactory<AuthCubit>(() => AuthCubit(sl()));
   sl.registerFactory<ProfileCubit>(
     () => ProfileCubit(
@@ -66,6 +93,11 @@ void setupDependencies() {
       tokenStorage: sl<TokenStorage>(),
       petRepository: sl<PetRepository>(),
       walkingHistoryRepository: sl<WalkingHistoryRepository>(),
+      meRepository: sl<MeRepository>(),
+      walkerRepository: sl<WalkerRepository>(),
+      feedbackRepository: sl<FeedbackRepository>(),
+      authRepository: sl<AuthRepository>(),
+      uploadRepository: sl<UploadRepository>(),
     ),
   );
 }

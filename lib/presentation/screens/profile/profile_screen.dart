@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/di/injection.dart';
+
 import '../../../domain/entities/pet.dart';
-import '../../../domain/repositories/auth_repository.dart';
+import '../../../domain/entities/user.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
+import '../auth/change_password_screen.dart';
 import '../auth/login_screen.dart';
 import '../../screens/pets/create_pet_screen.dart';
 import '../../screens/pets/pet_detail_screen.dart';
 import 'edit_profile_screen.dart';
 import 'privacy_settings_screen.dart';
 import 'profile_settings_screen.dart';
-import 'support_screen.dart';
+import 'help_center_screen.dart';
+import 'faq_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -35,6 +41,8 @@ class _ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<_ProfileView> {
   bool _twoFactor = true;
+  bool _uploadingAvatar = false;
+  final ImagePicker _picker = ImagePicker();
 
   static const Color _textDark = Color(0xFF1F2937);
   static const Color _textMid = Color(0xFF5A6473);
@@ -74,135 +82,165 @@ class _ProfileViewState extends State<_ProfileView> {
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 16),
-                  _buildIdentityRowFromState(),
-                  const SizedBox(height: 18),
-                  _buildStatsCard(),
-                  const SizedBox(height: 18),
-                  _buildQuickActions(),
-                  const SizedBox(height: 22),
-                  _buildMyPets(),
-                  const SizedBox(height: 18),
-                  _buildPersonalInformationFromState(),
-                  const SizedBox(height: 18),
-                  _buildSectionTitle('PREFERENCES'),
-                  const SizedBox(height: 8),
-                  _buildListCard([
-                    _buildIconRow(
-                      icon: Icons.person_outline,
-                      iconBgColor: _bgBlueTint,
-                      iconColor: _blue,
-                      title: 'Preferred Walker Gender',
-                      trailingValue: 'No preference',
-                    ),
-                    _divider(),
-                    _buildIconRow(
-                      icon: Icons.directions_walk,
-                      iconBgColor: _bgGreenTint,
-                      iconColor: _green,
-                      title: 'Walking Preferences',
-                      trailingValue: 'Mornings',
-                    ),
-                    _divider(),
-                    _buildIconRow(
-                      icon: Icons.shield_outlined,
-                      iconBgColor: _bgGoldTint,
-                      iconColor: _gold,
-                      title: 'Emergency Contacts',
-                      trailingValue: '2 added',
-                    ),
-                  ]),
-                  const SizedBox(height: 18),
-                  _buildSectionTitle('PRIVACY & SECURITY'),
-                  const SizedBox(height: 8),
-                  _buildListCard([
-                    _buildIconRow(
-                      icon: Icons.lock_outline,
-                      iconBgColor: _bgBlueTint,
-                      iconColor: _blue,
-                      title: 'Change Password',
-                    ),
-                    _divider(),
-                    _buildIconRow(
-                      icon: Icons.verified_user_outlined,
-                      iconBgColor: _bgGreenTint,
-                      iconColor: _green,
-                      title: 'Two-Factor Authentication',
-                      trailing: Switch(
-                        value: _twoFactor,
-                        activeThumbColor: Colors.white,
-                        activeTrackColor: _green,
-                        onChanged: (v) => setState(() => _twoFactor = v),
-                      ),
-                    ),
-                    _divider(),
-                    _buildIconRow(
-                      icon: Icons.visibility_outlined,
-                      iconBgColor: _bgPurpleTint,
-                      iconColor: _purple,
-                      title: 'Privacy Settings',
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const PrivacySettingsScreen(),
+          child: BlocListener<ProfileCubit, ProfileState>(
+            listenWhen: (_, current) => current is ProfileSignedOut,
+            listener: (context, _) => Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
+              (_) => false,
+            ),
+            child: RefreshIndicator(
+              onRefresh: () => context.read<ProfileCubit>().load(),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildHeader(),
+                      const SizedBox(height: 16),
+                      _buildIdentityRowFromState(),
+                      const SizedBox(height: 18),
+                      _buildStatsCard(),
+                      const SizedBox(height: 18),
+                      _buildQuickActions(),
+                      const SizedBox(height: 22),
+                      _buildMyPets(),
+                      const SizedBox(height: 18),
+                      _buildPersonalInformationFromState(),
+                      const SizedBox(height: 18),
+                      _buildSectionTitle('PREFERENCES'),
+                      const SizedBox(height: 8),
+                      _buildListCard([
+                        _buildIconRow(
+                          icon: Icons.person_outline,
+                          iconBgColor: _bgBlueTint,
+                          iconColor: _blue,
+                          title: 'Preferred Walker Gender',
+                          trailingValue: 'No preference',
                         ),
-                      ),
-                    ),
-                  ]),
-                  const SizedBox(height: 18),
-                  _buildPremiumCard(),
-                  const SizedBox(height: 18),
-                  _buildSectionTitle('SUPPORT'),
-                  const SizedBox(height: 8),
-                  _buildListCard([
-                    _buildIconRow(
-                      icon: Icons.help_outline,
-                      iconBgColor: _bgBlueTint,
-                      iconColor: _blue,
-                      title: 'Help Center',
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const SupportScreen(),
+                        _divider(),
+                        _buildIconRow(
+                          icon: Icons.directions_walk,
+                          iconBgColor: _bgGreenTint,
+                          iconColor: _green,
+                          title: 'Walking Preferences',
+                          trailingValue: 'Mornings',
                         ),
-                      ),
-                    ),
-                    _divider(),
-                    _buildIconRow(
-                      icon: Icons.headset_mic_outlined,
-                      iconBgColor: _bgGreenTint,
-                      iconColor: _green,
-                      title: 'Contact Support',
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const SupportScreen(),
+                        _divider(),
+                        _buildIconRow(
+                          icon: Icons.shield_outlined,
+                          iconBgColor: _bgGoldTint,
+                          iconColor: _gold,
+                          title: 'Emergency Contacts',
+                          trailingValue: '2 added',
                         ),
-                      ),
-                    ),
-                    _divider(),
-                    _buildIconRow(
-                      icon: Icons.chat_bubble_outline,
-                      iconBgColor: _bgPurpleTint,
-                      iconColor: _purple,
-                      title: 'FAQs',
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const SupportScreen(),
+                      ]),
+                      const SizedBox(height: 18),
+                      _buildSectionTitle('PRIVACY & SECURITY'),
+                      const SizedBox(height: 8),
+                      _buildListCard([
+                        _buildIconRow(
+                          icon: Icons.lock_outline,
+                          iconBgColor: _bgBlueTint,
+                          iconColor: _blue,
+                          title: 'Change Password',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const ChangePasswordScreen(),
+                              ),
+                            );
+                          },
                         ),
-                      ),
-                    ),
-                  ]),
-                  const SizedBox(height: 18),
-                  _buildSignOut(),
-                  const SizedBox(height: 20),
-                  _buildFooter(),
-                  const SizedBox(height: 20),
-                ],
+                        _divider(),
+                        _buildIconRow(
+                          icon: Icons.verified_user_outlined,
+                          iconBgColor: _bgGreenTint,
+                          iconColor: _green,
+                          title: 'Two-Factor Authentication',
+                          trailing: Switch(
+                            value: _twoFactor,
+                            activeThumbColor: Colors.white,
+                            activeTrackColor: _green,
+                            onChanged: (v) => setState(() => _twoFactor = v),
+                          ),
+                        ),
+                        _divider(),
+                        _buildIconRow(
+                          icon: Icons.visibility_outlined,
+                          iconBgColor: _bgPurpleTint,
+                          iconColor: _purple,
+                          title: 'Privacy Settings',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const PrivacySettingsScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ]),
+                      const SizedBox(height: 18),
+                      _buildPremiumCard(),
+                      const SizedBox(height: 18),
+                      _buildSectionTitle('SUPPORT'),
+                      const SizedBox(height: 8),
+                      _buildListCard([
+                        _buildIconRow(
+                          icon: Icons.help_outline,
+                          iconBgColor: _bgBlueTint,
+                          iconColor: _blue,
+                          title: 'Help Center',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const HelpCenterScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        _divider(),
+                        _buildIconRow(
+                          icon: Icons.headset_mic_outlined,
+                          iconBgColor: _bgGreenTint,
+                          iconColor: _green,
+                          title: 'Contact Support',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            launchUrl(
+                              Uri.parse('mailto:support@balto.app'),
+                              mode: LaunchMode.externalApplication,
+                            );
+                          },
+                        ),
+                        _divider(),
+                        _buildIconRow(
+                          icon: Icons.chat_bubble_outline,
+                          iconBgColor: _bgPurpleTint,
+                          iconColor: _purple,
+                          title: 'FAQs',
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const FaqScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ]),
+                      const SizedBox(height: 18),
+                      _buildSignOut(),
+                      const SizedBox(height: 20),
+                      _buildFooter(),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -222,21 +260,28 @@ class _ProfileViewState extends State<_ProfileView> {
               'Welcome back, $name 👋',
               style: const TextStyle(fontSize: 13, color: _textMid),
             ),
-            GestureDetector(
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const ProfileSettingsScreen(),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const ProfileSettingsScreen(),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                  ),
+                  child: const Icon(Icons.tune, size: 18, color: _textDark),
                 ),
-              ),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE5E7EB)),
-                ),
-                child: const Icon(Icons.tune, size: 18, color: _textDark),
               ),
             ),
           ],
@@ -250,10 +295,19 @@ class _ProfileViewState extends State<_ProfileView> {
     required String fullName,
     required DateTime? createdAt,
     String? errorMessage,
+    String? photoUrl,
+    VoidCallback? onAvatarTap,
   }) {
     return Row(
       children: [
-        _buildAvatar(firstName, size: 64, withCheck: true),
+        _buildAvatar(
+          firstName,
+          size: 64,
+          withCheck: onAvatarTap == null,
+          photoUrl: photoUrl,
+          onTap: onAvatarTap,
+          loading: _uploadingAvatar,
+        ),
         const SizedBox(width: 14),
         Expanded(
           child: Column(
@@ -323,13 +377,18 @@ class _ProfileViewState extends State<_ProfileView> {
   Widget _buildIdentityRowFromState() {
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
-        if (state is ProfileLoaded) {
-          return _buildIdentityRow(
-            firstName: state.user.firstName,
-            fullName: state.user.fullName,
-            createdAt: state.user.createdAt,
-          );
-        }
+    if (state is ProfileLoaded) {
+      return _buildIdentityRow(
+        firstName: state.user.firstName,
+        fullName: state.user.fullName,
+        createdAt: state.user.createdAt,
+        photoUrl: state.user.photoUrl,
+        onAvatarTap: () {
+          HapticFeedback.lightImpact();
+          _onChangeAvatar(state.user);
+        },
+      );
+    }
         if (state is ProfileError) {
           return _buildIdentityRow(
             firstName: '—',
@@ -443,37 +502,84 @@ class _ProfileViewState extends State<_ProfileView> {
   }
 
   Future<void> _onSignOut() async {
-    await sl<AuthRepository>().logout();
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
-      (_) => false,
-    );
+    HapticFeedback.mediumImpact();
+    await context.read<ProfileCubit>().signOut();
   }
 
-  Widget _buildAvatar(String name, {required double size, bool withCheck = false}) {
-    return Stack(
+  Widget _buildAvatar(
+    String name, {
+    required double size,
+    bool withCheck = false,
+    String? photoUrl,
+    VoidCallback? onTap,
+    bool loading = false,
+  }) {
+    final initials = name.isEmpty
+        ? '—'
+        : name.trim().split(RegExp(r'\s+')).take(2).map((p) => p[0].toUpperCase()).join();
+    final circle = Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+        image: photoUrl != null && photoUrl.isNotEmpty
+            ? DecorationImage(image: NetworkImage(photoUrl), fit: BoxFit.cover)
+            : null,
+      ),
+      alignment: Alignment.center,
+      child: photoUrl != null && photoUrl.isNotEmpty
+          ? null
+          : Text(
+              initials,
+              style: TextStyle(
+                fontSize: size * 0.32,
+                fontWeight: FontWeight.w700,
+                color: _textDark,
+              ),
+            ),
+    );
+
+    final stack = Stack(
       clipBehavior: Clip.none,
       children: [
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            name,
-            style: TextStyle(
-              fontSize: size * 0.22,
-              fontWeight: FontWeight.w700,
-              color: _textDark,
+        circle,
+        if (loading)
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.black38,
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-        if (withCheck)
+        if (onTap != null)
+          Positioned(
+            right: -2,
+            bottom: -2,
+            child: Container(
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                color: _blue,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+              child: const Icon(Icons.camera_alt, size: 11, color: Colors.white),
+            ),
+          )
+        else if (withCheck)
           Positioned(
             right: -2,
             bottom: -2,
@@ -490,6 +596,46 @@ class _ProfileViewState extends State<_ProfileView> {
           ),
       ],
     );
+
+    if (onTap == null) return stack;
+    return Material(
+      color: Colors.transparent,
+      shape: const CircleBorder(),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: () {
+          HapticFeedback.lightImpact();
+          onTap();
+        },
+        child: stack,
+      ),
+    );
+  }
+
+  Future<void> _onChangeAvatar(User user) async {
+    if (_uploadingAvatar) return;
+    final image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1200,
+      maxHeight: 1200,
+    );
+    if (image == null) return;
+    setState(() => _uploadingAvatar = true);
+    try {
+      await context.read<ProfileCubit>().updateAvatar(image.path);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile photo updated')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not upload photo: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _uploadingAvatar = false);
+    }
   }
 
   Widget _buildStatsCard() {
@@ -646,45 +792,56 @@ class _ProfileViewState extends State<_ProfileView> {
     bool hasDot = false,
     VoidCallback? onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap ?? () {},
-      child: Column(
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: iconBg,
-                  borderRadius: BorderRadius.circular(18),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Material(
+          color: Colors.transparent,
+          clipBehavior: Clip.antiAlias,
+          borderRadius: BorderRadius.circular(18),
+          child: InkWell(
+            onTap: onTap == null
+                ? null
+                : () {
+                    HapticFeedback.lightImpact();
+                    onTap();
+                  },
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: iconBg,
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                  child: Icon(icon, size: 22, color: iconColor),
                 ),
-                child: Icon(icon, size: 22, color: iconColor),
-              ),
-              if (hasDot)
-                Positioned(
-                  right: -2,
-                  top: -2,
-                  child: Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: _red,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 1.5),
+                if (hasDot)
+                  Positioned(
+                    right: -2,
+                    top: -2,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: _red,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 1.5),
+                      ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 11, color: _textDark),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11, color: _textDark),
+        ),
+      ],
     );
   }
 
@@ -843,15 +1000,19 @@ class _ProfileViewState extends State<_ProfileView> {
   }
 
   Widget _buildAddPetButton() {
-    return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => BlocProvider.value(
-            value: context.read<ProfileCubit>(),
-            child: const CreatePetScreen(),
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value: context.read<ProfileCubit>(),
+              child: const CreatePetScreen(),
+            ),
           ),
-        ),
-      ),
+        );
+      },
+      borderRadius: BorderRadius.circular(14),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 13),
@@ -969,7 +1130,20 @@ class _ProfileViewState extends State<_ProfileView> {
   }
 
   Widget _buildPremiumCard() {
-    return Container(
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeOut,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, 30 * (1 - value)),
+            child: child,
+          ),
+        );
+      },
+      child: Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1086,6 +1260,7 @@ class _ProfileViewState extends State<_ProfileView> {
           ),
         ],
       ),
+    ),
     );
   }
 

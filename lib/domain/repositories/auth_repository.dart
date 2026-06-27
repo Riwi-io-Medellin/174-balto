@@ -21,6 +21,11 @@ abstract class AuthRepository {
   Future<void> logout();
 
   Future<AuthTokens?> restoreSession();
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  });
 }
 
 class AuthFailure implements Exception {
