@@ -8,6 +8,7 @@ import 'presentation/screens/home/home_page.dart';
 import 'presentation/screens/profile/profile_screen.dart';
 import 'presentation/screens/services/services_page.dart';
 import 'presentation/screens/walks/walks_page.dart';
+import 'presentation/screens/walkers/walkers_page.dart';
 import 'presentation/widgets/bottom_nav/balto_bottom_nav_bar.dart';
 
 void main() async {
@@ -58,13 +59,6 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
-  static const List<String> _pageTitles = [
-    'Home',
-    'Walks',
-    'Walkers',
-    'Coach',
-    'Profile',
-  ];
 
   Widget _buildBody() {
     switch (_currentIndex) {
@@ -74,15 +68,12 @@ class _MainShellState extends State<MainShell> {
         return const WalksPage();
       case 2:
         return const ServicesPage();
+      case 3:
+        return const WalkersPage();
       case 4:
         return const ProfileScreen();
       default:
-        return Center(
-          child: Text(
-            _pageTitles[_currentIndex],
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-          ),
-        );
+        return const SizedBox.shrink();
     }
   }
 

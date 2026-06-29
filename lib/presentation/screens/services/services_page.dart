@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../core/constants/app_colors.dart';
+import '../../../core/di/injection.dart';
 import '../../../data/services_mock.dart';
-import '../../../data/walkers_mock.dart';
 import '../../../domain/entities/business.dart';
 import '../../../domain/entities/walker.dart';
+import '../../bloc/walker/walker_cubit.dart';
+import '../../bloc/walker/walker_state.dart';
 import '../../screens/walkers/walker_profile_page.dart';
 import 'business_profile_page.dart';
 import 'widgets/business_card.dart';
@@ -19,6 +23,7 @@ class ServicesPage extends StatefulWidget {
 
 class _ServicesPageState extends State<ServicesPage> {
   int _selectedFilter = 0;
+  late final WalkerCubit _walkerCubit;
 
   static const List<String> _filters = [
     'All',
@@ -27,16 +32,36 @@ class _ServicesPageState extends State<ServicesPage> {
     'Stores',
   ];
 
-  List<Object> get _filteredItems {
+  @override
+  void initState() {
+    super.initState();
+    _walkerCubit = sl<WalkerCubit>();
+    _walkerCubit.loadWalkers();
+  }
+
+  @override
+  void dispose() {
+    _walkerCubit.close();
+    super.dispose();
+  }
+
+  List<Walker> _getWalkers(WalkerState state) {
+    if (state is WalkerListLoaded) return state.walkers;
+    if (state is WalkerLoadingMore) return state.walkers;
+    return [];
+  }
+
+  List<Object> _buildItems(WalkerState walkerState) {
+    final walkers = _getWalkers(walkerState);
     switch (_selectedFilter) {
       case 1:
-        return List<Object>.from(kMockWalkers);
+        return List<Object>.from(walkers);
       case 2:
         return kMockBusinesses.where((b) => b.isVeterinary).toList();
       case 3:
         return kMockBusinesses.where((b) => b.isStore).toList();
       default:
-        return [...kMockBusinesses, ...kMockWalkers];
+        return [...kMockBusinesses, ...walkers];
     }
   }
 
@@ -58,37 +83,83 @@ class _ServicesPageState extends State<ServicesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final items = _filteredItems;
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 14),
-                  _buildFilterRow(),
-                ],
+    return BlocProvider.value(
+      value: _walkerCubit,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5F6FA),
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeader(),
+                    const SizedBox(height: 14),
+                    _buildFilterRow(),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: items.isEmpty
-                  ? const Center(
-                      child: Text(
-                        'No results found.',
-                        style: TextStyle(color: Color(0xFF8A93A0)),
-                      ),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+              const SizedBox(height: 16),
+              Expanded(
+                child: BlocBuilder<WalkerCubit, WalkerState>(
+                  builder: (context, walkerState) {
+                    if (walkerState is WalkerLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                            color: AppColors.navWalkers),
+                      );
+                    }
+
+                    if (walkerState is WalkerError) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.error_outline,
+                                  size: 48, color: Colors.grey),
+                              const SizedBox(height: 12),
+                              Text(walkerState.message,
+                                  textAlign: TextAlign.center,
+                                  style:
+                                      const TextStyle(color: Colors.grey)),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: () =>
+                                    context.read<WalkerCubit>().loadWalkers(),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.navWalkers,
+                                  foregroundColor: Colors.white,
+                                ),
+                                child: const Text('Retry'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    final items = _buildItems(walkerState);
+
+                    if (items.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'No results found.',
+                          style: TextStyle(color: Color(0xFF8A93A0)),
+                        ),
+                      );
+                    }
+
+                    return ListView.separated(
+                      padding:
+                          const EdgeInsets.fromLTRB(20, 0, 20, 100),
                       itemCount: items.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 16),
+                      separatorBuilder: (_, _) =>
+                          const SizedBox(height: 16),
                       itemBuilder: (_, i) {
                         final item = items[i];
                         if (item is Business) {
@@ -105,9 +176,12 @@ class _ServicesPageState extends State<ServicesPage> {
                         }
                         return const SizedBox.shrink();
                       },
-                    ),
-            ),
-          ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -142,12 +216,14 @@ class _ServicesPageState extends State<ServicesPage> {
         ),
         IconButton(
           onPressed: () {},
-          icon: const Icon(Icons.search_rounded, color: Color(0xFF1F2937)),
+          icon: const Icon(Icons.search_rounded,
+              color: Color(0xFF1F2937)),
           visualDensity: VisualDensity.compact,
         ),
         IconButton(
           onPressed: () {},
-          icon: const Icon(Icons.tune_rounded, color: Color(0xFF1F2937)),
+          icon:
+              const Icon(Icons.tune_rounded, color: Color(0xFF1F2937)),
           visualDensity: VisualDensity.compact,
         ),
       ],

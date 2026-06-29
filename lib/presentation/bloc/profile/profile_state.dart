@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import '../../../domain/entities/pet.dart';
 import '../../../domain/entities/user.dart';
+import '../../../domain/entities/walker_profile.dart';
 
 abstract class ProfileState extends Equatable {
   const ProfileState();
@@ -24,6 +25,7 @@ class ProfileLoaded extends ProfileState {
     this.pets = const [],
     this.walkCount = 0,
     this.averageRating = 0.0,
+    this.walkerProfile,
   });
 
   final User user;
@@ -31,10 +33,20 @@ class ProfileLoaded extends ProfileState {
   final int walkCount;
   final double averageRating;
 
+  /// null  → user has never applied to become a walker
+  /// non-null → user has an application; check [walkerProfile.status]
+  final WalkerProfile? walkerProfile;
+
   int get petCount => pets.length;
 
   @override
-  List<Object?> get props => [user, pets, walkCount, averageRating];
+  List<Object?> get props => [
+        user,
+        pets,
+        walkCount,
+        averageRating,
+        walkerProfile,
+      ];
 }
 
 class ProfileError extends ProfileState {

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
-import '../../../domain/entities/walker.dart';
+import '../../../domain/entities/walker_profile.dart';
+import '../../../domain/repositories/walker_profile_repository.dart';
+import '../../bloc/profile/profile_cubit.dart';
+import '../../bloc/profile/profile_state.dart';
 
 class EditWalkerProfileScreen extends StatefulWidget {
-  const EditWalkerProfileScreen({super.key, this.walker});
-
-  final Walker? walker;
+  const EditWalkerProfileScreen({super.key});
 
   @override
   State<EditWalkerProfileScreen> createState() =>
@@ -17,108 +20,105 @@ class EditWalkerProfileScreen extends StatefulWidget {
 class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  late final TextEditingController _nameCtrl;
   late final TextEditingController _bioCtrl;
   late final TextEditingController _priceCtrl;
   late final TextEditingController _yearsCtrl;
-  late final TextEditingController _areaCtrl;
+  late final TextEditingController _radiusCtrl;
 
-  late List<String> _specialties;
-  late List<String> _galleryImages;
+  bool _isAcceptingBookings = true;
+  bool _saving = false;
+  bool _initialized = false;
+
+  static const Color _bg = Color(0xFFF5F6FA);
+  static const Color _textDark = Color(0xFF1F2937);
+  static const Color _textMid = Color(0xFF5A6473);
+  static const Color _textMuted = Color(0xFF8A93A0);
+  static const Color _green = AppColors.navWalkers;
 
   @override
   void initState() {
     super.initState();
-    final w = widget.walker;
-    _nameCtrl = TextEditingController(text: w?.name ?? '');
-    _bioCtrl = TextEditingController(
-      text: w?.biography ?? w?.description ?? '',
-    );
-    _priceCtrl = TextEditingController(
-      text: w?.pricePerWalk != null
-          ? w!.pricePerWalk!.toStringAsFixed(0)
-          : '',
-    );
-    _yearsCtrl = TextEditingController(
-      text: (w != null && w.yearsOfExperience > 0)
-          ? w.yearsOfExperience.toString()
-          : '',
-    );
-    _areaCtrl = TextEditingController(text: w?.serviceArea ?? '');
-    _specialties = List.from(w?.specialties ?? []);
-    _galleryImages = List.from(w?.galleryImages ?? []);
-  }
+    _bioCtrl = TextEditingController();
+    _priceCtrl = TextEditingController();
+    _yearsCtrl = TextEditingController();
+    _radiusCtrl = TextEditingController();
 
-  @override
-  void dispose() {
-    _nameCtrl.dispose();
-    _bioCtrl.dispose();
-    _priceCtrl.dispose();
-    _yearsCtrl.dispose();
-    _areaCtrl.dispose();
-    super.dispose();
-  }
-
-  void _save() {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-    // Backend not yet connected — screen ready to wire up.
-    BaltoToast.info(context, 'Changes saved locally (backend not connected yet).');
-  }
-
-  void _removeSpecialty(String s) => setState(() => _specialties.remove(s));
-
-  void _addSpecialty() {
-    final ctrl = TextEditingController();
-    showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Add Specialty'),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          textCapitalization: TextCapitalization.words,
-          decoration: InputDecoration(
-            hintText: 'e.g. Large Dogs',
-            filled: true,
-            fillColor: const Color(0xFFF5F6FA),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(ctx).pop(ctrl.text.trim()),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.navWalkers,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: const Text('Add'),
-          ),
-        ],
-      ),
-    ).then((value) {
-      if (!mounted) return;
-      if (value != null && value.isNotEmpty) {
-        setState(() => _specialties.add(value));
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        final state = context.read<ProfileCubit>().state;
+        if (state is ProfileLoaded) {
+          final wp = state.walkerProfile;
+          if (wp == null || wp.status != WalkerStatus.approved) {
+            if (!mounted) return;
+            BaltoToast.warning(context, 'Walker profile not available.');
+            Navigator.of(context).pop();
+            return;
+          }
+          _bioCtrl.text = wp.bio ?? '';
+          _priceCtrl.text =
+              wp.hourlyRate != null ? wp.hourlyRate!.toStringAsFixed(0) : '';
+          _yearsCtrl.text =
+              wp.yearsOfExperience != null
+                  ? wp.yearsOfExperience.toString()
+                  : '';
+          _radiusCtrl.text =
+              wp.serviceRadiusKm != null
+                  ? wp.serviceRadiusKm.toString()
+                  : '';
+          _isAcceptingBookings = wp.isAcceptingBookings;
+          setState(() => _initialized = true);
+        }
+      } catch (_) {
+        if (!mounted) return;
+        BaltoToast.error(context, 'Failed to load profile.');
+        Navigator.of(context).pop();
       }
     });
   }
 
   @override
+  void dispose() {
+    _bioCtrl.dispose();
+    _priceCtrl.dispose();
+    _yearsCtrl.dispose();
+    _radiusCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    setState(() => _saving = true);
+    try {
+      await sl<WalkerProfileRepository>().updateMyProfile(
+        bio: _bioCtrl.text.trim(),
+        hourlyRate: double.tryParse(_priceCtrl.text.trim()),
+        serviceRadiusKm: double.tryParse(_radiusCtrl.text.trim()),
+        yearsOfExperience: int.tryParse(_yearsCtrl.text.trim()),
+        isAcceptingBookings: _isAcceptingBookings,
+      );
+
+      if (!mounted) return;
+      await context.read<ProfileCubit>().load();
+
+      if (!mounted) return;
+      BaltoToast.success(context, 'Profile updated successfully.');
+      Navigator.of(context).pop();
+    } on WalkerProfileFailure catch (e) {
+      if (!mounted) return;
+      BaltoToast.error(context, e.message);
+    } catch (e) {
+      if (!mounted) return;
+      BaltoToast.error(context, 'Something went wrong. Please try again.');
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: _bg,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -128,7 +128,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
             size: 20,
-            color: Color(0xFF1F2937),
+            color: _textDark,
           ),
         ),
         title: const Text(
@@ -136,128 +136,81 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1F2937),
+            color: _textDark,
           ),
         ),
         centerTitle: true,
         actions: [
           TextButton(
-            onPressed: _save,
+            onPressed: _saving ? null : _save,
             child: Text(
               'Save',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: AppColors.navWalkers,
+                color:
+                    _saving ? _textMuted : _green,
               ),
             ),
           ),
           const SizedBox(width: 4),
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildAvatarSection(),
-              const SizedBox(height: 32),
-              _buildSectionTitle('Basic Information'),
-              const SizedBox(height: 14),
-              _buildBasicInfoFields(),
-              const SizedBox(height: 28),
-              _buildSectionTitle('Services & Pricing'),
-              const SizedBox(height: 14),
-              _buildServicesFields(),
-              const SizedBox(height: 28),
-              _buildSpecialtiesSection(),
-              const SizedBox(height: 28),
-              _buildGallerySection(),
-              const SizedBox(height: 36),
-              _buildSaveButton(),
-            ],
-          ),
-        ),
-      ),
+      body: _initialized
+          ? Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildAvatarSection(),
+                    const SizedBox(height: 32),
+                    _buildSectionTitle('Basic Information'),
+                    const SizedBox(height: 14),
+                    _buildBioField(),
+                    const SizedBox(height: 28),
+                    _buildSectionTitle('Services & Pricing'),
+                    const SizedBox(height: 14),
+                    _buildServicesFields(),
+                    const SizedBox(height: 24),
+                    _buildAcceptingBookingsToggle(),
+                    const SizedBox(height: 36),
+                    _buildSaveButton(),
+                  ],
+                ),
+              ),
+            )
+          : const Center(child: CircularProgressIndicator()),
     );
   }
 
   // ─── Avatar ───────────────────────────────────────────────────────────────
 
   Widget _buildAvatarSection() {
-    final avatarUrl = widget.walker?.avatarUrl ?? widget.walker?.imageUrl;
     return Column(
       children: [
         Center(
-          child: Stack(
-            children: [
-              Container(
-                width: 100,
-                height: 100,
-                decoration: const BoxDecoration(shape: BoxShape.circle),
-                child: ClipOval(
-                  child: avatarUrl != null
-                      ? Image.network(
-                          avatarUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => _avatarFallback(),
-                        )
-                      : _avatarFallback(),
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    width: 30,
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: const Color(0xFFE0E4EC),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                    child: const Icon(
-                      Icons.edit_rounded,
-                      size: 14,
-                      color: Color(0xFF1F2937),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          child: Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              color: _green.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.person_rounded,
+              size: 48,
+              color: _green,
+            ),
           ),
         ),
         const SizedBox(height: 10),
-        const Text(
-          'Tap to change profile picture',
-          style: TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
+        Text(
+          'Edit your walker profile details below',
+          style: const TextStyle(fontSize: 13, color: _textMuted),
         ),
       ],
-    );
-  }
-
-  Widget _avatarFallback() {
-    return Container(
-      width: 100,
-      height: 100,
-      color: const Color(0xFFE8F5EE),
-      child: const Icon(
-        Icons.person_rounded,
-        size: 48,
-        color: Color(0xFFB0B8C1),
-      ),
     );
   }
 
@@ -269,26 +222,17 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
       style: const TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w800,
-        color: Color(0xFF1F2937),
+        color: _textDark,
       ),
     );
   }
 
-  // ─── Basic Info ───────────────────────────────────────────────────────────
+  // ─── Bio ──────────────────────────────────────────────────────────────────
 
-  Widget _buildBasicInfoFields() {
+  Widget _buildBioField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _fieldLabel('Full Name'),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: _nameCtrl,
-          decoration: _inputDecoration(hint: 'Sarah Jenkins'),
-          validator: (v) =>
-              (v == null || v.trim().isEmpty) ? 'Name is required.' : null,
-        ),
-        const SizedBox(height: 16),
         _fieldLabel('Biography'),
         const SizedBox(height: 8),
         TextFormField(
@@ -297,14 +241,14 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
           maxLines: 6,
           decoration: _inputDecoration(
             hint:
-                'Experienced dog walker with a passion for large breeds. I believe every dog deserves a safe, fun walk...',
+                'Experienced dog walker with a passion for large breeds...',
           ),
         ),
       ],
     );
   }
 
-  // ─── Services & Pricing ───────────────────────────────────────────────────
+  // ─── Services & Pricing ────────────────────────────────────────────────────
 
   Widget _buildServicesFields() {
     return Column(
@@ -357,167 +301,77 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        _fieldLabel('Service Area'),
+        _fieldLabel('Service Radius (km)'),
         const SizedBox(height: 8),
         TextFormField(
-          controller: _areaCtrl,
-          decoration:
-              _inputDecoration(hint: 'Downtown, Westside, North Hills'),
+          controller: _radiusCtrl,
+          keyboardType: TextInputType.number,
+          decoration: _inputDecoration(hint: '10'),
+          validator: (v) {
+            if (v == null || v.isEmpty) return null;
+            final n = double.tryParse(v);
+            if (n == null || n <= 0) return 'Invalid.';
+            return null;
+          },
         ),
       ],
     );
   }
 
-  // ─── Specialties ──────────────────────────────────────────────────────────
+  // ─── Accepting Bookings Toggle ────────────────────────────────────────────
 
-  Widget _buildSpecialtiesSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            _buildSectionTitle('Specialties'),
-            const Spacer(),
-            TextButton.icon(
-              onPressed: _addSpecialty,
-              icon: const Icon(Icons.add_rounded, size: 16),
-              label: const Text('Add'),
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.navWalkers,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                visualDensity: VisualDensity.compact,
-              ),
+  Widget _buildAcceptingBookingsToggle() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE0E4EC)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: _green.withValues(alpha: 0.10),
+              shape: BoxShape.circle,
             ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        if (_specialties.isEmpty)
-          const Padding(
-            padding: EdgeInsets.only(top: 4),
-            child: Text(
-              'No specialties added yet.',
-              style: TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
-            ),
-          )
-        else
-          ..._specialties.map(
-            (s) => Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 12,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE0E4EC)),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.pets_rounded,
-                    size: 16,
-                    color: AppColors.navWalkers,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      s,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF1F2937),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => _removeSpecialty(s),
-                    child: const Icon(
-                      Icons.close_rounded,
-                      size: 18,
-                      color: Color(0xFF8A93A0),
-                    ),
-                  ),
-                ],
-              ),
+            child: const Icon(
+              Icons.schedule_rounded,
+              size: 20,
+              color: _green,
             ),
           ),
-      ],
-    );
-  }
-
-  // ─── Gallery ──────────────────────────────────────────────────────────────
-
-  Widget _buildGallerySection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionTitle('Photo Gallery'),
-        const SizedBox(height: 14),
-        SizedBox(
-          height: 100,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              ..._galleryImages.map(
-                (url) => Container(
-                  width: 100,
-                  height: 100,
-                  margin: const EdgeInsets.only(right: 10),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      url,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => Container(
-                        color: const Color(0xFFF0F2F5),
-                        child: const Icon(
-                          Icons.image_outlined,
-                          color: Color(0xFFB0B8C1),
-                        ),
-                      ),
-                    ),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Accepting Bookings',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: _textDark,
                   ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF0F2F5),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xFFDDE1EA),
-                      width: 1.5,
-                    ),
-                  ),
-                  child: const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_photo_alternate_outlined,
-                        size: 28,
-                        color: Color(0xFF8A93A0),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        'Add Photo',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF8A93A0),
-                        ),
-                      ),
-                    ],
-                  ),
+                SizedBox(height: 2),
+                Text(
+                  'Make your profile visible to pet owners',
+                  style: TextStyle(fontSize: 12, color: _textMuted),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+          Switch(
+            value: _isAcceptingBookings,
+            activeTrackColor: _green,
+            activeThumbColor: Colors.white,
+            onChanged: (v) => setState(() => _isAcceptingBookings = v),
+          ),
+        ],
+      ),
     );
   }
 
@@ -528,19 +382,29 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
       width: double.infinity,
       height: 54,
       child: ElevatedButton(
-        onPressed: _save,
+        onPressed: _saving ? null : _save,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.navProfile.withValues(alpha: 0.25),
-          foregroundColor: const Color(0xFF1F2937),
+          backgroundColor: _green,
+          foregroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
+          disabledBackgroundColor: _green.withValues(alpha: 0.45),
         ),
-        child: const Text(
-          'Save Changes',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-        ),
+        child: _saving
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : const Text(
+                'Save Changes',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              ),
       ),
     );
   }
@@ -553,7 +417,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
       style: const TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w600,
-        color: Color(0xFF5A6473),
+        color: _textMid,
       ),
     );
   }
@@ -561,7 +425,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
   InputDecoration _inputDecoration({required String hint}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Color(0xFFB0B8C1), fontSize: 14),
+      hintStyle: const TextStyle(color: _textMuted, fontSize: 14),
       filled: true,
       fillColor: Colors.white,
       border: OutlineInputBorder(
@@ -574,7 +438,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.navWalkers, width: 1.5),
+        borderSide: BorderSide(color: _green, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

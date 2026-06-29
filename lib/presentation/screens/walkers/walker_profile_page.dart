@@ -1,57 +1,115 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/di/injection.dart';
+import '../../../domain/entities/available_slot.dart';
 import '../../../domain/entities/walker.dart';
+import '../../bloc/walker/walker_cubit.dart';
+import '../../bloc/walker/walker_state.dart';
+import 'booking_screen.dart';
 
-class WalkerProfilePage extends StatelessWidget {
+class WalkerProfilePage extends StatefulWidget {
   const WalkerProfilePage({super.key, required this.walker});
 
   final Walker walker;
 
-  String get _firstName => walker.name.split(' ').first;
+  @override
+  State<WalkerProfilePage> createState() => _WalkerProfilePageState();
+}
+
+class _WalkerProfilePageState extends State<WalkerProfilePage> {
+  late final WalkerCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = sl<WalkerCubit>();
+    if (widget.walker.id.isNotEmpty) {
+      _cubit.loadWalkerDetail(widget.walker.id);
+    }
+  }
+
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
-      bottomNavigationBar: _BookingBar(walker: walker),
-      body: CustomScrollView(
-        slivers: [
-          _WalkerAppBar(walker: walker),
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _ProfileHeader(walker: walker),
-                if (walker.galleryImages.isNotEmpty) ...[
-                  const SizedBox(height: 20),
-                  _GalleryStrip(images: walker.galleryImages),
-                ],
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _AboutCard(walker: walker, firstName: _firstName),
+    return BlocProvider.value(
+      value: _cubit,
+      child: BlocBuilder<WalkerCubit, WalkerState>(
+        builder: (context, state) {
+          final walker =
+              state is WalkerDetailLoaded ? state.walker : widget.walker;
+          final isLoadingDetail = state is WalkerLoading;
+
+          return Scaffold(
+            backgroundColor: const Color(0xFFF5F6FA),
+            bottomNavigationBar: _BookingBar(walker: walker),
+            body: CustomScrollView(
+              slivers: [
+                _WalkerAppBar(walker: walker),
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _ProfileHeader(walker: walker),
+                      if (isLoadingDetail)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 32),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.navWalkers,
+                            ),
+                          ),
+                        ),
+                      if (walker.galleryImages.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        _GalleryStrip(images: walker.galleryImages),
+                      ],
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: _AboutCard(
+                          walker: walker,
+                          firstName: walker.name.split(' ').first,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: _ServiceDetailsSection(walker: walker),
+                      ),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: _ServiceAreaCard(area: walker.serviceArea),
+                      ),
+                      if (walker.availableSlots.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: _AvailabilitySlotsSection(
+                            slots: walker.availableSlots,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: _RatingsReviewsSection(walker: walker),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _ServiceDetailsSection(walker: walker),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _ServiceAreaCard(area: walker.serviceArea),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _RatingsReviewsSection(walker: walker),
-                ),
-                const SizedBox(height: 24),
               ],
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -416,8 +474,10 @@ class _ServiceDetailsSection extends StatelessWidget {
         icon: Icons.location_on_outlined,
         iconColor: AppColors.navWalkers,
         bgColor: const Color(0xFFE8F8F2),
-        value: walker.serviceArea ?? '—',
-        label: 'Area',
+        value: walker.serviceRadiusKm != null
+            ? '${walker.serviceRadiusKm!.round()} km'
+            : (walker.serviceArea ?? '—'),
+        label: walker.serviceRadiusKm != null ? 'Radius' : 'Area',
       ),
       _StatTileData(
         icon: Icons.check_circle_outline_rounded,
@@ -903,6 +963,70 @@ class _ReviewCard extends StatelessWidget {
   }
 }
 
+// ─── Availability Slots (Today) ───────────────────────────────────────────────
+
+class _AvailabilitySlotsSection extends StatelessWidget {
+  const _AvailabilitySlotsSection({required this.slots});
+
+  final List<AvailableSlot> slots;
+
+  String _formatTime(DateTime dt) {
+    final hour = dt.hour;
+    final minute = dt.minute;
+    final period = hour < 12 ? 'AM' : 'PM';
+    final h = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+    final m = minute.toString().padLeft(2, '0');
+    return '$h:$m $period';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Available Today',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF1F2937),
+          ),
+        ),
+        const SizedBox(height: 14),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: slots
+              .map(
+                (s) => Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.navWalkers.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: AppColors.navWalkers.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Text(
+                    _formatTime(s.start),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.navWalkers,
+                    ),
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+      ],
+    );
+  }
+}
+
 // ─── Booking Bar ─────────────────────────────────────────────────────────────
 
 class _BookingBar extends StatelessWidget {
@@ -971,7 +1095,12 @@ class _BookingBar extends StatelessWidget {
             ),
             const Spacer(),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  fullscreenDialog: true,
+                  builder: (_) => BookingScreen(walker: walker),
+                ),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF1F2937),
                 foregroundColor: Colors.white,

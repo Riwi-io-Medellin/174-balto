@@ -13,6 +13,11 @@ import 'edit_profile_screen.dart';
 import 'privacy_settings_screen.dart';
 import 'profile_settings_screen.dart';
 import 'support_screen.dart';
+import '../../../domain/entities/walker_profile.dart';
+import '../walkers/become_walker_screen.dart';
+import '../walkers/edit_walker_profile_screen.dart';
+import '../walkers/walker_availability_screen.dart';
+import '../walkers/walker_bookings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -88,6 +93,8 @@ class _ProfileViewState extends State<_ProfileView> {
                   const SizedBox(height: 18),
                   _buildQuickActions(),
                   const SizedBox(height: 22),
+                  _buildWalkerSection(),
+                  const SizedBox(height: 18),
                   _buildMyPets(),
                   const SizedBox(height: 18),
                   _buildPersonalInformationFromState(),
@@ -684,6 +691,343 @@ class _ProfileViewState extends State<_ProfileView> {
             style: const TextStyle(fontSize: 11, color: _textDark),
           ),
         ],
+      ),
+    );
+  }
+
+  // ─── Walker Status Section ────────────────────────────────────────────────
+
+  Widget _buildWalkerSection() {
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        if (state is! ProfileLoaded) return const SizedBox.shrink();
+        final wp = state.walkerProfile;
+        if (wp == null) return _buildWalkerNotApplied();
+        switch (wp.status) {
+          case WalkerStatus.pending:
+            return _buildWalkerPending();
+          case WalkerStatus.approved:
+            return _buildWalkerApproved();
+          case WalkerStatus.rejected:
+            return _buildWalkerRejected();
+        }
+      },
+    );
+  }
+
+  Widget _buildWalkerNotApplied() {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => BlocProvider.value(
+            value: context.read<ProfileCubit>(),
+            child: const BecomeWalkerScreen(),
+          ),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE8F8F2),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _green.withValues(alpha: 0.30)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: _green.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.directions_walk, color: _green, size: 22),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Become a Walker',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: _textDark,
+                    ),
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    'Earn money walking dogs in your area.',
+                    style: TextStyle(fontSize: 12, color: _textMid),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: _textMuted),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWalkerPending() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEBF3FB),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _blue.withValues(alpha: 0.30)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: _blue.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.hourglass_top_rounded,
+              color: _blue,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 14),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Verification Pending',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: _textDark,
+                  ),
+                ),
+                SizedBox(height: 3),
+                Text(
+                  'Your application is under review. We\'ll notify you within 24–48 hours.',
+                  style: TextStyle(fontSize: 12, color: _textMid),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWalkerApproved() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8F8F2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _green.withValues(alpha: 0.40)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: _green.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.verified_rounded, color: _green, size: 22),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Walker Profile Active',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: _textDark,
+                      ),
+                    ),
+                    SizedBox(height: 3),
+                    Text(
+                      'You\'re a verified walker. Pet owners can now book you.',
+                      style: TextStyle(fontSize: 12, color: _textMid),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<ProfileCubit>(),
+                      child: const EditWalkerProfileScreen(),
+                    ),
+                  ),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _green,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: const Text(
+                    'Edit',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const WalkerAvailabilityScreen(),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: _green.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.schedule_rounded,
+                      size: 16,
+                      color: _green,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Manage Availability',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: _green,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      size: 16,
+                      color: _green,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const WalkerBookingsScreen(),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: _green.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.calendar_month_rounded, size: 16, color: _green),
+                    SizedBox(width: 8),
+                    Text(
+                      'My Bookings',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: _green,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(Icons.chevron_right_rounded, size: 16, color: _green),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWalkerRejected() {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => BlocProvider.value(
+            value: context.read<ProfileCubit>(),
+            child: const BecomeWalkerScreen(isReapply: true),
+          ),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFEECE8),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _orange.withValues(alpha: 0.35)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: _orange.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                color: _orange,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Verification Failed',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: _textDark,
+                    ),
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    'Your document was not accepted. Tap to upload a new one.',
+                    style: TextStyle(fontSize: 12, color: _textMid),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: _textMuted),
+          ],
+        ),
       ),
     );
   }

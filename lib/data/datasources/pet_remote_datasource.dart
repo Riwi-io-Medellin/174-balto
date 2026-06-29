@@ -9,14 +9,23 @@ class PetRemoteDataSource {
   final Dio _dio;
 
   Future<List<PetDto>> getMyPets() async {
-    final response = await _dio.get<dynamic>('/pets/me');
+    final response = await _dio.get<dynamic>(
+      '/pets/me',
+      queryParameters: {'page': 1, 'pageSize': 100},
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
+    if (status == 200 && data is Map<String, dynamic>) {
+      final items = data['items'] as List? ?? [];
+      return items
+          .map((json) => PetDto.fromJson(json as Map<String, dynamic>))
+          .toList();
+    }
+
     if (status == 200 && data is List) {
       return data
-          .cast<Map<String, dynamic>>()
-          .map((json) => PetDto.fromJson(json))
+          .map((json) => PetDto.fromJson(json as Map<String, dynamic>))
           .toList();
     }
 
