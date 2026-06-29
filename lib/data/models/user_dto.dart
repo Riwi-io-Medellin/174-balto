@@ -42,7 +42,7 @@ class UserDto {
       location: json['location'] as String?,
       address: json['address'] as String?,
       photoUrl: json['photoUrl'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String).toLocal(),
     );
   }
 
