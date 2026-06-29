@@ -257,10 +257,11 @@ class _ProfileViewState extends State<_ProfileView> {
     required String fullName,
     required DateTime? createdAt,
     String? errorMessage,
+    String? photoUrl,
   }) {
     return Row(
       children: [
-        _buildAvatar(firstName, size: 64, withCheck: true),
+        _buildAvatar(firstName, size: 64, withCheck: true, photoUrl: photoUrl),
         const SizedBox(width: 14),
         Expanded(
           child: Column(
@@ -335,6 +336,7 @@ class _ProfileViewState extends State<_ProfileView> {
             firstName: state.user.firstName,
             fullName: state.user.fullName,
             createdAt: state.user.createdAt,
+            photoUrl: state.user.photoUrl,
           );
         }
         if (state is ProfileError) {
@@ -458,7 +460,7 @@ class _ProfileViewState extends State<_ProfileView> {
     );
   }
 
-  Widget _buildAvatar(String name, {required double size, bool withCheck = false}) {
+  Widget _buildAvatar(String name, {required double size, bool withCheck = false, String? photoUrl}) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -471,14 +473,31 @@ class _ProfileViewState extends State<_ProfileView> {
             border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
           ),
           alignment: Alignment.center,
-          child: Text(
-            name,
-            style: TextStyle(
-              fontSize: size * 0.22,
-              fontWeight: FontWeight.w700,
-              color: _textDark,
-            ),
-          ),
+          child: photoUrl != null && photoUrl.isNotEmpty
+              ? ClipOval(
+                  child: Image.network(
+                    photoUrl,
+                    width: size,
+                    height: size,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _e, _s) => Text(
+                      name,
+                      style: TextStyle(
+                        fontSize: size * 0.22,
+                        fontWeight: FontWeight.w700,
+                        color: _textDark,
+                      ),
+                    ),
+                  ),
+                )
+              : Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: size * 0.22,
+                    fontWeight: FontWeight.w700,
+                    color: _textDark,
+                  ),
+                ),
         ),
         if (withCheck)
           Positioned(

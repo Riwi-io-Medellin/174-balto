@@ -1,8 +1,58 @@
 import 'package:flutter/material.dart';
 import '../../../../domain/entities/pet.dart';
 
-class PetHeroCard extends StatelessWidget {
-  const PetHeroCard({super.key, this.pet, required this.onTap});
+class PetHeroCard extends StatefulWidget {
+  const PetHeroCard({super.key, required this.pets, required this.onTap});
+
+  final List<Pet> pets;
+  final VoidCallback onTap;
+
+  @override
+  State<PetHeroCard> createState() => _PetHeroCardState();
+}
+
+class _PetHeroCardState extends State<PetHeroCard> {
+  final _ctrl = PageController();
+  int _page = 0;
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.pets.isEmpty) {
+      return _PetCard(pet: null, onTap: widget.onTap);
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          height: 240,
+          child: PageView.builder(
+            controller: _ctrl,
+            itemCount: widget.pets.length,
+            onPageChanged: (i) => setState(() => _page = i),
+            itemBuilder: (_, i) =>
+                _PetCard(pet: widget.pets[i], onTap: widget.onTap),
+          ),
+        ),
+        if (widget.pets.length > 1) ...[
+          const SizedBox(height: 10),
+          _DotRow(count: widget.pets.length, current: _page),
+        ],
+      ],
+    );
+  }
+}
+
+// ─── Single pet card ──────────────────────────────────────────────────────────
+
+class _PetCard extends StatelessWidget {
+  const _PetCard({required this.pet, required this.onTap});
 
   final Pet? pet;
   final VoidCallback onTap;
@@ -31,9 +81,9 @@ class PetHeroCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              _buildBackground(),
-              _buildGradient(),
-              _buildContent(),
+              _background(),
+              _gradient(),
+              _content(),
             ],
           ),
         ),
@@ -41,13 +91,13 @@ class PetHeroCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBackground() {
+  Widget _background() {
     final photoUrl = pet?.photoUrl;
     if (photoUrl != null && photoUrl.isNotEmpty) {
       return Image.network(
         photoUrl,
         fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => _defaultBackground(),
+        errorBuilder: (_, e, s) => _defaultBackground(),
       );
     }
     return _defaultBackground();
@@ -68,7 +118,7 @@ class PetHeroCard extends StatelessWidget {
     );
   }
 
-  Widget _buildGradient() {
+  Widget _gradient() {
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -84,7 +134,7 @@ class PetHeroCard extends StatelessWidget {
     );
   }
 
-  Widget _buildContent() {
+  Widget _content() {
     return Padding(
       padding: const EdgeInsets.all(18),
       child: Row(
@@ -122,6 +172,37 @@ class PetHeroCard extends StatelessWidget {
     );
   }
 }
+
+// ─── Dot indicator ────────────────────────────────────────────────────────────
+
+class _DotRow extends StatelessWidget {
+  const _DotRow({required this.count, required this.current});
+
+  final int count;
+  final int current;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(count, (i) {
+        final active = i == current;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          width: active ? 20 : 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: active ? const Color(0xFF3A80C2) : const Color(0xFFCBD5E0),
+            borderRadius: BorderRadius.circular(4),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+// ─── Status pill ──────────────────────────────────────────────────────────────
 
 class _StatusPill extends StatelessWidget {
   const _StatusPill();

@@ -30,11 +30,12 @@ class WalkBookingCubit extends Cubit<WalkBookingState> {
         emit(const WalkBookingNoPets());
         return;
       }
-      final tomorrow = DateTime.now().add(const Duration(days: 1));
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
       final initial = WalkBookingForm(
         pets: pets,
         selectedPet: pets.length == 1 ? pets.first : null,
-        selectedDate: tomorrow,
+        selectedDate: today,
       );
       emit(initial);
       _loadSlots(initial);

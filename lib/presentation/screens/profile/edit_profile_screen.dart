@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/user.dart';
+import '../../../domain/repositories/upload_repository.dart';
 import '../../../domain/repositories/user_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
@@ -17,12 +21,14 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _picker = ImagePicker();
   late final TextEditingController _firstNameCtrl;
   late final TextEditingController _lastNameCtrl;
   late final TextEditingController _idNumberCtrl;
   late final TextEditingController _phoneCtrl;
   late final TextEditingController _addressCtrl;
   late final TextEditingController _locationCtrl;
+  XFile? _pickedImage;
   bool _saving = false;
 
   static const Color _primary = Color(0xFF3A80C2);
@@ -60,6 +66,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1200,
+      maxHeight: 1200,
+      imageQuality: 85,
+    );
+    if (image != null) setState(() => _pickedImage = image);
+  }
+
   InputDecoration _decoration({
     required String hint,
     required IconData icon,
@@ -86,6 +102,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final state = context.read<ProfileCubit>().state;
       if (state is! ProfileLoaded) return;
 
+      String? photoUrl = state.user.photoUrl;
+      if (_pickedImage != null) {
+        photoUrl = await sl<UploadRepository>().uploadImage(_pickedImage!.path);
+      }
+
       await sl<UserRepository>().update(
         id: state.user.id,
         firstName: _firstNameCtrl.text.trim(),
@@ -100,13 +121,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         location: _locationCtrl.text.trim().isEmpty
             ? null
             : _locationCtrl.text.trim(),
+        photoUrl: photoUrl,
       );
 
+      if (!mounted) return;
       await context.read<ProfileCubit>().load();
 
       if (!mounted) return;
       BaltoToast.success(context, 'Profile updated successfully.');
       Navigator.of(context).pop();
+    } on UploadFailure catch (e) {
+      if (!mounted) return;
+      BaltoToast.error(context, 'Photo upload failed: ${e.message}');
     } catch (e) {
       if (!mounted) return;
       BaltoToast.error(context, 'Error: ${e.toString()}');
@@ -124,6 +150,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         body: const Center(child: CircularProgressIndicator()),
       );
     }
+
+    final currentPhotoUrl = state.user.photoUrl;
 
     return Scaffold(
       backgroundColor: _bg,
@@ -164,6 +192,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
+                Center(child: _AvatarPicker(
+                  pickedImage: _pickedImage,
+                  photoUrl: currentPhotoUrl,
+                  onTap: _pickImage,
+                  primary: _primary,
+                )),
+                const SizedBox(height: 28),
                 _fieldLabel('First Name'),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -287,6 +322,59 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         fontSize: 14,
         fontWeight: FontWeight.w600,
         color: _textDark,
+      ),
+    );
+  }
+}
+
+class _AvatarPicker extends StatelessWidget {
+  const _AvatarPicker({
+    required this.pickedImage,
+    required this.photoUrl,
+    required this.onTap,
+    required this.primary,
+  });
+
+  final XFile? pickedImage;
+  final String? photoUrl;
+  final VoidCallback onTap;
+  final Color primary;
+
+  @override
+  Widget build(BuildContext context) {
+    ImageProvider? bg;
+    if (pickedImage != null) {
+      bg = FileImage(File(pickedImage!.path));
+    } else if (photoUrl != null) {
+      bg = NetworkImage(photoUrl!);
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        children: [
+          CircleAvatar(
+            radius: 48,
+            backgroundColor: const Color(0xFFEEF3F3),
+            backgroundImage: bg,
+            child: bg == null
+                ? const Icon(Icons.person, size: 48, color: Color(0xFF6B7280))
+                : null,
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: primary,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+              child: const Icon(Icons.camera_alt, size: 14, color: Colors.white),
+            ),
+          ),
+        ],
       ),
     );
   }

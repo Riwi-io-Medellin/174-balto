@@ -15,14 +15,16 @@ import 'widgets/compact_walker_card.dart';
 import 'widgets/service_category_chip.dart';
 
 class ServicesPage extends StatefulWidget {
-  const ServicesPage({super.key});
+  const ServicesPage({super.key, this.initialFilter = 0});
+
+  final int initialFilter;
 
   @override
   State<ServicesPage> createState() => _ServicesPageState();
 }
 
 class _ServicesPageState extends State<ServicesPage> {
-  int _selectedFilter = 0;
+  late int _selectedFilter;
   late final WalkerCubit _walkerCubit;
 
   static const List<String> _filters = [
@@ -35,6 +37,7 @@ class _ServicesPageState extends State<ServicesPage> {
   @override
   void initState() {
     super.initState();
+    _selectedFilter = widget.initialFilter;
     _walkerCubit = sl<WalkerCubit>();
     _walkerCubit.loadWalkers();
   }

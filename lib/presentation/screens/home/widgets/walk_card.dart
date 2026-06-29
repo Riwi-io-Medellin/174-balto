@@ -6,12 +6,14 @@ class WalkEntry {
     required this.subtitle,
     this.imageUrl,
     this.isActive = false,
+    this.statusColor,
   });
 
   final String title;
   final String subtitle;
   final String? imageUrl;
   final bool isActive;
+  final Color? statusColor;
 }
 
 class WalkCard extends StatelessWidget {
@@ -23,7 +25,7 @@ class WalkCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Opacity(
-      opacity: entry.isActive ? 1.0 : 0.52,
+      opacity: entry.isActive ? 1.0 : 0.72,
       child: Material(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
@@ -36,6 +38,17 @@ class WalkCard extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             child: Row(
               children: [
+                if (entry.statusColor != null) ...[
+                  Container(
+                    width: 3,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: entry.statusColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ],
                 _WalkThumbnail(imageUrl: entry.imageUrl),
                 const SizedBox(width: 12),
                 Expanded(
@@ -90,7 +103,7 @@ class _WalkThumbnail extends StatelessWidget {
           width: 48,
           height: 48,
           fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => _placeholder(),
+          errorBuilder: (_, e, s) => _placeholder(),
         ),
       );
     }

@@ -58,16 +58,26 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
+  int _servicesFilter = 0;
 
+  void _openServices(int filter) {
+    setState(() {
+      _servicesFilter = filter;
+      _currentIndex = 2;
+    });
+  }
 
   Widget _buildBody() {
     switch (_currentIndex) {
       case 0:
-        return const HomeScreen();
+        return HomeScreen(onOpenServices: _openServices);
       case 1:
         return const WalksPage();
       case 2:
-        return const ServicesPage();
+        return ServicesPage(
+          key: ValueKey(_servicesFilter),
+          initialFilter: _servicesFilter,
+        );
       case 3:
         return const WalkersPage();
       case 4:
