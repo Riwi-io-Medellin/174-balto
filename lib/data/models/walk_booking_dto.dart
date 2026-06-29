@@ -13,6 +13,7 @@ class BookingResponseDto {
     this.specialInstructions,
     required this.createdAt,
     this.clientUserId,
+    this.walkSessionId,
   });
 
   factory BookingResponseDto.fromJson(Map<String, dynamic> json) {
@@ -28,6 +29,7 @@ class BookingResponseDto {
       totalPrice: (json['totalPrice'] as num?)?.toDouble(),
       specialInstructions: json['specialInstructions'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      walkSessionId: json['walkSessionId'] as String?,
     );
   }
 
@@ -59,6 +61,7 @@ class BookingResponseDto {
   final double? totalPrice;
   final String? specialInstructions;
   final DateTime createdAt;
+  final String? walkSessionId;
 
   WalkBooking toEntity() => WalkBooking(
         id: id,
@@ -72,5 +75,6 @@ class BookingResponseDto {
         totalPrice: totalPrice,
         specialInstructions: specialInstructions,
         createdAt: createdAt,
+        walkSessionId: walkSessionId,
       );
 }

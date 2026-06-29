@@ -7,6 +7,7 @@ import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/walk_booking.dart';
 import '../../bloc/my_walks/my_walks_cubit.dart';
 import '../../bloc/my_walks/my_walks_state.dart';
+import 'live_walk_screen.dart';
 
 class WalksPage extends StatelessWidget {
   const WalksPage({super.key});
@@ -304,13 +305,22 @@ class _BookingCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.antiAlias,
         elevation: 0,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade100),
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
+        child: InkWell(
+          onTap: inProgress
+              ? () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LiveWalkScreen(booking: booking),
+                    ),
+                  )
+              : null,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey.shade100),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -441,6 +451,7 @@ class _BookingCard extends StatelessWidget {
               ],
             ],
           ),
+        ),
         ),
       ),
     );

@@ -6,6 +6,7 @@ import '../../data/datasources/pet_remote_datasource.dart';
 import '../../data/datasources/upload_remote_datasource.dart';
 import '../../data/datasources/user_remote_datasource.dart';
 import '../../data/datasources/walk_booking_remote_datasource.dart';
+import '../../data/datasources/walk_session_remote_datasource.dart';
 import '../../data/datasources/walker_availability_remote_datasource.dart';
 import '../../data/datasources/walker_profile_remote_datasource.dart';
 import '../../data/datasources/walker_remote_datasource.dart';
@@ -15,6 +16,7 @@ import '../../data/repositories/pet_repository_impl.dart';
 import '../../data/repositories/upload_repository_impl.dart';
 import '../../data/repositories/user_repository_impl.dart';
 import '../../data/repositories/walk_booking_repository_impl.dart';
+import '../../data/repositories/walk_session_repository_impl.dart';
 import '../../data/repositories/walker_availability_repository_impl.dart';
 import '../../data/repositories/walker_profile_repository_impl.dart';
 import '../../data/repositories/walker_repository_impl.dart';
@@ -24,6 +26,7 @@ import '../../domain/repositories/pet_repository.dart';
 import '../../domain/repositories/upload_repository.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../../domain/repositories/walk_booking_repository.dart';
+import '../../domain/repositories/walk_session_repository.dart';
 import '../../domain/repositories/walker_availability_repository.dart';
 import '../../domain/repositories/walker_profile_repository.dart';
 import '../../domain/repositories/walker_repository.dart';
@@ -118,6 +121,14 @@ void setupDependencies() {
   );
   sl.registerLazySingleton<WalkBookingRepository>(
     () => WalkBookingRepositoryImpl(sl<WalkBookingRemoteDataSource>()),
+  );
+
+  // Walk session
+  sl.registerLazySingleton<WalkSessionRemoteDataSource>(
+    () => WalkSessionRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<WalkSessionRepository>(
+    () => WalkSessionRepositoryImpl(sl<WalkSessionRemoteDataSource>()),
   );
 
   // Cubits

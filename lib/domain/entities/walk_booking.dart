@@ -22,6 +22,7 @@ class WalkBooking extends Equatable {
     this.specialInstructions,
     required this.createdAt,
     this.clientUserId,
+    this.walkSessionId,
   });
 
   final String id;
@@ -35,6 +36,7 @@ class WalkBooking extends Equatable {
   final double? totalPrice;
   final String? specialInstructions;
   final DateTime createdAt;
+  final String? walkSessionId;
 
   @override
   List<Object?> get props => [
@@ -49,5 +51,6 @@ class WalkBooking extends Equatable {
         totalPrice,
         specialInstructions,
         createdAt,
+        walkSessionId,
       ];
 }
