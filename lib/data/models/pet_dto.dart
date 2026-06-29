@@ -31,11 +31,11 @@ class PetDto {
       species: json['species'] as String?,
       breed: json['breed'] as String?,
       birthDate: json['birthDate'] != null
-          ? DateTime.parse(json['birthDate'] as String)
+          ? DateTime.parse((json['birthDate'] as String).split('T').first)
           : null,
       description: json['description'] as String?,
       photoUrl: json['photoUrl'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: DateTime.parse(json['createdAt'] as String).toLocal(),
     );
   }
 
