@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_colors.dart';
 
 class DailyTipCard extends StatelessWidget {
   const DailyTipCard({super.key, required this.tip});
@@ -11,8 +10,25 @@ class DailyTipCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFEBF3FD),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: [0.0, 0.6, 1.0],
+          colors: [
+            Color(0xFF1A3A6E),
+            Color(0xFF2259A8),
+            Color(0xFF3A80C2),
+          ],
+        ),
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF2259A8).withValues(alpha: 0.30),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+            spreadRadius: -2,
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -21,13 +37,14 @@ class DailyTipCard extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: AppColors.dashboard.withValues(alpha: 0.14),
+              color: Colors.white.withValues(alpha: 0.15),
               shape: BoxShape.circle,
+              border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 1),
             ),
             child: const Icon(
               Icons.lightbulb_outline_rounded,
               size: 20,
-              color: AppColors.dashboard,
+              color: Colors.white,
             ),
           ),
           const SizedBox(width: 12),
@@ -40,17 +57,18 @@ class DailyTipCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.dashboard,
-                    letterSpacing: 1.0,
+                    color: Colors.white70,
+                    letterSpacing: 1.2,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 5),
                 Text(
                   tip,
                   style: const TextStyle(
                     fontSize: 13,
-                    color: Color(0xFF1F2937),
+                    color: Colors.white,
                     height: 1.45,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],

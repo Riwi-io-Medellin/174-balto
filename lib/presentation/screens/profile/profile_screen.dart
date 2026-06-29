@@ -8,6 +8,7 @@ import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
 import '../auth/login_screen.dart';
 import '../../screens/pets/create_pet_screen.dart';
+import '../../screens/pets/manage_pets_screen.dart';
 import '../../screens/pets/pet_detail_screen.dart';
 import 'edit_profile_screen.dart';
 import 'privacy_settings_screen.dart';
@@ -60,8 +61,6 @@ class _ProfileViewState extends State<_ProfileView> {
   static const Color _bgPurpleTint = Color(0xFFEEF0FF);
   static const Color _bgOrangeTint = Color(0xFFFFF1E6);
   static const Color _bgGoldTint = Color(0xFFFBF6E9);
-  static const Color _bgAddPet = Color(0xFFFFF6E9);
-  static const Color _addPetBorder = Color(0xFFF1C97A);
 
   @override
   Widget build(BuildContext context) {
@@ -524,6 +523,8 @@ class _ProfileViewState extends State<_ProfileView> {
         final petCount = state is ProfileLoaded ? state.petCount : 0;
         final walkCount = state is ProfileLoaded ? state.walkCount : 0;
         final avgRating = state is ProfileLoaded ? state.averageRating : 0.0;
+        final isWalker = state is ProfileLoaded &&
+            state.walkerProfile?.status == WalkerStatus.approved;
         return Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
@@ -545,19 +546,21 @@ class _ProfileViewState extends State<_ProfileView> {
                   iconBg: _bgPurpleTint,
                   iconColor: _purple,
                   value: '$petCount',
-                  label: 'Dogs Registered',
+                  label: 'Pets Registered',
                 ),
               ),
-              _statDivider(),
-              Expanded(
-                child: _buildStatCell(
-                  icon: Icons.directions_walk,
-                  iconBg: _bgGreenTint,
-                  iconColor: _green,
-                  value: '$walkCount',
-                  label: 'Completed Walks',
+              if (isWalker) ...[
+                _statDivider(),
+                Expanded(
+                  child: _buildStatCell(
+                    icon: Icons.directions_walk,
+                    iconBg: _bgGreenTint,
+                    iconColor: _green,
+                    value: '$walkCount',
+                    label: 'Completed Walks',
+                  ),
                 ),
-              ),
+              ],
               _statDivider(),
               Expanded(
                 child: _buildStatCell(
@@ -638,9 +641,17 @@ class _ProfileViewState extends State<_ProfileView> {
         Expanded(
           child: _buildQuickAction(
             icon: Icons.pets,
-            iconBg: _bgOrangeTint,
-            iconColor: _orange,
+            iconBg: _bgPurpleTint,
+            iconColor: _purple,
             label: 'Manage Pets',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<ProfileCubit>(),
+                  child: const ManagePetsScreen(),
+                ),
+              ),
+            ),
           ),
         ),
         Expanded(
@@ -1219,10 +1230,10 @@ class _ProfileViewState extends State<_ProfileView> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 13),
         decoration: BoxDecoration(
-          color: _bgAddPet,
+          color: _bgPurpleTint,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: _addPetBorder,
+            color: _purple.withValues(alpha: 0.30),
             width: 1.5,
             style: BorderStyle.solid,
           ),
@@ -1233,7 +1244,7 @@ class _ProfileViewState extends State<_ProfileView> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: _orange,
+            color: _purple,
           ),
         ),
       ),

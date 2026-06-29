@@ -10,6 +10,7 @@ class PetDto {
     this.birthDate,
     this.description,
     this.photoUrl,
+    this.weight,
     required this.createdAt,
   });
 
@@ -21,6 +22,7 @@ class PetDto {
   final DateTime? birthDate;
   final String? description;
   final String? photoUrl;
+  final double? weight;
   final DateTime createdAt;
 
   factory PetDto.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,7 @@ class PetDto {
           : null,
       description: json['description'] as String?,
       photoUrl: json['photoUrl'] as String?,
+      weight: (json['weight'] as num?)?.toDouble(),
       createdAt: DateTime.parse(json['createdAt'] as String).toLocal(),
     );
   }
@@ -47,6 +50,7 @@ class PetDto {
           'birthDate': birthDate!.toIso8601String().split('T').first,
         if (description != null) 'description': description,
         if (photoUrl != null) 'photoUrl': photoUrl,
+        if (weight != null) 'weight': weight,
       };
 
   Pet toEntity() => Pet(
@@ -58,6 +62,7 @@ class PetDto {
         birthDate: birthDate,
         description: description,
         photoUrl: photoUrl,
+        weight: weight,
         createdAt: createdAt,
       );
 }

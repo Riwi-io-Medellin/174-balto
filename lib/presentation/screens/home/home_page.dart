@@ -13,6 +13,7 @@ import 'widgets/greeting_header.dart';
 import 'widgets/pet_hero_card.dart';
 import 'widgets/quick_care_grid.dart';
 import 'widgets/walk_card.dart';
+import '../pets/manage_pets_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, this.onOpenServices});
@@ -113,6 +114,14 @@ class _HomeViewState extends State<_HomeView>
                           onClinicTap: () => _openServices(2),
                           onWalkerTap: () => _openServices(1),
                           onStoreTap:  () => _openServices(3),
+                          onPetsTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => BlocProvider.value(
+                                value: context.read<ProfileCubit>(),
+                                child: const ManagePetsScreen(),
+                              ),
+                            ),
+                          ),
                         ),
                       ]),
                     ),
@@ -265,13 +274,26 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w800,
-        color: Color(0xFF1F2937),
-      ),
+    return Row(
+      children: [
+        Container(
+          width: 4,
+          height: 20,
+          decoration: BoxDecoration(
+            color: const Color(0xFF1BAA71),
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF1F2937),
+          ),
+        ),
+      ],
     );
   }
 }

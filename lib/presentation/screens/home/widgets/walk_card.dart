@@ -22,18 +22,43 @@ class WalkCard extends StatelessWidget {
   final WalkEntry entry;
   final VoidCallback onTap;
 
+  Color get _cardBg {
+    if (entry.statusColor != null) {
+      return entry.statusColor!.withValues(alpha: 0.07);
+    }
+    return const Color(0xFFF5F8FF);
+  }
+
+  Color get _shadowColor {
+    if (entry.statusColor != null) {
+      return entry.statusColor!.withValues(alpha: 0.18);
+    }
+    return Colors.black.withValues(alpha: 0.06);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Opacity(
-      opacity: entry.isActive ? 1.0 : 0.72,
-      child: Material(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        clipBehavior: Clip.antiAlias,
-        elevation: entry.isActive ? 2 : 0,
-        shadowColor: Colors.black.withValues(alpha: 0.07),
-        child: InkWell(
-          onTap: entry.isActive ? onTap : null,
+    return GestureDetector(
+      onTap: entry.isActive ? onTap : null,
+      child: Container(
+          decoration: BoxDecoration(
+            color: _cardBg,
+            borderRadius: BorderRadius.circular(14),
+            border: entry.statusColor != null
+                ? Border.all(
+                    color: entry.statusColor!.withValues(alpha: 0.20),
+                    width: 1,
+                  )
+                : Border.all(color: const Color(0xFFE8EDF5), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: _shadowColor,
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+                spreadRadius: -1,
+              ),
+            ],
+          ),
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: Row(
@@ -49,7 +74,10 @@ class WalkCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                 ],
-                _WalkThumbnail(imageUrl: entry.imageUrl),
+                _WalkThumbnail(
+                  imageUrl: entry.imageUrl,
+                  accentColor: entry.statusColor,
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -74,24 +102,24 @@ class WalkCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(
+                Icon(
                   Icons.chevron_right,
                   size: 20,
-                  color: Color(0xFF8A93A0),
+                  color: entry.statusColor ?? const Color(0xFF8A93A0),
                 ),
               ],
             ),
           ),
         ),
-      ),
     );
   }
 }
 
 class _WalkThumbnail extends StatelessWidget {
-  const _WalkThumbnail({this.imageUrl});
+  const _WalkThumbnail({this.imageUrl, this.accentColor});
 
   final String? imageUrl;
+  final Color? accentColor;
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +131,7 @@ class _WalkThumbnail extends StatelessWidget {
           width: 48,
           height: 48,
           fit: BoxFit.cover,
-          errorBuilder: (_, e, s) => _placeholder(),
+          errorBuilder: (_, __, ___) => _placeholder(),
         ),
       );
     }
@@ -111,17 +139,18 @@ class _WalkThumbnail extends StatelessWidget {
   }
 
   Widget _placeholder() {
+    final color = accentColor ?? const Color(0xFF3A80C2);
     return Container(
       width: 48,
       height: 48,
       decoration: BoxDecoration(
-        color: const Color(0xFFF0F2F5),
+        color: color.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: const Icon(
+      child: Icon(
         Icons.directions_walk,
         size: 22,
-        color: Color(0xFFB0B8C1),
+        color: color.withValues(alpha: 0.60),
       ),
     );
   }

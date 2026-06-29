@@ -7,26 +7,33 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
+import '../../../domain/entities/pet.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../../domain/repositories/upload_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 
-class CreatePetScreen extends StatefulWidget {
-  const CreatePetScreen({super.key});
+class EditPetScreen extends StatefulWidget {
+  const EditPetScreen({super.key, required this.pet});
+
+  final Pet pet;
 
   @override
-  State<CreatePetScreen> createState() => _CreatePetScreenState();
+  State<EditPetScreen> createState() => _EditPetScreenState();
 }
 
-class _CreatePetScreenState extends State<CreatePetScreen> {
+class _EditPetScreenState extends State<EditPetScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameCtrl = TextEditingController();
-  final _speciesCtrl = TextEditingController();
-  final _breedCtrl = TextEditingController();
-  final _weightCtrl = TextEditingController();
-  final _descriptionCtrl = TextEditingController();
+  late final _nameCtrl = TextEditingController(text: widget.pet.name);
+  late final _speciesCtrl = TextEditingController(text: widget.pet.species ?? '');
+  late final _breedCtrl = TextEditingController(text: widget.pet.breed ?? '');
+  late final _weightCtrl = TextEditingController(
+    text: widget.pet.weight != null ? widget.pet.weight!.toStringAsFixed(1) : '',
+  );
+  late final _descriptionCtrl = TextEditingController(text: widget.pet.description ?? '');
   final _picker = ImagePicker();
+
   DateTime? _birthDate;
+  String? _existingPhotoUrl;
   XFile? _pickedImage;
   bool _saving = false;
 
@@ -53,6 +60,8 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
   @override
   void initState() {
     super.initState();
+    _birthDate = widget.pet.birthDate;
+    _existingPhotoUrl = widget.pet.photoUrl;
     _speciesCtrl.addListener(() => setState(() {}));
     _breedCtrl.addListener(() => setState(() {}));
   }
@@ -85,7 +94,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().subtract(const Duration(days: 365)),
+      initialDate: _birthDate ?? DateTime.now().subtract(const Duration(days: 365)),
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
@@ -106,7 +115,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
 
     setState(() => _saving = true);
     try {
-      String? photoUrl;
+      String? photoUrl = _existingPhotoUrl;
       if (_pickedImage != null) {
         photoUrl = await sl<UploadRepository>().uploadImage(_pickedImage!.path);
       }
@@ -114,7 +123,8 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
       final weightText = _weightCtrl.text.trim();
       final weight = weightText.isNotEmpty ? double.tryParse(weightText) : null;
 
-      await sl<PetRepository>().create(
+      await sl<PetRepository>().update(
+        widget.pet.id,
         name: _nameCtrl.text.trim(),
         species: _speciesCtrl.text.trim().isEmpty ? null : _speciesCtrl.text.trim(),
         breed: _breedCtrl.text.trim().isEmpty ? null : _breedCtrl.text.trim(),
@@ -127,7 +137,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
       await context.read<ProfileCubit>().load();
 
       if (!mounted) return;
-      BaltoToast.success(context, 'Pet added successfully.');
+      BaltoToast.success(context, 'Pet updated successfully.');
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
@@ -142,7 +152,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
     return Scaffold(
       backgroundColor: _bg,
       appBar: AppBar(
-        title: const Text('Add New Pet'),
+        title: Text('Edit ${widget.pet.name}'),
         backgroundColor: Colors.white,
         foregroundColor: _textDark,
         elevation: 0,
@@ -167,17 +177,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Center(
-                  child: Text(
-                    'Register Your Pet',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: _textDark,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 4),
                 _buildPhotoPicker(),
                 const SizedBox(height: 20),
                 _fieldLabel('Name'),
@@ -289,7 +289,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                             ),
                           )
                         : const Text(
-                            'Add Pet',
+                            'Save Changes',
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                   ),
@@ -357,9 +357,12 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
   }
 
   Widget _buildPhotoPicker() {
+    final hasNewImage = _pickedImage != null;
+    final hasExistingUrl = _existingPhotoUrl != null && _existingPhotoUrl!.isNotEmpty;
+
     return Column(
       children: [
-        if (_pickedImage != null)
+        if (hasNewImage)
           Stack(
             children: [
               ClipRRect(
@@ -388,38 +391,85 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
               ),
             ],
           )
+        else if (hasExistingUrl)
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.network(
+                  _existingPhotoUrl!,
+                  width: double.infinity,
+                  height: 180,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => _buildPhotoPlaceholder(),
+                ),
+              ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: _overlayButton(Icons.edit),
+                    ),
+                    const SizedBox(width: 6),
+                    GestureDetector(
+                      onTap: () => setState(() => _existingPhotoUrl = null),
+                      child: _overlayButton(Icons.close),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
         else
           GestureDetector(
             onTap: _pickImage,
-            child: Container(
-              width: double.infinity,
-              height: 120,
-              decoration: BoxDecoration(
-                color: _inputFill,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: _primary.withValues(alpha: 0.3),
-                  width: 1.5,
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.camera_alt_outlined, size: 32, color: _primary),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Add Photo',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: _primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            child: _buildPhotoPlaceholder(),
           ),
       ],
+    );
+  }
+
+  Widget _overlayButton(IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.5),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, size: 16, color: Colors.white),
+    );
+  }
+
+  Widget _buildPhotoPlaceholder() {
+    return Container(
+      width: double.infinity,
+      height: 120,
+      decoration: BoxDecoration(
+        color: _inputFill,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _primary.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.camera_alt_outlined, size: 32, color: _primary),
+          const SizedBox(height: 8),
+          Text(
+            'Add Photo',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: _primary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

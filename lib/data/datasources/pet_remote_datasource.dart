@@ -73,4 +73,38 @@ class PetRemoteDataSource {
 
     throw PetFailure('PET_CREATE_FAILED', 'Unexpected response ($status).');
   }
+
+  Future<PetDto> update(String id, Map<String, dynamic> request) async {
+    final response = await _dio.put<dynamic>('/pets/$id', data: request);
+    final status = response.statusCode ?? 0;
+    final data = response.data;
+
+    if (status == 200 && data is Map<String, dynamic>) {
+      return PetDto.fromJson(data);
+    }
+
+    if (data is Map<String, dynamic> &&
+        data['code'] is String &&
+        data['error'] is String) {
+      throw PetFailure(data['code'] as String, data['error'] as String);
+    }
+
+    throw PetFailure('PET_UPDATE_FAILED', 'Unexpected response ($status).');
+  }
+
+  Future<void> delete(String id) async {
+    final response = await _dio.delete<dynamic>('/pets/$id');
+    final status = response.statusCode ?? 0;
+
+    if (status == 204) return;
+
+    final data = response.data;
+    if (data is Map<String, dynamic> &&
+        data['code'] is String &&
+        data['error'] is String) {
+      throw PetFailure(data['code'] as String, data['error'] as String);
+    }
+
+    throw PetFailure('PET_DELETE_FAILED', 'Unexpected response ($status).');
+  }
 }

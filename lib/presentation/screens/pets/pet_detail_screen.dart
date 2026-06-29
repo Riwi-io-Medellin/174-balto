@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/di/injection.dart';
+import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/pet.dart';
+import '../../../domain/repositories/pet_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
+import 'edit_pet_screen.dart';
 
 class PetDetailScreen extends StatelessWidget {
   const PetDetailScreen({super.key, required this.petId});
@@ -14,6 +18,7 @@ class PetDetailScreen extends StatelessWidget {
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _textDark = Color(0xFF1A1A2E);
   static const Color _textMuted = Color(0xFF6B7280);
+  static const Color _red = Color(0xFFE53935);
 
   Pet _findPet(BuildContext context) {
     final state = context.read<ProfileCubit>().state;
@@ -21,6 +26,40 @@ class PetDetailScreen extends StatelessWidget {
       return state.pets.firstWhere((p) => p.id == petId);
     }
     throw StateError('Pet not found');
+  }
+
+  Future<void> _confirmDelete(BuildContext context, Pet pet) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Pet'),
+        content: Text('Remove ${pet.name} from your pets? This cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: _red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      await sl<PetRepository>().delete(pet.id);
+      await context.read<ProfileCubit>().load();
+      if (!context.mounted) return;
+      BaltoToast.success(context, '${pet.name} removed.');
+      Navigator.of(context).pop();
+    } catch (e) {
+      if (!context.mounted) return;
+      BaltoToast.error(context, 'Error: ${e.toString()}');
+    }
   }
 
   @override
@@ -38,6 +77,25 @@ class PetDetailScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: _textDark,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Edit',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<ProfileCubit>(),
+                  child: EditPetScreen(pet: pet),
+                ),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: _red),
+            tooltip: 'Delete',
+            onPressed: () => _confirmDelete(context, pet),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -75,6 +133,10 @@ class PetDetailScreen extends StatelessWidget {
                   _infoRow(Icons.style_outlined, 'Breed', pet.breed ?? 'Not specified'),
                   const SizedBox(height: 12),
                   _infoRow(Icons.cake_outlined, 'Age', age),
+                  if (pet.weight != null) ...[
+                    const SizedBox(height: 12),
+                    _infoRow(Icons.monitor_weight_outlined, 'Weight', '${pet.weight!.toStringAsFixed(1)} kg'),
+                  ],
                   if (pet.description != null) ...[
                     const SizedBox(height: 16),
                     const Divider(color: Color(0xFFE0E4F0)),
