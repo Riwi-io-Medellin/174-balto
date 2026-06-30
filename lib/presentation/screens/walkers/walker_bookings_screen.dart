@@ -246,6 +246,8 @@ class _BookingCard extends StatelessWidget {
     return now.isAfter(window) && now.isBefore(end);
   }
 
+  bool _canRejoin() => booking.status == WalkBookingStatus.inProgress;
+
   double? _minDistanceKmToAccepted() {
     if (booking.ownerLatitude == null || booking.ownerLongitude == null) return null;
     double? minDist;
@@ -455,6 +457,33 @@ class _BookingCard extends StatelessWidget {
             ],
             if (tabType == _TabType.upcoming) ...[
               const SizedBox(height: 12),
+              if (_canRejoin())
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            WalkerLiveWalkScreen(booking: booking),
+                      ),
+                    ),
+                    icon: const Icon(Icons.map_rounded, size: 18),
+                    label: const Text(
+                      'Rejoin Walk',
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1565C0),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+              if (_canRejoin()) const SizedBox(height: 8),
               if (_canStart())
                 SizedBox(
                   width: double.infinity,

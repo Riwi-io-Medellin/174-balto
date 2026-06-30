@@ -39,7 +39,9 @@ class WalkerBookingLoaded extends WalkerBookingState {
       ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
 
   List<WalkBooking> get upcoming => (bookings
-        .where((b) => b.status == WalkBookingStatus.accepted)
+        .where((b) =>
+            b.status == WalkBookingStatus.accepted ||
+            b.status == WalkBookingStatus.inProgress)
         .toList()
       ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
 

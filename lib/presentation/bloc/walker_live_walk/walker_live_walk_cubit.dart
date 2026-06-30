@@ -45,9 +45,15 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
         return;
       }
 
-      _sessionId = await _sessionRepository.startSession(booking.id);
+      // Rejoin existing session if the walk is already in progress.
+      final existingId = booking.walkSessionId;
+      if (existingId != null) {
+        _sessionId = existingId;
+      } else {
+        _sessionId = await _sessionRepository.startSession(booking.id);
+      }
       // ignore: avoid_print
-      print('[WalkerLive] Session started: $_sessionId');
+      print('[WalkerLive] Session ID: $_sessionId (rejoined: ${existingId != null})');
 
       await _liveWalkService.start();
 

@@ -103,6 +103,8 @@ class _WalkerLiveWalkViewState extends State<_WalkerLiveWalkView> {
 class _MapSection extends StatelessWidget {
   const _MapSection({required this.state, required this.onMapCreated});
 
+  static const _defaultCenter = LatLng(6.2442, -75.5812);
+
   final WalkerLiveWalkState state;
   final void Function(GoogleMapController) onMapCreated;
 
@@ -115,43 +117,71 @@ class _MapSection extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        if (hasPosition)
-          GoogleMap(
-            onMapCreated: onMapCreated,
-            initialCameraPosition: CameraPosition(
-              target: active!.currentPosition!,
-              zoom: 17,
-            ),
-            markers: {
-              Marker(
-                markerId: const MarkerId('me'),
-                position: active.currentPosition!,
-                icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueAzure,
-                ),
-                infoWindow: const InfoWindow(title: 'You'),
-              ),
-            },
-            circles: active.accuracyMeters != null
-                ? {
-                    Circle(
-                      circleId: const CircleId('accuracy'),
-                      center: active.currentPosition!,
-                      radius: active.accuracyMeters!,
-                      fillColor: Colors.blue.withValues(alpha: 0.08),
-                      strokeColor: Colors.blue.withValues(alpha: 0.25),
-                      strokeWidth: 1,
+        GoogleMap(
+          onMapCreated: onMapCreated,
+          initialCameraPosition: CameraPosition(
+            target: hasPosition ? active!.currentPosition! : _defaultCenter,
+            zoom: hasPosition ? 17 : 13,
+          ),
+          markers: hasPosition
+              ? {
+                  Marker(
+                    markerId: const MarkerId('me'),
+                    position: active!.currentPosition!,
+                    icon: BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueAzure,
                     ),
-                  }
-                : {},
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
-            mapToolbarEnabled: false,
-          )
-        else
-          _PlaceholderMap(
-            isStarting: state is WalkerLiveWalkStarting ||
-                state is WalkerLiveWalkInitial,
+                    infoWindow: const InfoWindow(title: 'You'),
+                  ),
+                }
+              : {},
+          circles: hasPosition && active?.accuracyMeters != null
+              ? {
+                  Circle(
+                    circleId: const CircleId('accuracy'),
+                    center: active!.currentPosition!,
+                    radius: active.accuracyMeters!,
+                    fillColor: Colors.blue.withValues(alpha: 0.08),
+                    strokeColor: Colors.blue.withValues(alpha: 0.25),
+                    strokeWidth: 1,
+                  ),
+                }
+              : {},
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: false,
+          mapToolbarEnabled: false,
+        ),
+        if (!hasPosition)
+          Center(
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    state is WalkerLiveWalkStarting ||
+                            state is WalkerLiveWalkInitial
+                        ? 'Starting walk...'
+                        : 'Getting GPS fix...',
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
           ),
 
         Positioned(
@@ -166,51 +196,6 @@ class _MapSection extends StatelessWidget {
           child: _WalkingBadge(),
         ),
       ],
-    );
-  }
-}
-
-class _PlaceholderMap extends StatelessWidget {
-  const _PlaceholderMap({required this.isStarting});
-
-  final bool isStarting;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xFFE8EEE4),
-      child: Center(
-        child: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          decoration: BoxDecoration(
-            color: Colors.black54,
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                    strokeWidth: 2, color: Colors.white),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                isStarting
-                    ? 'Starting walk...'
-                    : 'Acquiring GPS signal...',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

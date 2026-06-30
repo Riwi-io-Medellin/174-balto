@@ -120,6 +120,9 @@ class _MapSection extends StatelessWidget {
   final LiveWalkState state;
   final void Function(GoogleMapController) onMapCreated;
 
+  // Default map center (Medellín) used before the walker's GPS arrives.
+  static const _defaultCenter = LatLng(6.2442, -75.5812);
+
   @override
   Widget build(BuildContext context) {
     final active = state is LiveWalkActive ? state as LiveWalkActive : null;
@@ -128,46 +131,45 @@ class _MapSection extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        if (hasPosition)
-          GoogleMap(
-            onMapCreated: onMapCreated,
-            initialCameraPosition: CameraPosition(
-              target: active!.currentPosition!,
-              zoom: 16,
-            ),
-            markers: {
-              Marker(
-                markerId: const MarkerId('walker'),
-                position: active.currentPosition!,
-                icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueBlue,
-                ),
-                infoWindow: InfoWindow(title: '${active.petName} · now'),
-              ),
-            },
-            polylines: active.routePoints.length >= 2
-                ? {
-                    Polyline(
-                      polylineId: const PolylineId('route'),
-                      points: active.routePoints,
-                      color: AppColors.navWalks,
-                      width: 5,
-                      jointType: JointType.round,
-                      startCap: Cap.roundCap,
-                      endCap: Cap.roundCap,
+        // Map is always rendered so onMapCreated fires immediately and
+        // animateCamera works reliably when the first position arrives.
+        GoogleMap(
+          onMapCreated: onMapCreated,
+          initialCameraPosition: CameraPosition(
+            target: hasPosition ? active!.currentPosition! : _defaultCenter,
+            zoom: hasPosition ? 16 : 13,
+          ),
+          markers: hasPosition
+              ? {
+                  Marker(
+                    markerId: const MarkerId('walker'),
+                    position: active!.currentPosition!,
+                    icon: BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueBlue,
                     ),
-                  }
-                : {},
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
-            mapToolbarEnabled: false,
-          )
-        else ...[
-          CustomPaint(painter: _MapPainter()),
-          CustomPaint(painter: _RoutePainter()),
-        ],
+                    infoWindow: InfoWindow(title: '${active.petName} · now'),
+                  ),
+                }
+              : {},
+          polylines: (active?.routePoints.length ?? 0) >= 2
+              ? {
+                  Polyline(
+                    polylineId: const PolylineId('route'),
+                    points: active!.routePoints,
+                    color: AppColors.navWalks,
+                    width: 5,
+                    jointType: JointType.round,
+                    startCap: Cap.roundCap,
+                    endCap: Cap.roundCap,
+                  ),
+                }
+              : {},
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: false,
+          mapToolbarEnabled: false,
+        ),
 
-        // Connecting overlay (shown before first GPS point arrives)
+        // Overlay shown until walker's first GPS point arrives.
         if (!hasPosition)
           Center(
             child: Container(
@@ -292,91 +294,6 @@ class _LiveBadge extends StatelessWidget {
       ),
     );
   }
-}
-
-// Placeholder map painters shown while awaiting first GPS point
-class _MapPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final bg = Paint()..color = const Color(0xFFE8EEE4);
-    canvas.drawRect(Offset.zero & size, bg);
-
-    final road = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 18
-      ..strokeCap = StrokeCap.round;
-
-    final roadSm = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 10
-      ..strokeCap = StrokeCap.round;
-
-    final block = Paint()..color = const Color(0xFFD4DDD0);
-
-    for (var i = 0; i < 6; i++) {
-      for (var j = 0; j < 8; j++) {
-        canvas.drawRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromLTWH(
-              28 + i * (size.width / 5),
-              28 + j * (size.height / 7),
-              size.width / 5 - 16,
-              size.height / 7 - 16,
-            ),
-            const Radius.circular(6),
-          ),
-          block,
-        );
-      }
-    }
-
-    for (var j = 0; j <= 7; j++) {
-      canvas.drawLine(
-        Offset(0, (j + 0.5) * size.height / 7),
-        Offset(size.width, (j + 0.5) * size.height / 7),
-        j % 3 == 0 ? road : roadSm,
-      );
-    }
-    for (var i = 0; i <= 5; i++) {
-      canvas.drawLine(
-        Offset((i + 0.5) * size.width / 5, 0),
-        Offset((i + 0.5) * size.width / 5, size.height),
-        i % 2 == 0 ? road : roadSm,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(_) => false;
-}
-
-class _RoutePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final path = Path();
-    path.moveTo(size.width * 0.2, size.height * 0.85);
-    path.cubicTo(
-      size.width * 0.2, size.height * 0.55,
-      size.width * 0.38, size.height * 0.55,
-      size.width * 0.38, size.height * 0.35,
-    );
-    path.cubicTo(
-      size.width * 0.38, size.height * 0.15,
-      size.width * 0.55, size.height * 0.15,
-      size.width * 0.56, size.height * 0.24,
-    );
-
-    final paint = Paint()
-      ..color = AppColors.navWalks.withValues(alpha: 0.4)
-      ..strokeWidth = 4
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(_) => false;
 }
 
 // ── Waiting ───────────────────────────────────────────────────────────────────
