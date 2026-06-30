@@ -14,6 +14,8 @@ class BookingResponseDto {
     required this.createdAt,
     this.clientUserId,
     this.walkSessionId,
+    this.actualDistanceMeters,
+    this.actualDurationSeconds,
   });
 
   factory BookingResponseDto.fromJson(Map<String, dynamic> json) {
@@ -23,20 +25,29 @@ class BookingResponseDto {
       petId: json['petId'] as String,
       clientUserId: json['clientUserId'] as String?,
       status: _parseStatus(json['status'] as String),
-      slotStart: DateTime.parse(json['slotStart'] as String),
+      slotStart: _parseLocal(json['slotStart'] as String),
       durationMinutes: json['durationMinutes'] as int,
       snapshotHourlyRate: (json['snapshotHourlyRate'] as num?)?.toDouble(),
       totalPrice: (json['totalPrice'] as num?)?.toDouble(),
       specialInstructions: json['specialInstructions'] as String?,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: _parseLocal(json['createdAt'] as String),
       walkSessionId: json['walkSessionId'] as String?,
+      actualDistanceMeters: (json['totalDistanceMeters'] as num?)?.toDouble(),
+      actualDurationSeconds: json['totalDurationSeconds'] as int?,
     );
   }
+
+  // Backend sends local times incorrectly marked with Z — strip the suffix
+  // so Dart treats them as local rather than converting from UTC.
+  static DateTime _parseLocal(String s) =>
+      DateTime.parse(s.replaceFirst(RegExp(r'Z$'), ''));
 
   static WalkBookingStatus _parseStatus(String s) {
     switch (s) {
       case 'accepted':
         return WalkBookingStatus.accepted;
+      case 'in_progress':
+        return WalkBookingStatus.inProgress;
       case 'completed':
         return WalkBookingStatus.completed;
       case 'rejected':
@@ -62,6 +73,8 @@ class BookingResponseDto {
   final String? specialInstructions;
   final DateTime createdAt;
   final String? walkSessionId;
+  final double? actualDistanceMeters;
+  final int? actualDurationSeconds;
 
   WalkBooking toEntity() => WalkBooking(
         id: id,
@@ -76,5 +89,7 @@ class BookingResponseDto {
         specialInstructions: specialInstructions,
         createdAt: createdAt,
         walkSessionId: walkSessionId,
+        actualDistanceMeters: actualDistanceMeters,
+        actualDurationSeconds: actualDurationSeconds,
       );
 }

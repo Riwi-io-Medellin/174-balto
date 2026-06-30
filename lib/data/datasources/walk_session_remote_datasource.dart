@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../domain/repositories/walk_session_repository.dart';
 
@@ -47,6 +48,22 @@ class WalkSessionRemoteDataSource {
     _throwFailure(status, response.data);
   }
 
+  Future<List<LatLng>> getRoute(String sessionId) async {
+    final response = await _dio.get<dynamic>('/walk-sessions/$sessionId/route');
+    final status = response.statusCode ?? 0;
+    final data = response.data;
+    if (status == 200 && data is List) {
+      return data
+          .cast<Map<String, dynamic>>()
+          .map((p) => LatLng(
+                (p['latitude'] as num).toDouble(),
+                (p['longitude'] as num).toDouble(),
+              ))
+          .toList();
+    }
+    _throwFailure(status, data);
+  }
+
   Never _throwFailure(int status, dynamic data) {
     if (data is Map<String, dynamic> &&
         data['code'] is String &&
@@ -56,7 +73,9 @@ class WalkSessionRemoteDataSource {
         data['error'] as String,
       );
     }
+    // ignore: avoid_print
+    print('[WalkSession] HTTP $status — body: $data');
     throw WalkSessionFailure(
-        'REQUEST_FAILED', 'Unexpected response ($status).');
+        'REQUEST_FAILED', 'Server error ($status). Check logs for details.');
   }
 }

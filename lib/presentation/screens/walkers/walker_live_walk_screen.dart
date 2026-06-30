@@ -9,6 +9,7 @@ import '../../../domain/entities/walk_booking.dart';
 import '../../../domain/repositories/walk_session_repository.dart';
 import '../../bloc/walker_live_walk/walker_live_walk_cubit.dart';
 import '../../bloc/walker_live_walk/walker_live_walk_state.dart';
+import '../walks/walk_route_summary_screen.dart';
 
 class WalkerLiveWalkScreen extends StatelessWidget {
   const WalkerLiveWalkScreen({super.key, required this.booking});
@@ -56,7 +57,16 @@ class _WalkerLiveWalkViewState extends State<_WalkerLiveWalkView> {
           );
         }
         if (state is WalkerLiveWalkCompleted) {
-          Navigator.of(context).pop();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => WalkRouteSummaryScreen(
+                sessionId: state.sessionId,
+                distanceKm: state.distanceKm,
+                elapsedSeconds: state.elapsedSeconds,
+              ),
+            ),
+          );
         }
       },
       child: Scaffold(

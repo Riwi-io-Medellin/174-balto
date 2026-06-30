@@ -4,11 +4,12 @@ import '../../../core/storage/token_storage.dart';
 import '../../../core/utils/jwt_decoder.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/entities/user.dart';
+import '../../../domain/entities/walk_booking.dart';
 import '../../../domain/entities/walker_profile.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../../domain/repositories/user_repository.dart';
+import '../../../domain/repositories/walk_booking_repository.dart';
 import '../../../domain/repositories/walker_profile_repository.dart';
-import '../../../domain/repositories/walking_history_repository.dart';
 import 'profile_state.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
@@ -16,20 +17,20 @@ class ProfileCubit extends Cubit<ProfileState> {
     required UserRepository userRepository,
     required TokenStorage tokenStorage,
     required PetRepository petRepository,
-    required WalkingHistoryRepository walkingHistoryRepository,
+    required WalkBookingRepository walkBookingRepository,
     required WalkerProfileRepository walkerProfileRepository,
   // ignore: prefer_initializing_formals
   })  : _userRepository = userRepository,
         _tokenStorage = tokenStorage,
         _petRepository = petRepository,
-        _walkingHistoryRepository = walkingHistoryRepository,
+        _walkBookingRepository = walkBookingRepository,
         _walkerProfileRepository = walkerProfileRepository,
         super(const ProfileInitial());
 
   final UserRepository _userRepository;
   final TokenStorage _tokenStorage;
   final PetRepository _petRepository;
-  final WalkingHistoryRepository _walkingHistoryRepository;
+  final WalkBookingRepository _walkBookingRepository;
   final WalkerProfileRepository _walkerProfileRepository;
 
   Future<void> load() async {
@@ -49,7 +50,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       // Fire all requests concurrently.
       final userFuture = _userRepository.getById(userId);
       final petsFuture = _petRepository.getMyPets();
-      final walkCountFuture = _walkingHistoryRepository.getMyWalkCount();
+      final bookingsFuture = _walkBookingRepository.getMyBookings(status: 'completed');
       // Walker profile may fail without blocking profile.
       final walkerProfileFuture = _walkerProfileRepository.getMyProfile();
 
@@ -59,9 +60,9 @@ class ProfileCubit extends Cubit<ProfileState> {
         petsFuture,
         onError: (_) => <Pet>[],
       );
-      final walkCount = await _safeAwait<int>(
-        walkCountFuture,
-        onError: (_) => 0,
+      final completedBookings = await _safeAwait<List<WalkBooking>>(
+        bookingsFuture,
+        onError: (_) => <WalkBooking>[],
       );
       final walkerProfile = await _safeAwait<WalkerProfile?>(
         walkerProfileFuture,
@@ -71,8 +72,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileLoaded(
         user: user,
         pets: savedPets,
-        walkCount: walkCount,
-        averageRating: 0.0,
+        walkCount: completedBookings.length,
         walkerProfile: walkerProfile,
       ));
     } on UserFailure catch (e) {

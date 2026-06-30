@@ -9,9 +9,12 @@ import '../../../core/storage/token_storage.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/walk_booking.dart';
 import '../../../domain/repositories/pet_repository.dart';
+import '../../../domain/repositories/walk_booking_repository.dart';
+import '../../../domain/repositories/walk_session_repository.dart';
 import '../../../domain/repositories/walker_repository.dart';
 import '../../bloc/live_walk/live_walk_cubit.dart';
 import '../../bloc/live_walk/live_walk_state.dart';
+import 'walk_route_summary_screen.dart';
 
 class LiveWalkScreen extends StatelessWidget {
   const LiveWalkScreen({super.key, required this.booking});
@@ -27,6 +30,8 @@ class LiveWalkScreen extends StatelessWidget {
         petRepository: sl<PetRepository>(),
         trackingService: WalkTrackingService(),
         tokenStorage: sl<TokenStorage>(),
+        walkBookingRepository: sl<WalkBookingRepository>(),
+        walkSessionRepository: sl<WalkSessionRepository>(),
       )..start(),
       child: const _LiveWalkView(),
     );
@@ -54,17 +59,22 @@ class _LiveWalkViewState extends State<_LiveWalkView> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<LiveWalkCubit, LiveWalkState>(
-      listenWhen: (prev, next) {
-        if (next is! LiveWalkActive || next.currentPosition == null) return false;
-        if (prev is LiveWalkActive && prev.currentPosition == next.currentPosition) {
-          return false;
-        }
-        return true;
-      },
-      listener: (_, state) {
+      listener: (context, state) {
         if (state is LiveWalkActive && state.currentPosition != null) {
           _mapController?.animateCamera(
             CameraUpdate.newLatLng(state.currentPosition!),
+          );
+        }
+        if (state is LiveWalkCompleted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => WalkRouteSummaryScreen(
+                sessionId: state.sessionId,
+                distanceKm: state.distanceKm,
+                elapsedSeconds: state.elapsedSeconds,
+              ),
+            ),
           );
         }
       },
@@ -77,6 +87,9 @@ class _LiveWalkViewState extends State<_LiveWalkView> {
                 message: state.message,
                 onRetry: () => context.read<LiveWalkCubit>().retry(),
               );
+            }
+            if (state is LiveWalkWaiting) {
+              return const _WaitingView();
             }
             return Column(
               children: [
@@ -365,6 +378,88 @@ class _RoutePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_) => false;
+}
+
+// ── Waiting ───────────────────────────────────────────────────────────────────
+
+class _WaitingView extends StatelessWidget {
+  const _WaitingView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: AppColors.navWalkers.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.directions_walk_rounded,
+                    size: 40,
+                    color: AppColors.navWalkers,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Waiting for your walker',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1A1A2E),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'The map will appear automatically once the walker starts the walk.',
+                  style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                const SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: AppColors.navWalkers,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => context.read<LiveWalkCubit>().retry(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.navWalkers,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                  child: const Text('Check now'),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Go Back'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 // ── Error ─────────────────────────────────────────────────────────────────────

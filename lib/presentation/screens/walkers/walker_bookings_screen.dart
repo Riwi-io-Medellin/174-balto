@@ -490,6 +490,7 @@ class _StatusBadge extends StatelessWidget {
     final (label, color) = switch (status) {
       WalkBookingStatus.pending => ('Pending', const Color(0xFFF59E0B)),
       WalkBookingStatus.accepted => ('Upcoming', const Color(0xFF3A80C2)),
+      WalkBookingStatus.inProgress => ('Live', const Color(0xFF1BAA71)),
       WalkBookingStatus.completed => ('Completed', const Color(0xFF1BAA71)),
       WalkBookingStatus.rejected => ('Rejected', const Color(0xFFD05A24)),
       WalkBookingStatus.walkerCancelled => ('Cancelled', Colors.grey),

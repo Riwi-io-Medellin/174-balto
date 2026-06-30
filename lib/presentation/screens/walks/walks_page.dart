@@ -274,10 +274,16 @@ class _BookingCard extends StatelessWidget {
   final WalkBooking booking;
 
   bool _isInProgress() {
+    // Backend status "in_progress" means walker has started.
+    if (booking.status == WalkBookingStatus.inProgress) return true;
     if (booking.status != WalkBookingStatus.accepted) return false;
+    // Accepted + active session = still live (started before scheduled slot).
+    if (booking.walkSessionId != null) return true;
+    // Accepted + inside scheduled window.
     final now = DateTime.now();
+    final window = booking.slotStart.subtract(const Duration(minutes: 5));
     final end = booking.slotStart.add(Duration(minutes: booking.durationMinutes));
-    return !booking.slotStart.isAfter(now) && !end.isBefore(now);
+    return now.isAfter(window) && now.isBefore(end);
   }
 
   bool _canCancel() {
@@ -579,6 +585,11 @@ class _StatusBadge extends StatelessWidget {
           'Upcoming',
           AppColors.navWalks.withValues(alpha: 0.12),
           AppColors.navWalks,
+        ),
+      WalkBookingStatus.inProgress => (
+          'Live',
+          AppColors.navWalkers.withValues(alpha: 0.12),
+          AppColors.navWalkers,
         ),
       WalkBookingStatus.completed => (
           'Completed',

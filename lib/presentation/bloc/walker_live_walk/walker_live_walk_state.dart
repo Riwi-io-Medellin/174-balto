@@ -22,25 +22,33 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
     this.currentPosition,
     this.accuracyMeters,
     this.elapsedSeconds = 0,
+    this.routePoints = const [],
+    this.distanceKm = 0.0,
   });
 
   final LatLng? currentPosition;
   final double? accuracyMeters;
   final int elapsedSeconds;
+  final List<LatLng> routePoints;
+  final double distanceKm;
 
   WalkerLiveWalkActive copyWith({
     LatLng? currentPosition,
     double? accuracyMeters,
     int? elapsedSeconds,
+    List<LatLng>? routePoints,
+    double? distanceKm,
   }) =>
       WalkerLiveWalkActive(
         currentPosition: currentPosition ?? this.currentPosition,
         accuracyMeters: accuracyMeters ?? this.accuracyMeters,
         elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
+        routePoints: routePoints ?? this.routePoints,
+        distanceKm: distanceKm ?? this.distanceKm,
       );
 
   @override
-  List<Object?> get props => [currentPosition, accuracyMeters, elapsedSeconds];
+  List<Object?> get props => [currentPosition, accuracyMeters, elapsedSeconds, routePoints, distanceKm];
 }
 
 class WalkerLiveWalkEnding extends WalkerLiveWalkState {
@@ -50,9 +58,18 @@ class WalkerLiveWalkEnding extends WalkerLiveWalkState {
 }
 
 class WalkerLiveWalkCompleted extends WalkerLiveWalkState {
-  const WalkerLiveWalkCompleted();
+  const WalkerLiveWalkCompleted({
+    required this.sessionId,
+    required this.distanceKm,
+    required this.elapsedSeconds,
+  });
+
+  final String sessionId;
+  final double distanceKm;
+  final int elapsedSeconds;
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [sessionId, distanceKm, elapsedSeconds];
 }
 
 class WalkerLiveWalkError extends WalkerLiveWalkState {

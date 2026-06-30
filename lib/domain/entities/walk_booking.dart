@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 enum WalkBookingStatus {
   pending,
   accepted,
+  inProgress,
   completed,
   rejected,
   walkerCancelled,
@@ -23,6 +24,8 @@ class WalkBooking extends Equatable {
     required this.createdAt,
     this.clientUserId,
     this.walkSessionId,
+    this.actualDistanceMeters,
+    this.actualDurationSeconds,
   });
 
   final String id;
@@ -37,6 +40,8 @@ class WalkBooking extends Equatable {
   final String? specialInstructions;
   final DateTime createdAt;
   final String? walkSessionId;
+  final double? actualDistanceMeters;
+  final int? actualDurationSeconds;
 
   @override
   List<Object?> get props => [
@@ -52,5 +57,7 @@ class WalkBooking extends Equatable {
         specialInstructions,
         createdAt,
         walkSessionId,
+        actualDistanceMeters,
+        actualDurationSeconds,
       ];
 }

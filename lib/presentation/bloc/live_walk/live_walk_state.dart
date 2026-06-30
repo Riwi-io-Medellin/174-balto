@@ -17,6 +17,13 @@ class LiveWalkConnecting extends LiveWalkState {
   List<Object?> get props => [];
 }
 
+// Walker hasn't started the walk yet — polling until walkSessionId is set
+class LiveWalkWaiting extends LiveWalkState {
+  const LiveWalkWaiting();
+  @override
+  List<Object?> get props => [];
+}
+
 class LiveWalkActive extends LiveWalkState {
   const LiveWalkActive({
     required this.walkerName,
@@ -71,6 +78,21 @@ class LiveWalkActive extends LiveWalkState {
         distanceKm,
         lastUpdateAt,
       ];
+}
+
+class LiveWalkCompleted extends LiveWalkState {
+  const LiveWalkCompleted({
+    required this.sessionId,
+    required this.distanceKm,
+    required this.elapsedSeconds,
+  });
+
+  final String sessionId;
+  final double distanceKm;
+  final int elapsedSeconds;
+
+  @override
+  List<Object?> get props => [sessionId, distanceKm, elapsedSeconds];
 }
 
 class LiveWalkError extends LiveWalkState {

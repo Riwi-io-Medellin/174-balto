@@ -70,14 +70,17 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
 
     final current = LatLng(position.latitude, position.longitude);
     if (_lastPosition != null) {
-      _accumulatedDistanceMeters +=
-          _haversineMeters(_lastPosition!, current);
+      _accumulatedDistanceMeters += _haversineMeters(_lastPosition!, current);
     }
     _lastPosition = current;
+
+    final updatedPoints = [...s.routePoints, current];
 
     emit(s.copyWith(
       currentPosition: current,
       accuracyMeters: position.accuracy,
+      routePoints: updatedPoints,
+      distanceKm: _accumulatedDistanceMeters / 1000,
     ));
 
     final id = _sessionId;
@@ -103,9 +106,11 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
   Future<void> endWalk() async {
     _elapsedTimer?.cancel();
     await _positionSub?.cancel();
-    final elapsedSeconds = state is WalkerLiveWalkActive
-        ? (state as WalkerLiveWalkActive).elapsedSeconds
-        : 0;
+    final activeState = state is WalkerLiveWalkActive
+        ? state as WalkerLiveWalkActive
+        : null;
+    final elapsedSeconds = activeState?.elapsedSeconds ?? 0;
+    final distanceKm = _accumulatedDistanceMeters / 1000;
     emit(const WalkerLiveWalkEnding());
     try {
       await _liveWalkService.stop();
@@ -116,7 +121,11 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
           elapsedSeconds,
         );
       }
-      emit(const WalkerLiveWalkCompleted());
+      emit(WalkerLiveWalkCompleted(
+        sessionId: _sessionId ?? '',
+        distanceKm: distanceKm,
+        elapsedSeconds: elapsedSeconds,
+      ));
     } catch (e) {
       emit(WalkerLiveWalkError(e.toString()));
     }

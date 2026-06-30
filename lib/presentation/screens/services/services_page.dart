@@ -206,7 +206,7 @@ class _ServicesPageState extends State<ServicesPage> {
         const SizedBox(width: 10),
         const Expanded(
           child: Text(
-            'PawSphere Finder',
+            'Balto Finder',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,

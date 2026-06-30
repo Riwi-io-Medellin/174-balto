@@ -138,7 +138,7 @@ void setupDependencies() {
       userRepository: sl<UserRepository>(),
       tokenStorage: sl<TokenStorage>(),
       petRepository: sl<PetRepository>(),
-      walkingHistoryRepository: sl<WalkingHistoryRepository>(),
+      walkBookingRepository: sl<WalkBookingRepository>(),
       walkerProfileRepository: sl<WalkerProfileRepository>(),
     ),
   );
