@@ -85,7 +85,7 @@ class _CompletedBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dt = walk.scheduledAt;
+    final dt = walk.scheduledAt.toLocal();
     final month = _month(dt.month);
     final dateStr = '$month ${dt.day}, ${dt.year}';
 
@@ -389,7 +389,7 @@ class _StatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dt = walk.scheduledAt;
+    final dt = walk.scheduledAt.toLocal();
     final timeStr =
         '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
 

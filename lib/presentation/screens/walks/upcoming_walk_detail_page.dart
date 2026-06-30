@@ -187,7 +187,7 @@ class _WalkInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dt = walk.scheduledAt;
+    final dt = walk.scheduledAt.toLocal();
     final dateStr = '${_weekday(dt.weekday)}, ${_month(dt.month)} ${dt.day}';
     final timeStr =
         '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
