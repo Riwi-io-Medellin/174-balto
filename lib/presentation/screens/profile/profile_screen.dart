@@ -10,6 +10,7 @@ import '../../bloc/profile/profile_state.dart';
 import '../../screens/pets/create_pet_screen.dart';
 import '../../screens/pets/manage_pets_screen.dart';
 import '../../screens/pets/pet_detail_screen.dart';
+import '../auth/change_password_screen.dart';
 import '../auth/login_screen.dart';
 import '../walkers/become_walker_screen.dart';
 import '../walkers/edit_walker_profile_screen.dart';
@@ -134,6 +135,11 @@ class _ProfileViewState extends State<_ProfileView> {
                       iconBgColor: _bgBlueTint,
                       iconColor: _blue,
                       title: 'Change Password',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const ChangePasswordScreen(),
+                        ),
+                      ),
                     ),
                     _divider(),
                     _buildIconRow(
@@ -1294,7 +1300,7 @@ class _ProfileViewState extends State<_ProfileView> {
 
   Widget _buildFooter() {
     return const Center(
-      child: Text('Balto · v2.4.0', style: TextStyle(fontSize: 11, color: _textSection)),
+      child: Text('Balto · v1.0.0', style: TextStyle(fontSize: 11, color: _textSection)),
     );
   }
 }

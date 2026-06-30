@@ -209,7 +209,7 @@ class _ServicesPageState extends State<ServicesPage> {
         const SizedBox(width: 10),
         const Expanded(
           child: Text(
-            'PawSphere Finder',
+            'Discover',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
