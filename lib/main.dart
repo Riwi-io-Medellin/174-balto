@@ -8,7 +8,7 @@ import 'presentation/screens/home/home_page.dart';
 import 'presentation/screens/profile/profile_screen.dart';
 import 'presentation/screens/services/services_page.dart';
 import 'presentation/screens/walks/walks_page.dart';
-import 'presentation/screens/walkers/walkers_page.dart';
+import 'presentation/screens/coach/coach_screen.dart';
 import 'presentation/widgets/bottom_nav/balto_bottom_nav_bar.dart';
 
 void main() async {
@@ -79,7 +79,7 @@ class _MainShellState extends State<MainShell> {
           initialFilter: _servicesFilter,
         );
       case 3:
-        return const WalkersPage();
+        return const CoachScreen();
       case 4:
         return const ProfileScreen();
       default:
