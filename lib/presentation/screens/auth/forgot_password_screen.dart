@@ -12,11 +12,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
 
   static const Color _primary = Color(0xFF3A80C2);
-  static const Color _bg = Color(0xFFF0F4F4);
-  static const Color _inputFill = Color(0xFFEEF3F3);
-  static const Color _textDark = Color(0xFF1A1A2E);
-  static const Color _textMuted = Color(0xFF6B7280);
-  static const Color _textLight = Color(0xFF9AA0B2);
   static const Color _success = Color(0xFF1BAA71);
 
   @override
@@ -36,7 +31,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bg,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -69,7 +63,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           child: const Icon(Icons.pets, color: Colors.white, size: 30),
         ),
         const SizedBox(width: 12),
-        const Text(
+        Text(
           'Balto',
           style: TextStyle(
             fontSize: 28,
@@ -82,10 +76,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _buildCard() {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -100,24 +95,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         children: [
           Center(child: _heroIcon()),
           const SizedBox(height: 20),
-          const Center(
+          Center(
             child: Text(
               'Forgot\nPassword?',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: _textDark,
+                color: cs.onSurface,
                 height: 1.2,
               ),
             ),
           ),
           const SizedBox(height: 10),
-          const Center(
+          Center(
             child: Text(
               "Enter your email and we'll send you a link to reset your password.",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: _textMuted, height: 1.5),
+              style: TextStyle(fontSize: 14, color: cs.onSurfaceVariant, height: 1.5),
             ),
           ),
           const SizedBox(height: 28),
@@ -134,6 +129,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _heroIcon() {
+    final cs = Theme.of(context).colorScheme;
     return SizedBox(
       width: 120,
       height: 120,
@@ -147,7 +143,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 color: _primary.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.lock_reset,
                 color: _primary,
                 size: 56,
@@ -161,7 +157,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               width: 30,
               height: 30,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: cs.surface,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -171,7 +167,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.check_circle,
                 color: _success,
                 size: 22,
@@ -186,15 +182,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget _fieldLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: _textDark,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
     );
   }
 
   Widget _emailField() {
+    final cs = Theme.of(context).colorScheme;
     return TextField(
       controller: _emailController,
       keyboardType: TextInputType.emailAddress,
@@ -202,13 +199,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       enableSuggestions: false,
       textInputAction: TextInputAction.done,
       onSubmitted: (_) => _sendResetLink(),
-      style: const TextStyle(fontSize: 14, color: _textDark),
+      style: TextStyle(fontSize: 14, color: cs.onSurface),
       decoration: InputDecoration(
         hintText: 'name@email.com',
-        hintStyle: const TextStyle(color: _textLight, fontSize: 14),
-        prefixIcon: const Icon(Icons.mail_outline, color: _textMuted, size: 20),
+        hintStyle: TextStyle(color: cs.onSurfaceVariant, fontSize: 14),
+        prefixIcon: Icon(Icons.mail_outline, color: cs.onSurfaceVariant, size: 20),
         filled: true,
-        fillColor: _inputFill,
+        fillColor: cs.surfaceContainerLow,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -252,13 +249,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _backToSignInRow() {
+    final cs = Theme.of(context).colorScheme;
     return Center(
       child: GestureDetector(
         onTap: () => Navigator.of(context).pop(),
         child: RichText(
-          text: const TextSpan(
+          text: TextSpan(
             text: 'Remember your password? ',
-            style: TextStyle(fontSize: 14, color: Color(0xFF4A4A6A)),
+            style: TextStyle(fontSize: 14, color: cs.onSurfaceVariant),
             children: [
               TextSpan(
                 text: 'Sign In',
@@ -276,6 +274,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 
   Widget _buildFooter() {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       children: [
         Row(
@@ -289,18 +288,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ],
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           '© 2026 Balto Inc. Secure Recovery',
-          style: TextStyle(fontSize: 11, color: _textLight),
+          style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
         ),
       ],
     );
   }
 
   Widget _footerSeparator() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      child: Text('·', style: TextStyle(color: _textLight, fontSize: 11)),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Text('·', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 11)),
     );
   }
 
@@ -309,7 +308,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       onTap: () {},
       child: Text(
         text,
-        style: const TextStyle(fontSize: 11, color: _textLight),
+        style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
     );
   }

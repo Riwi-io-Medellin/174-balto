@@ -7,9 +7,10 @@ class WalkersSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
@@ -21,16 +22,16 @@ class WalkersSearchBar extends StatelessWidget {
       ),
       child: TextField(
         onChanged: onChanged,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           hintText: 'Search by name or area...',
-          hintStyle: TextStyle(fontSize: 14, color: Color(0xFFB0B8C1)),
+          hintStyle: TextStyle(fontSize: 14, color: cs.onSurfaceVariant),
           prefixIcon: Icon(
             Icons.search_rounded,
-            color: Color(0xFFB0B8C1),
+            color: cs.onSurfaceVariant,
             size: 22,
           ),
           border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
       ),
     );

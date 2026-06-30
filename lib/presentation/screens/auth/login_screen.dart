@@ -39,12 +39,6 @@ class _LoginViewState extends State<_LoginView> {
   bool _rememberDevice = false;
 
   static const Color _primary = Color(0xFF3A80C2);
-  static const Color _bg = Color(0xFFF0F4F4);
-  static const Color _inputFill = Color(0xFFEEF3F3);
-  static const Color _textDark = Color(0xFF1A1A2E);
-  static const Color _textMuted = Color(0xFF6B7280);
-  static const Color _textLight = Color(0xFF9AA0B2);
-  static const Color _divider = Color(0xFFE0E4F0);
   static final RegExp _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
   @override
@@ -95,7 +89,6 @@ class _LoginViewState extends State<_LoginView> {
       builder: (context, state) {
         final isLoading = state is AuthLoading;
         return Scaffold(
-          backgroundColor: _bg,
           body: SafeArea(
             child: AbsorbPointer(
               absorbing: isLoading,
@@ -150,10 +143,11 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   Widget _buildCard(bool isLoading) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -166,24 +160,24 @@ class _LoginViewState extends State<_LoginView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
               'Welcome back to\nBalto',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: _textDark,
+                color: cs.onSurface,
                 height: 1.2,
               ),
             ),
           ),
           const SizedBox(height: 10),
-          const Center(
+          Center(
             child: Text(
               'The premium sanctuary for you and your companion.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: _textMuted, height: 1.5),
+              style: TextStyle(fontSize: 14, color: cs.onSurfaceVariant, height: 1.5),
             ),
           ),
           const SizedBox(height: 28),
@@ -210,12 +204,13 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   Widget _fieldLabel(String text) {
+    final cs = Theme.of(context).colorScheme;
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: _textDark,
+        color: cs.onSurface,
       ),
     );
   }
@@ -225,13 +220,14 @@ class _LoginViewState extends State<_LoginView> {
     required IconData icon,
     Widget? suffix,
   }) {
+    final cs = Theme.of(context).colorScheme;
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: _textLight, fontSize: 14),
-      prefixIcon: Icon(icon, color: _textMuted, size: 20),
+      hintStyle: TextStyle(color: cs.onSurfaceVariant, fontSize: 14),
+      prefixIcon: Icon(icon, color: cs.onSurfaceVariant, size: 20),
       suffixIcon: suffix,
       filled: true,
-      fillColor: _inputFill,
+      fillColor: cs.surfaceContainerLow,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
@@ -241,6 +237,7 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   Widget _emailField() {
+    final cs = Theme.of(context).colorScheme;
     return TextFormField(
       controller: _emailCtrl,
       keyboardType: TextInputType.emailAddress,
@@ -248,7 +245,7 @@ class _LoginViewState extends State<_LoginView> {
       enableSuggestions: false,
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
-      style: const TextStyle(fontSize: 14, color: _textDark),
+      style: TextStyle(fontSize: 14, color: cs.onSurface),
       decoration: _decoration(hint: 'name@email.com', icon: Icons.mail_outline),
       validator: (v) {
         final value = v?.trim() ?? '';
@@ -260,15 +257,16 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   Widget _passwordLabelRow() {
+    final cs = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+        Text(
           'Password',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: _textDark,
+            color: cs.onSurface,
           ),
         ),
         InkWell(
@@ -293,6 +291,7 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   Widget _passwordField() {
+    final cs = Theme.of(context).colorScheme;
     return TextFormField(
       controller: _passwordCtrl,
       focusNode: _passwordFocus,
@@ -301,7 +300,7 @@ class _LoginViewState extends State<_LoginView> {
       enableSuggestions: false,
       textInputAction: TextInputAction.done,
       onFieldSubmitted: (_) => _submit(),
-      style: const TextStyle(fontSize: 14, color: _textDark),
+      style: TextStyle(fontSize: 14, color: cs.onSurface),
       decoration: _decoration(
         hint: '••••••••',
         icon: Icons.lock_outline,
@@ -310,7 +309,7 @@ class _LoginViewState extends State<_LoginView> {
             _obscurePassword
                 ? Icons.visibility_outlined
                 : Icons.visibility_off_outlined,
-            color: _textMuted,
+            color: cs.onSurfaceVariant,
             size: 20,
           ),
           onPressed: () =>
@@ -323,6 +322,7 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   Widget _rememberRow() {
+    final cs = Theme.of(context).colorScheme;
     return InkWell(
       onTap: () => setState(() => _rememberDevice = !_rememberDevice),
       borderRadius: BorderRadius.circular(8),
@@ -340,14 +340,14 @@ class _LoginViewState extends State<_LoginView> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4),
                 ),
-                side: const BorderSide(color: Color(0xFFCDD2E0), width: 1.5),
+                side: BorderSide(color: cs.outline, width: 1.5),
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
             ),
             const SizedBox(width: 10),
-            const Text(
+            Text(
               'Remember this device',
-              style: TextStyle(fontSize: 14, color: Color(0xFF4A4A6A)),
+              style: TextStyle(fontSize: 14, color: cs.onSurfaceVariant),
             ),
           ],
         ),
@@ -398,27 +398,29 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   Widget _orDivider() {
+    final cs = Theme.of(context).colorScheme;
     return Row(
-      children: const [
-        Expanded(child: Divider(color: _divider, thickness: 1)),
+      children: [
+        Expanded(child: Divider(color: cs.outline, thickness: 1)),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
             'OR CONTINUE WITH',
             style: TextStyle(
               fontSize: 11,
-              color: _textLight,
+              color: cs.onSurfaceVariant,
               letterSpacing: 0.8,
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
-        Expanded(child: Divider(color: _divider, thickness: 1)),
+        Expanded(child: Divider(color: cs.outline, thickness: 1)),
       ],
     );
   }
 
   Widget _socialRow() {
+    final cs = Theme.of(context).colorScheme;
     return Row(
       children: [
         Expanded(
@@ -435,7 +437,7 @@ class _LoginViewState extends State<_LoginView> {
         Expanded(
           child: _SocialButton(
             label: 'Apple',
-            icon: const Icon(Icons.apple, size: 22, color: _textDark),
+            icon: Icon(Icons.apple, size: 22, color: cs.onSurface),
           ),
         ),
       ],
@@ -443,16 +445,17 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   Widget _createAccountRow() {
+    final cs = Theme.of(context).colorScheme;
     return Center(
       child: GestureDetector(
         onTap: () => Navigator.of(context).push(
           MaterialPageRoute(builder: (_) => const RegisterScreen()),
         ),
         child: RichText(
-          text: const TextSpan(
+          text: TextSpan(
             text: 'New to Balto? ',
-            style: TextStyle(fontSize: 14, color: Color(0xFF4A4A6A)),
-            children: [
+            style: TextStyle(fontSize: 14, color: cs.onSurfaceVariant),
+            children: const [
               TextSpan(
                 text: 'Create Account',
                 style: TextStyle(
@@ -469,6 +472,7 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   Widget _buildFooter() {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       children: [
         Row(
@@ -482,27 +486,29 @@ class _LoginViewState extends State<_LoginView> {
           ],
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           '© 2026 Balto Inc. Secure Login',
-          style: TextStyle(fontSize: 11, color: _textLight),
+          style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
         ),
       ],
     );
   }
 
   Widget _footerSeparator() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      child: Text('·', style: TextStyle(color: _textLight, fontSize: 11)),
+    final cs = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Text('·', style: TextStyle(color: cs.onSurfaceVariant, fontSize: 11)),
     );
   }
 
   Widget _footerLink(String text) {
+    final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: () {},
       child: Text(
         text,
-        style: const TextStyle(fontSize: 11, color: _textLight),
+        style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
       ),
     );
   }
@@ -516,6 +522,7 @@ class _SocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return OutlinedButton(
       onPressed: () {},
       style: OutlinedButton.styleFrom(
@@ -523,8 +530,8 @@ class _SocialButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        side: const BorderSide(color: Color(0xFFDDE1F0), width: 1.5),
-        backgroundColor: Colors.white,
+        side: BorderSide(color: cs.outline, width: 1.5),
+        backgroundColor: cs.surface,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -533,10 +540,10 @@ class _SocialButton extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: Color(0xFF1A1A2E),
+              color: cs.onSurface,
             ),
           ),
         ],

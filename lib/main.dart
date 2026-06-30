@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/di/injection.dart';
 import 'core/storage/token_storage.dart';
+import 'core/theme/app_theme.dart';
+import 'presentation/bloc/theme/theme_cubit.dart';
 import 'presentation/screens/auth/login_screen.dart';
 import 'presentation/screens/home/home_page.dart';
 import 'presentation/screens/profile/profile_screen.dart';
@@ -30,21 +32,18 @@ class BaltoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final base = ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3A80C2)),
-      useMaterial3: true,
-    );
-    return MaterialApp(
-      title: 'Balto',
-      debugShowCheckedModeBanner: false,
-      theme: base.copyWith(
-        textTheme: GoogleFonts.interTextTheme(base.textTheme).apply(
-          fontFamilyFallback: const ['Ubuntu', 'Roboto'],
+    return BlocProvider<ThemeCubit>(
+      create: (_) => sl<ThemeCubit>(),
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (_, themeMode) => MaterialApp(
+          title: 'Balto',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: themeMode,
+          home: isLoggedIn ? const MainShell() : const LoginScreen(),
         ),
-        primaryTextTheme: GoogleFonts.interTextTheme(base.primaryTextTheme)
-            .apply(fontFamilyFallback: const ['Ubuntu', 'Roboto']),
       ),
-      home: isLoggedIn ? const MainShell() : const LoginScreen(),
     );
   }
 }
@@ -90,7 +89,6 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
       body: _buildBody(),
       bottomNavigationBar: BaltoBottomNavBar(
         currentIndex: _currentIndex,

@@ -30,10 +30,6 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
   final _descriptionCtrl = TextEditingController();
 
   static const Color _green = AppColors.navWalkers;
-  static const Color _bg = Color(0xFFF5F6FA);
-  static const Color _textDark = Color(0xFF1F2937);
-  static const Color _textMid = Color(0xFF5A6473);
-  static const Color _textMuted = Color(0xFF8A93A0);
 
   @override
   void dispose() {
@@ -109,28 +105,29 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: _textDark,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );
   }
 
   InputDecoration _inputDecoration({required String hint}) {
+    final cs = Theme.of(context).colorScheme;
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: _textMuted, fontSize: 14),
+      hintStyle: TextStyle(color: cs.onSurfaceVariant, fontSize: 14),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: cs.surfaceContainerLow,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
+        borderSide: BorderSide(color: cs.outline),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
+        borderSide: BorderSide(color: cs.outline),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -143,28 +140,13 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: _textDark,
-          ),
-        ),
+        centerTitle: true,
         title: Text(
           widget.isReapply ? 'Re-submit Application' : 'Become a Walker',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: _textDark,
-          ),
         ),
-        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(20, 28, 20, 40),
@@ -206,9 +188,9 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
             const SizedBox(height: 28),
             _buildSectionTitle('Identity Document'),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Upload a clear photo of a valid government-issued ID (national ID, passport, or driver\'s license).',
-              style: TextStyle(fontSize: 13, color: _textMid, height: 1.5),
+              style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.5),
             ),
             const SizedBox(height: 16),
             _buildDocumentPicker(),
@@ -229,7 +211,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -248,7 +230,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
               color: _green.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.directions_walk,
               size: 32,
               color: _green,
@@ -259,10 +241,10 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
             widget.isReapply
                 ? 'Re-submit Your Document'
                 : 'Join Our Walker Network',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: _textDark,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             textAlign: TextAlign.center,
           ),
@@ -271,16 +253,16 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
             widget.isReapply
                 ? 'Your previous document was not accepted. Upload a new, clear photo to try again.'
                 : 'Earn money doing what you love. Walk dogs in your neighbourhood and set your own schedule.',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
-              color: _textMid,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               height: 1.55,
             ),
             textAlign: TextAlign.center,
           ),
           if (!widget.isReapply) ...[
             const SizedBox(height: 20),
-            const Divider(color: Color(0xFFF1F3F6)),
+            Divider(color: Theme.of(context).colorScheme.outlineVariant),
             const SizedBox(height: 16),
             _buildBenefitsRow(),
           ],
@@ -315,10 +297,10 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
           const SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: _textMid,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               height: 1.4,
             ),
             textAlign: TextAlign.center,
@@ -333,10 +315,10 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w800,
-        color: _textDark,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
     );
   }
@@ -356,7 +338,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0xFFDDE1EA),
+            color: Theme.of(context).colorScheme.outline,
             width: 1.5,
             style: BorderStyle.solid,
           ),
@@ -371,25 +353,25 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
                 color: _green.withValues(alpha: 0.10),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.upload_file_rounded,
                 size: 26,
                 color: _green,
               ),
             ),
             const SizedBox(height: 14),
-            const Text(
+            Text(
               'Tap to select document',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: _textDark,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'JPG, PNG — max 10 MB',
-              style: TextStyle(fontSize: 12, color: _textMuted),
+              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ],
         ),
@@ -494,7 +476,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -507,12 +489,12 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Photo requirements',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: _textDark,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12),
@@ -537,9 +519,9 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
                       padding: const EdgeInsets.only(top: 4),
                       child: Text(
                         item.$2,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: _textMid,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           height: 1.4,
                         ),
                       ),
@@ -584,7 +566,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
                 widget.isReapply
                     ? 'Re-submit Document'
                     : 'Submit Application',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),

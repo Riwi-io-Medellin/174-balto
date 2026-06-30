@@ -32,10 +32,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _saving = false;
 
   static const Color _primary = Color(0xFF3A80C2);
-  static const Color _bg = Color(0xFFF0F4F4);
-  static const Color _inputFill = Color(0xFFEEF3F3);
-  static const Color _textDark = Color(0xFF1A1A2E);
-  static const Color _textMuted = Color(0xFF6B7280);
 
   @override
   void initState() {
@@ -80,12 +76,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     required String hint,
     required IconData icon,
   }) {
+    final cs = Theme.of(context).colorScheme;
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: _textMuted, fontSize: 14),
-      prefixIcon: Icon(icon, color: _textMuted, size: 20),
+      hintStyle: TextStyle(color: cs.onSurfaceVariant, fontSize: 14),
+      prefixIcon: Icon(icon, color: cs.onSurfaceVariant, size: 20),
       filled: true,
-      fillColor: _inputFill,
+      fillColor: cs.surfaceContainerLow,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
@@ -146,20 +143,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final state = context.read<ProfileCubit>().state;
     if (state is! ProfileLoaded) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Edit Profile')),
-        body: const Center(child: CircularProgressIndicator()),
+        appBar: AppBar(title: Text('Edit Profile')),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
     final currentPhotoUrl = state.user.photoUrl;
 
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: _bg,
       appBar: AppBar(
         title: const Text('Edit Profile'),
-        backgroundColor: Colors.white,
-        foregroundColor: _textDark,
-        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -168,7 +162,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: cs.surface,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -181,13 +175,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Center(
+                Center(
                   child: Text(
                     'Edit Your Profile',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: _textDark,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -203,7 +197,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _firstNameCtrl,
-                  style: const TextStyle(fontSize: 14, color: _textDark),
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
                   decoration: _decoration(
                     hint: 'First name',
                     icon: Icons.person_outline,
@@ -216,7 +210,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _lastNameCtrl,
-                  style: const TextStyle(fontSize: 14, color: _textDark),
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
                   decoration: _decoration(
                     hint: 'Last name',
                     icon: Icons.person_outline,
@@ -229,7 +223,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _idNumberCtrl,
-                  style: const TextStyle(fontSize: 14, color: _textDark),
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
                   decoration: _decoration(
                     hint: 'ID number',
                     icon: Icons.badge_outlined,
@@ -243,7 +237,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 TextFormField(
                   controller: _phoneCtrl,
                   keyboardType: TextInputType.phone,
-                  style: const TextStyle(fontSize: 14, color: _textDark),
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
                   decoration: _decoration(
                     hint: 'Phone number',
                     icon: Icons.phone_outlined,
@@ -256,7 +250,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _addressCtrl,
-                  style: const TextStyle(fontSize: 14, color: _textDark),
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
                   decoration: _decoration(
                     hint: 'Your address',
                     icon: Icons.place_outlined,
@@ -267,7 +261,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _locationCtrl,
-                  style: const TextStyle(fontSize: 14, color: _textDark),
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
                   decoration: _decoration(
                     hint: 'City / Region',
                     icon: Icons.location_on_outlined,
@@ -298,7 +292,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ),
                             ),
                           )
-                        : const Text(
+                        : Text(
                             'Save Changes',
                             style: TextStyle(
                               fontSize: 16,
@@ -318,10 +312,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _fieldLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: _textDark,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
     );
   }
@@ -355,10 +349,10 @@ class _AvatarPicker extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 48,
-            backgroundColor: const Color(0xFFEEF3F3),
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
             backgroundImage: bg,
             child: bg == null
-                ? const Icon(Icons.person, size: 48, color: Color(0xFF6B7280))
+                ? Icon(Icons.person, size: 48, color: Theme.of(context).colorScheme.onSurfaceVariant)
                 : null,
           ),
           Positioned(
@@ -371,7 +365,7 @@ class _AvatarPicker extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2),
               ),
-              child: const Icon(Icons.camera_alt, size: 14, color: Colors.white),
+              child: Icon(Icons.camera_alt, size: 14, color: Colors.white),
             ),
           ),
         ],

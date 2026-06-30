@@ -38,6 +38,7 @@ import '../../presentation/bloc/walk_booking/walk_booking_cubit.dart';
 import '../../presentation/bloc/walker/walker_cubit.dart';
 import '../../presentation/bloc/my_walks/my_walks_cubit.dart';
 import '../../presentation/bloc/walker_availability/walker_availability_cubit.dart';
+import '../../presentation/bloc/theme/theme_cubit.dart';
 import '../../presentation/bloc/walker_booking/walker_booking_cubit.dart';
 import '../network/api_client.dart';
 import '../storage/token_storage.dart';
@@ -125,6 +126,8 @@ void setupDependencies() {
   );
 
   // Cubits
+  sl.registerLazySingleton<ThemeCubit>(() => ThemeCubit(sl<TokenStorage>()));
+
   sl.registerFactory<AuthCubit>(() => AuthCubit(sl()));
   sl.registerFactory<ProfileCubit>(
     () => ProfileCubit(

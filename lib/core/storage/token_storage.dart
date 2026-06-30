@@ -34,4 +34,14 @@ class TokenStorage {
     await _storage.delete(key: _refreshKey);
     await _storage.delete(key: _rememberKey);
   }
+
+  static const _themeKey = 'app_theme_dark';
+
+  Future<void> saveDarkMode(bool value) =>
+      _storage.write(key: _themeKey, value: value.toString());
+
+  Future<bool> readDarkMode() async {
+    final v = await _storage.read(key: _themeKey);
+    return v == 'true';
+  }
 }

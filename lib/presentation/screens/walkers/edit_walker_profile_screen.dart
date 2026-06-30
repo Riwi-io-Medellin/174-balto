@@ -29,10 +29,6 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
   bool _saving = false;
   bool _initialized = false;
 
-  static const Color _bg = Color(0xFFF5F6FA);
-  static const Color _textDark = Color(0xFF1F2937);
-  static const Color _textMid = Color(0xFF5A6473);
-  static const Color _textMuted = Color(0xFF8A93A0);
   static const Color _green = AppColors.navWalkers;
 
   @override
@@ -117,29 +113,13 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: _bg,
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: _textDark,
-          ),
-        ),
-        title: const Text(
-          'Edit Profile',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: _textDark,
-          ),
-        ),
         centerTitle: true,
+        title: Text('Edit Profile'),
         actions: [
           TextButton(
             onPressed: _saving ? null : _save,
@@ -148,8 +128,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color:
-                    _saving ? _textMuted : _green,
+                color: _saving ? cs.onSurfaceVariant : _green,
               ),
             ),
           ),
@@ -208,7 +187,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
         const SizedBox(height: 10),
         Text(
           'Edit your walker profile details below',
-          style: const TextStyle(fontSize: 13, color: _textMuted),
+          style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );
@@ -219,10 +198,10 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w800,
-        color: _textDark,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
     );
   }
@@ -321,12 +300,13 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
   // ─── Accepting Bookings Toggle ────────────────────────────────────────────
 
   Widget _buildAcceptingBookingsToggle() {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE0E4EC)),
+        border: Border.all(color: cs.outline),
       ),
       child: Row(
         children: [
@@ -344,7 +324,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
             ),
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -353,13 +333,13 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: _textDark,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
                   'Make your profile visible to pet owners',
-                  style: TextStyle(fontSize: 12, color: _textMuted),
+                  style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ],
             ),
@@ -401,7 +381,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
-            : const Text(
+            : Text(
                 'Save Changes',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
@@ -414,27 +394,28 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
   Widget _fieldLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w600,
-        color: _textMid,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
     );
   }
 
   InputDecoration _inputDecoration({required String hint}) {
+    final cs = Theme.of(context).colorScheme;
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: _textMuted, fontSize: 14),
+      hintStyle: TextStyle(color: cs.onSurfaceVariant, fontSize: 14),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: cs.surfaceContainerLow,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
+        borderSide: BorderSide(color: cs.outline),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
+        borderSide: BorderSide(color: cs.outline),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

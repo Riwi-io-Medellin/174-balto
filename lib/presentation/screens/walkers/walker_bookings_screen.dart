@@ -30,9 +30,7 @@ class _WalkerBookingsView extends StatelessWidget {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Colors.white,
           elevation: 0,
           title: const Text(
             'My Bookings',
@@ -45,7 +43,7 @@ class _WalkerBookingsView extends StatelessWidget {
           iconTheme: const IconThemeData(color: _green),
           bottom: TabBar(
             labelColor: _green,
-            unselectedLabelColor: Colors.grey,
+            unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
             indicatorColor: _green,
             labelStyle: const TextStyle(
               fontWeight: FontWeight.w600,
@@ -130,18 +128,19 @@ class _ErrorBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.grey),
+            Icon(Icons.error_outline, size: 48, color: cs.onSurfaceVariant),
             const SizedBox(height: 12),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.grey),
+              style: TextStyle(color: cs.onSurfaceVariant),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -185,7 +184,7 @@ class _BookingList extends StatelessWidget {
                   child: Center(
                     child: Text(
                       emptyMessage,
-                      style: const TextStyle(color: Colors.grey, fontSize: 14),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14),
                     ),
                   ),
                 ),
@@ -232,9 +231,9 @@ class _BookingCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -250,8 +249,8 @@ class _BookingCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.calendar_today_rounded,
-                    size: 14, color: Colors.grey),
+                Icon(Icons.calendar_today_rounded,
+                    size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -268,19 +267,19 @@ class _BookingCard extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.timer_rounded, size: 14, color: Colors.grey),
+                Icon(Icons.timer_rounded, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 const SizedBox(width: 6),
                 Text(duration,
                     style:
-                        const TextStyle(fontSize: 13, color: Colors.black87)),
+                        TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
                 if (price != null) ...[
                   const SizedBox(width: 16),
-                  const Icon(Icons.attach_money_rounded,
-                      size: 14, color: Colors.grey),
+                  Icon(Icons.attach_money_rounded,
+                      size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   const SizedBox(width: 2),
                   Text(price,
-                      style: const TextStyle(
-                          fontSize: 13, color: Colors.black87)),
+                      style: TextStyle(
+                          fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
                 ],
               ],
             ),
@@ -290,13 +289,13 @@ class _BookingCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.notes_rounded, size: 14, color: Colors.grey),
+                  Icon(Icons.notes_rounded, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       booking.specialInstructions!,
                       style:
-                          const TextStyle(fontSize: 12, color: Colors.black54),
+                          TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ),
                 ],

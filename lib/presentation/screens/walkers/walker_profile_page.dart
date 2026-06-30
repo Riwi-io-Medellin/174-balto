@@ -48,7 +48,6 @@ class _WalkerProfilePageState extends State<WalkerProfilePage> {
           final isLoadingDetail = state is WalkerLoading;
 
           return Scaffold(
-            backgroundColor: const Color(0xFFF5F6FA),
             bottomNavigationBar: _BookingBar(walker: walker),
             body: CustomScrollView(
               slivers: [
@@ -136,7 +135,6 @@ class _WalkerAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       pinned: true,
-      backgroundColor: const Color(0xFFF5F6FA),
       elevation: 0,
       scrolledUnderElevation: 0,
       leading: IconButton(
@@ -144,7 +142,6 @@ class _WalkerAppBar extends StatelessWidget {
         icon: const Icon(
           Icons.arrow_back_ios_new_rounded,
           size: 20,
-          color: Color(0xFF1F2937),
         ),
       ),
     );
@@ -167,6 +164,7 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final avatarUrl = walker.avatarUrl ?? walker.imageUrl;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
@@ -177,7 +175,7 @@ class _ProfileHeader extends StatelessWidget {
             height: 112,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 4),
+              border: Border.all(color: cs.surface, width: 4),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.12),
@@ -192,32 +190,32 @@ class _ProfileHeader extends StatelessWidget {
                 fit: BoxFit.cover,
                 errorBuilder: (_, _, _) => Container(
                   color: const Color(0xFFE8F5EE),
-                  child: const Icon(
+                  child: Icon(
                     Icons.person_rounded,
                     size: 48,
-                    color: Color(0xFFB0B8C1),
+                    color: cs.onSurfaceVariant,
                   ),
                 ),
               ),
             ),
           ),
           const SizedBox(height: 14),
-          const Text(
+          Text(
             'WALKER PROFILE',
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF8A93A0),
+              color: cs.onSurfaceVariant,
               letterSpacing: 1.4,
             ),
           ),
           const SizedBox(height: 6),
           Text(
             walker.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF1F2937),
+              color: cs.onSurface,
             ),
           ),
           const SizedBox(height: 8),
@@ -232,17 +230,17 @@ class _ProfileHeader extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 '${walker.rating}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF1F2937),
+                  color: cs.onSurface,
                 ),
               ),
               Text(
                 ' $_reviewsText',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF8A93A0),
+                  color: cs.onSurfaceVariant,
                 ),
               ),
             ],
@@ -254,16 +252,16 @@ class _ProfileHeader extends StatelessWidget {
               if (walker.yearsOfExperience > 0) ...[
                 Text(
                   '${walker.yearsOfExperience} years exp.',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF5A6473),
+                    color: cs.onSurfaceVariant,
                   ),
                 ),
                 if (walker.isVerified)
-                  const Text(
+                  Text(
                     '  ·  ',
-                    style: TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
+                    style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
                   ),
               ],
               if (walker.isVerified)
@@ -304,6 +302,7 @@ class _GalleryStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return SizedBox(
       height: 160,
       child: ListView.separated(
@@ -322,10 +321,10 @@ class _GalleryStrip extends StatelessWidget {
               width: 220,
               height: 160,
               color: const Color(0xFFE8F5EE),
-              child: const Icon(
+              child: Icon(
                 Icons.image_outlined,
                 size: 36,
-                color: Color(0xFFB0B8C1),
+                color: cs.onSurfaceVariant,
               ),
             ),
           ),
@@ -345,11 +344,12 @@ class _AboutCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final bio = walker.biography ?? walker.description;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -380,10 +380,10 @@ class _AboutCard extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 'About $firstName',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF1F2937),
+                  color: cs.onSurface,
                 ),
               ),
             ],
@@ -391,9 +391,9 @@ class _AboutCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             bio,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Color(0xFF5A6473),
+              color: cs.onSurfaceVariant,
               height: 1.55,
             ),
           ),
@@ -420,19 +420,20 @@ class _SpecialtyChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFF0F2F5),
+        color: cs.surfaceContainerLow,
         borderRadius: BorderRadius.circular(99),
-        border: Border.all(color: const Color(0xFFE0E4EC)),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: Text(
         label,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF4A5568),
+          color: cs.onSurface,
         ),
       ),
     );
@@ -491,12 +492,12 @@ class _ServiceDetailsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Service Details',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF1F2937),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 14),
@@ -585,12 +586,12 @@ class _ServiceAreaCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Service Area',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF1F2937),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 14),
@@ -603,11 +604,9 @@ class _ServiceAreaCard extends StatelessWidget {
               alignment: Alignment.center,
               children: [
                 Container(color: const Color(0xFFDEEBD8)),
-                // Road-like horizontal lines
                 Positioned.fill(
                   child: CustomPaint(painter: _MapGridPainter()),
                 ),
-                // Service radius circle
                 Container(
                   width: 120,
                   height: 120,
@@ -620,7 +619,6 @@ class _ServiceAreaCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Center pin dot
                 Container(
                   width: 14,
                   height: 14,
@@ -713,12 +711,12 @@ class _RatingsReviewsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Ratings & Reviews',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF1F2937),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 16),
@@ -757,10 +755,11 @@ class _RatingSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -776,10 +775,10 @@ class _RatingSummary extends StatelessWidget {
             children: [
               Text(
                 '${walker.rating}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 48,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF1F2937),
+                  color: cs.onSurface,
                   height: 1,
                 ),
               ),
@@ -793,17 +792,17 @@ class _RatingSummary extends StatelessWidget {
                     size: 14,
                     color: i < walker.rating.floor()
                         ? const Color(0xFFF6C86A)
-                        : const Color(0xFFE0E4EC),
+                        : cs.outlineVariant,
                   ),
                 ),
               ),
               const SizedBox(height: 6),
               Text(
                 '${walker.reviews} REVIEWS',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF8A93A0),
+                  color: cs.onSurfaceVariant,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -821,9 +820,9 @@ class _RatingSummary extends StatelessWidget {
                     children: [
                       Text(
                         '$star',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: Color(0xFF8A93A0),
+                          color: cs.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -833,8 +832,8 @@ class _RatingSummary extends StatelessWidget {
                           child: LinearProgressIndicator(
                             value: fraction,
                             minHeight: 7,
-                            backgroundColor: const Color(0xFFF0F2F5),
-                            color: const Color(0xFF1F2937),
+                            backgroundColor: cs.surfaceContainerLow,
+                            color: cs.onSurface,
                           ),
                         ),
                       ),
@@ -867,10 +866,11 @@ class _ReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
@@ -895,10 +895,10 @@ class _ReviewCard extends StatelessWidget {
                     width: 38,
                     height: 38,
                     color: const Color(0xFFE8F5EE),
-                    child: const Icon(
+                    child: Icon(
                       Icons.person_rounded,
                       size: 20,
-                      color: Color(0xFFB0B8C1),
+                      color: cs.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -910,10 +910,10 @@ class _ReviewCard extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF1F2937),
+                        color: cs.onSurface,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -925,7 +925,7 @@ class _ReviewCard extends StatelessWidget {
                           size: 12,
                           color: i < rating.floor()
                               ? const Color(0xFFF6C86A)
-                              : const Color(0xFFE0E4EC),
+                              : cs.outlineVariant,
                         ),
                       ),
                     ),
@@ -934,9 +934,9 @@ class _ReviewCard extends StatelessWidget {
               ),
               Text(
                 timeAgo,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
-                  color: Color(0xFF8A93A0),
+                  color: cs.onSurfaceVariant,
                 ),
               ),
             ],
@@ -944,9 +944,9 @@ class _ReviewCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
-              color: Color(0xFF5A6473),
+              color: cs.onSurfaceVariant,
               height: 1.5,
             ),
           ),
@@ -987,6 +987,7 @@ class _WeeklyScheduleSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final grouped = _group();
     final activeDays = List.generate(7, (i) => i)
         .where((d) => grouped.containsKey(d))
@@ -995,7 +996,7 @@ class _WeeklyScheduleSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -1024,18 +1025,17 @@ class _WeeklyScheduleSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              const Text(
+              Text(
                 'Weekly Schedule',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF1F2937),
+                  color: cs.onSurface,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          // Day pills row
           Wrap(
             spacing: 6,
             runSpacing: 6,
@@ -1047,7 +1047,7 @@ class _WeeklyScheduleSection extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: active
                       ? AppColors.navWalkers
-                      : const Color(0xFFF0F2F5),
+                      : cs.surfaceContainerLow,
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
@@ -1056,14 +1056,13 @@ class _WeeklyScheduleSection extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: active ? Colors.white : const Color(0xFFB0B8C1),
+                    color: active ? Colors.white : cs.onSurfaceVariant,
                   ),
                 ),
               );
             }),
           ),
           const SizedBox(height: 16),
-          // Time slots per active day
           ...activeDays.map((day) {
             final daySlots = grouped[day]!;
             return Padding(
@@ -1075,10 +1074,10 @@ class _WeeklyScheduleSection extends StatelessWidget {
                     width: 80,
                     child: Text(
                       _daysFull[day],
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF1F2937),
+                        color: cs.onSurface,
                       ),
                     ),
                   ),
@@ -1142,12 +1141,12 @@ class _AvailabilitySlotsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Available Today',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF1F2937),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 14),
@@ -1201,12 +1200,13 @@ class _BookingBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return SafeArea(
       child: Container(
         height: 76,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cs.surface,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.08),
@@ -1223,10 +1223,10 @@ class _BookingBar extends StatelessWidget {
               children: [
                 Text(
                   '$_priceLabel / walk',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF1F2937),
+                    color: cs.onSurface,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -1260,7 +1260,7 @@ class _BookingBar extends StatelessWidget {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1F2937),
+                backgroundColor: AppColors.navWalkers,
                 foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(

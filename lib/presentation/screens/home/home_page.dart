@@ -79,7 +79,6 @@ class _HomeViewState extends State<_HomeView>
     return FadeTransition(
       opacity: _fadeAnim,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF5F6FA),
         body: SafeArea(
           child: BlocBuilder<ProfileCubit, ProfileState>(
             builder: (context, state) {
@@ -158,11 +157,14 @@ class _WalksSection extends StatelessWidget {
         final entries = _buildEntries(state);
 
         if (entries.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
               'No walks yet.',
-              style: TextStyle(fontSize: 14, color: Color(0xFF8A93A0)),
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           );
         }
@@ -286,10 +288,10 @@ class _SectionTitle extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           text,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
-            color: Color(0xFF1F2937),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],

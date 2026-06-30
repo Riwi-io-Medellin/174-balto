@@ -13,19 +13,13 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
   bool _allowProfilePhoto = true;
 
   static const Color _primary = Color(0xFF3A80C2);
-  static const Color _bg = Color(0xFFF0F4F4);
-  static const Color _textDark = Color(0xFF1A1A2E);
-  static const Color _textMuted = Color(0xFF6B7280);
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: _bg,
       appBar: AppBar(
         title: const Text('Privacy Settings'),
-        backgroundColor: Colors.white,
-        foregroundColor: _textDark,
-        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -33,7 +27,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cs.surface,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -83,6 +77,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
     required bool value,
     required ValueChanged<bool> onChanged,
   }) {
+    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
@@ -103,16 +98,16 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: _textDark,
+                    color: cs.onSurface,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(fontSize: 12, color: _textMuted),
+                  style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                 ),
               ],
             ),
@@ -129,9 +124,9 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
   }
 
   Widget _divider() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4),
-      child: Divider(height: 1, color: Color(0xFFE0E4F0)),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
     );
   }
 }

@@ -12,7 +12,6 @@ class UpcomingWalkDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
       body: CustomScrollView(
         slivers: [
           _DetailAppBar(walk: walk),
@@ -55,11 +54,12 @@ class _DetailAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return SliverAppBar(
       pinned: true,
       expandedHeight: 200,
-      backgroundColor: Colors.white,
-      foregroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: cs.surface,
+      foregroundColor: cs.onSurface,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       flexibleSpace: FlexibleSpaceBar(
@@ -70,10 +70,10 @@ class _DetailAppBar extends StatelessWidget {
           children: [
             Text(
               walk.petName,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A1A2E),
+                color: cs.onSurface,
               ),
             ),
             Text(
@@ -98,13 +98,13 @@ class _DetailAppBar extends StatelessWidget {
                     color: AppColors.navWalks, size: 64),
               ),
             ),
-            const DecoratedBox(
+            DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.white],
-                  stops: [0.5, 1.0],
+                  colors: [Colors.transparent, cs.surface],
+                  stops: const [0.5, 1.0],
                 ),
               ),
             ),
@@ -122,6 +122,7 @@ class _StatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final date = walk.scheduledAt;
     final diff = date.difference(DateTime.now());
     final hoursLeft = diff.inHours;
@@ -155,12 +156,12 @@ class _StatusCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Walk Scheduled',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 15,
-                  color: Color(0xFF1A1A2E),
+                  color: cs.onSurface,
                 ),
               ),
               const SizedBox(height: 2),
@@ -255,6 +256,7 @@ class _WalkerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return _Card(
       title: 'Your Walker',
       icon: Icons.person_outline_rounded,
@@ -285,10 +287,10 @@ class _WalkerCard extends StatelessWidget {
                   children: [
                     Text(
                       walk.walkerName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
-                        color: Color(0xFF1A1A2E),
+                        color: cs.onSurface,
                       ),
                     ),
                     const SizedBox(width: 6),
@@ -297,9 +299,9 @@ class _WalkerCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 3),
-                const Text(
+                Text(
                   'Verified Pro',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                  style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                 ),
               ],
             ),
@@ -311,10 +313,10 @@ class _WalkerCard extends StatelessWidget {
               const SizedBox(width: 3),
               Text(
                 walk.walkerRating.toStringAsFixed(1),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
-                  color: Color(0xFF1A1A2E),
+                  color: cs.onSurface,
                 ),
               ),
             ],
@@ -332,15 +334,16 @@ class _NotesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return _Card(
       title: 'Special Instructions',
       icon: Icons.notes_rounded,
       iconColor: AppColors.navProfile,
       child: Text(
         notes,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
-          color: Color(0xFF4A4A6A),
+          color: cs.onSurfaceVariant,
           height: 1.6,
         ),
       ),
@@ -391,10 +394,11 @@ class _Card extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -413,10 +417,10 @@ class _Card extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
-                  color: Color(0xFF1A1A2E),
+                  color: cs.onSurface,
                 ),
               ),
             ],
@@ -442,25 +446,26 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF9AA0B2)),
+          Icon(icon, size: 16, color: cs.onSurfaceVariant),
           const SizedBox(width: 10),
           Text(
             label,
-            style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+            style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
           ),
           const Spacer(),
           Flexible(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1A1A2E),
+                color: cs.onSurface,
               ),
             ),
           ),
@@ -475,6 +480,6 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Divider(color: Color(0xFFF0F0F4), height: 1, thickness: 1);
+    return Divider(color: Theme.of(context).colorScheme.outlineVariant, height: 1, thickness: 1);
   }
 }

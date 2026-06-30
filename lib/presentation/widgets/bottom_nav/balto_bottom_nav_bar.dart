@@ -47,7 +47,7 @@ class BaltoBottomNavBar extends StatelessWidget {
       child: Container(
         height: 68,
         decoration: BoxDecoration(
-          color: AppColors.navBarBackground,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(40),
           boxShadow: [
             BoxShadow(
@@ -100,7 +100,9 @@ class _NavItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                color: isActive ? Colors.black87 : AppColors.navLabelInactive,
+                color: isActive
+                    ? Theme.of(context).colorScheme.onSurface
+                    : AppColors.navLabelInactive,
               ),
             ),
           ],

@@ -22,9 +22,10 @@ class WalkerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -43,15 +44,15 @@ class WalkerCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildNameRow(),
+                _buildNameRow(cs),
                 const SizedBox(height: 6),
-                _buildMetaRow(),
+                _buildMetaRow(cs),
                 const SizedBox(height: 10),
                 Text(
                   walker.description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: Color(0xFF5A6473),
+                    color: cs.onSurfaceVariant,
                     height: 1.45,
                   ),
                   maxLines: 2,
@@ -164,16 +165,16 @@ class WalkerCard extends StatelessWidget {
     );
   }
 
-  Widget _buildNameRow() {
+  Widget _buildNameRow(ColorScheme cs) {
     return Row(
       children: [
         Expanded(
           child: Text(
             walker.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF1F2937),
+              color: cs.onSurface,
             ),
           ),
         ),
@@ -189,46 +190,46 @@ class WalkerCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMetaRow() {
+  Widget _buildMetaRow(ColorScheme cs) {
     return Row(
       children: [
         const Icon(Icons.star_rounded, size: 16, color: Color(0xFFF6C86A)),
         const SizedBox(width: 4),
         Text(
           '${walker.rating}',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1F2937),
+            color: cs.onSurface,
           ),
         ),
         Text(
           '  $_reviewsLabel',
-          style: const TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
+          style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
         ),
         const Spacer(),
         if (walker.yearsOfExperience > 0) ...[
-          const Icon(
+          Icon(
             Icons.work_outline_rounded,
             size: 14,
-            color: Color(0xFF8A93A0),
+            color: cs.onSurfaceVariant,
           ),
           const SizedBox(width: 2),
           Text(
             '${walker.yearsOfExperience}yr',
-            style: const TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
+            style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
           ),
           const SizedBox(width: 8),
         ],
-        const Icon(
+        Icon(
           Icons.location_on_rounded,
           size: 14,
-          color: Color(0xFF8A93A0),
+          color: cs.onSurfaceVariant,
         ),
         const SizedBox(width: 2),
         Text(
           '${walker.distance.toStringAsFixed(1)} km',
-          style: const TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
+          style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
         ),
       ],
     );

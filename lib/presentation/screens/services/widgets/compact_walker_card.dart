@@ -19,8 +19,9 @@ class CompactWalkerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Material(
-      color: Colors.white,
+      color: cs.surface,
       borderRadius: BorderRadius.circular(16),
       clipBehavior: Clip.antiAlias,
       elevation: 2,
@@ -42,10 +43,10 @@ class CompactWalkerCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             walker.name,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF1F2937),
+                              color: cs.onSurface,
                             ),
                           ),
                         ),
@@ -63,9 +64,9 @@ class CompactWalkerCard extends StatelessWidget {
                         const SizedBox(width: 3),
                         Text(
                           '${walker.rating} $_reviewsLabel',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Color(0xFF5A6473),
+                            color: cs.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -75,10 +76,10 @@ class CompactWalkerCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right,
                 size: 20,
-                color: Color(0xFFB0B8C1),
+                color: cs.onSurfaceVariant,
               ),
             ],
           ),
@@ -132,7 +133,7 @@ class _StatusBadge extends StatelessWidget {
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: isActive ? AppColors.navWalkers : const Color(0xFF8A93A0),
+          color: isActive ? AppColors.navWalkers : Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       ),
     );

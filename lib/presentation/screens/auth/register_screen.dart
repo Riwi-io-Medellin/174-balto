@@ -52,12 +52,6 @@ class _RegisterViewState extends State<_RegisterView> {
   static const List<String> _idTypes = ['CC', 'CE', 'Passport', 'TI'];
 
   static const Color _primary = Color(0xFF3A80C2);
-  static const Color _bg = Color(0xFFF0F4F4);
-  static const Color _inputFill = Color(0xFFEEF3F3);
-  static const Color _textDark = Color(0xFF1A1A2E);
-  static const Color _textMuted = Color(0xFF6B7280);
-  static const Color _textLight = Color(0xFF9AA0B2);
-  static const Color _divider = Color(0xFFE0E4F0);
   static final RegExp _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
   @override
@@ -136,7 +130,6 @@ class _RegisterViewState extends State<_RegisterView> {
       builder: (context, state) {
         final isLoading = state is AuthLoading;
         return Scaffold(
-          backgroundColor: _bg,
           body: SafeArea(
             child: AbsorbPointer(
               absorbing: isLoading,
@@ -175,10 +168,10 @@ class _RegisterViewState extends State<_RegisterView> {
             color: _primary,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Icon(Icons.pets, color: Colors.white, size: 30),
+          child: Icon(Icons.pets, color: Colors.white, size: 30),
         ),
         const SizedBox(width: 12),
-        const Text(
+        Text(
           'Balto',
           style: TextStyle(
             fontSize: 28,
@@ -194,7 +187,7 @@ class _RegisterViewState extends State<_RegisterView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -207,24 +200,24 @@ class _RegisterViewState extends State<_RegisterView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
               'Create your\nBalto account',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: _textDark,
+                color: Theme.of(context).colorScheme.onSurface,
                 height: 1.2,
               ),
             ),
           ),
           const SizedBox(height: 10),
-          const Center(
+          Center(
             child: Text(
               'Join the premium sanctuary for you and your companion.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: _textMuted, height: 1.5),
+              style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.5),
             ),
           ),
           const SizedBox(height: 28),
@@ -314,10 +307,10 @@ class _RegisterViewState extends State<_RegisterView> {
   Widget _fieldLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: _textDark,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
     );
   }
@@ -329,11 +322,11 @@ class _RegisterViewState extends State<_RegisterView> {
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: _textLight, fontSize: 14),
-      prefixIcon: Icon(icon, color: _textMuted, size: 20),
+      hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14),
+      prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 20),
       suffixIcon: suffix,
       filled: true,
-      fillColor: _inputFill,
+      fillColor: Theme.of(context).colorScheme.surfaceContainerLow,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
@@ -349,7 +342,7 @@ class _RegisterViewState extends State<_RegisterView> {
       textCapitalization: TextCapitalization.words,
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (_) => _lastNameFocus.requestFocus(),
-      style: const TextStyle(fontSize: 14, color: _textDark),
+      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
       decoration: _decoration(hint: 'First', icon: Icons.person_outline),
       validator: (v) =>
           (v == null || v.trim().isEmpty) ? 'Required.' : null,
@@ -364,7 +357,7 @@ class _RegisterViewState extends State<_RegisterView> {
       textCapitalization: TextCapitalization.words,
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (_) => _emailFocus.requestFocus(),
-      style: const TextStyle(fontSize: 14, color: _textDark),
+      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
       decoration: _decoration(hint: 'Last', icon: Icons.person_outline),
       validator: (v) =>
           (v == null || v.trim().isEmpty) ? 'Required.' : null,
@@ -380,7 +373,7 @@ class _RegisterViewState extends State<_RegisterView> {
       enableSuggestions: false,
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
-      style: const TextStyle(fontSize: 14, color: _textDark),
+      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
       decoration:
           _decoration(hint: 'name@email.com', icon: Icons.mail_outline),
       validator: (v) {
@@ -401,7 +394,7 @@ class _RegisterViewState extends State<_RegisterView> {
       enableSuggestions: false,
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (_) => _confirmFocus.requestFocus(),
-      style: const TextStyle(fontSize: 14, color: _textDark),
+      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
       decoration: _decoration(
         hint: '••••••••',
         icon: Icons.lock_outline,
@@ -410,7 +403,7 @@ class _RegisterViewState extends State<_RegisterView> {
             _obscurePassword
                 ? Icons.visibility_outlined
                 : Icons.visibility_off_outlined,
-            color: _textMuted,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             size: 20,
           ),
           onPressed: () =>
@@ -444,7 +437,7 @@ class _RegisterViewState extends State<_RegisterView> {
       enableSuggestions: false,
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (_) => _idNumberFocus.requestFocus(),
-      style: const TextStyle(fontSize: 14, color: _textDark),
+      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
       decoration: _decoration(
         hint: '••••••••',
         icon: Icons.lock_outline,
@@ -453,7 +446,7 @@ class _RegisterViewState extends State<_RegisterView> {
             _obscureConfirm
                 ? Icons.visibility_outlined
                 : Icons.visibility_off_outlined,
-            color: _textMuted,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             size: 20,
           ),
           onPressed: () =>
@@ -470,7 +463,7 @@ class _RegisterViewState extends State<_RegisterView> {
       height: 54,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        color: _inputFill,
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(12),
       ),
       child: DropdownButtonHideUnderline(
@@ -482,15 +475,15 @@ class _RegisterViewState extends State<_RegisterView> {
                   value: t,
                   child: Text(
                     t,
-                    style: const TextStyle(fontSize: 14, color: _textDark),
+                    style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
               )
               .toList(),
           onChanged: (v) => setState(() => _selectedIdType = v ?? 'CC'),
-          icon: const Icon(Icons.arrow_drop_down, color: _textMuted),
-          style: const TextStyle(fontSize: 14, color: _textDark),
-          dropdownColor: Colors.white,
+          icon: Icon(Icons.arrow_drop_down, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
+          dropdownColor: Theme.of(context).colorScheme.surface,
         ),
       ),
     );
@@ -503,7 +496,7 @@ class _RegisterViewState extends State<_RegisterView> {
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (_) => _phoneFocus.requestFocus(),
-      style: const TextStyle(fontSize: 14, color: _textDark),
+      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
       decoration:
           _decoration(hint: '1234567890', icon: Icons.badge_outlined),
       validator: (v) =>
@@ -518,7 +511,7 @@ class _RegisterViewState extends State<_RegisterView> {
       keyboardType: TextInputType.phone,
       textInputAction: TextInputAction.done,
       onFieldSubmitted: (_) => _submit(),
-      style: const TextStyle(fontSize: 14, color: _textDark),
+      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
       decoration:
           _decoration(hint: '3001234567', icon: Icons.phone_outlined),
       validator: (v) =>
@@ -625,21 +618,21 @@ class _RegisterViewState extends State<_RegisterView> {
 
   Widget _orDivider() {
     return Row(
-      children: const [
-        Expanded(child: Divider(color: _divider, thickness: 1)),
+      children: [
+        Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant, thickness: 1)),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
             'OR SIGN UP WITH',
             style: TextStyle(
               fontSize: 11,
-              color: _textLight,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               letterSpacing: 0.8,
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
-        Expanded(child: Divider(color: _divider, thickness: 1)),
+        Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant, thickness: 1)),
       ],
     );
   }
@@ -661,7 +654,7 @@ class _RegisterViewState extends State<_RegisterView> {
         Expanded(
           child: _SocialButton(
             label: 'Apple',
-            icon: const Icon(Icons.apple, size: 22, color: _textDark),
+            icon: Icon(Icons.apple, size: 22, color: Theme.of(context).colorScheme.onSurface),
           ),
         ),
       ],
@@ -706,18 +699,18 @@ class _RegisterViewState extends State<_RegisterView> {
           ],
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           '© 2026 Balto Inc. Secure Signup',
-          style: TextStyle(fontSize: 11, color: _textLight),
+          style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );
   }
 
   Widget _footerSeparator() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
-      child: Text('·', style: TextStyle(color: _textLight, fontSize: 11)),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Text('·', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 11)),
     );
   }
 
@@ -726,7 +719,7 @@ class _RegisterViewState extends State<_RegisterView> {
       onTap: () {},
       child: Text(
         text,
-        style: const TextStyle(fontSize: 11, color: _textLight),
+        style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
     );
   }
@@ -748,7 +741,7 @@ class _SocialButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         side: const BorderSide(color: Color(0xFFDDE1F0), width: 1.5),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -757,7 +750,7 @@ class _SocialButton extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
               color: Color(0xFF1A1A2E),

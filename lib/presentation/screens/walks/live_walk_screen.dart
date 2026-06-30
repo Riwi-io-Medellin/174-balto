@@ -12,7 +12,6 @@ class LiveWalkScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
       body: Column(
         children: [
           Expanded(
@@ -63,18 +62,19 @@ class _MapSection extends StatelessWidget {
 class _BackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Material(
-      color: Colors.white,
+      color: cs.surface,
       borderRadius: BorderRadius.circular(12),
       elevation: 4,
       shadowColor: Colors.black26,
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () => Navigator.of(context).pop(),
-        child: const Padding(
-          padding: EdgeInsets.all(10),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
           child: Icon(Icons.arrow_back_rounded,
-              color: Color(0xFF1A1A2E), size: 22),
+              color: cs.onSurface, size: 22),
         ),
       ),
     );
@@ -86,6 +86,7 @@ class _UpdatedBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return SafeArea(
       bottom: false,
       child: Align(
@@ -95,7 +96,7 @@ class _UpdatedBadge extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: cs.surface,
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
@@ -119,12 +120,12 @@ class _UpdatedBadge extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 6),
-                const Text(
+                Text(
                   'Updated 5 seconds ago',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF4A4A6A),
+                    color: cs.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -301,12 +302,13 @@ class _StatusPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        boxShadow: const [
           BoxShadow(
             color: Color(0x14000000),
             blurRadius: 20,
@@ -324,7 +326,7 @@ class _StatusPanel extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE0E0E0),
+                  color: cs.outlineVariant,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -352,6 +354,7 @@ class _WalkerRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Row(
       children: [
         ClipOval(
@@ -376,15 +379,15 @@ class _WalkerRow extends StatelessWidget {
             children: [
               Text(
                 walk.walkerName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 17,
-                  color: Color(0xFF1A1A2E),
+                  color: cs.onSurface,
                 ),
               ),
-              const Text(
+              Text(
                 'Your walker · Verified Pro',
-                style: TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+                style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant),
               ),
             ],
           ),
@@ -403,10 +406,10 @@ class _WalkerRow extends StatelessWidget {
               const SizedBox(width: 3),
               Text(
                 walk.walkerRating.toStringAsFixed(1),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
-                  color: Color(0xFF1A1A2E),
+                  color: cs.onSurface,
                 ),
               ),
             ],
@@ -465,6 +468,7 @@ class _StatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
@@ -485,9 +489,9 @@ class _StatTile extends StatelessWidget {
           ),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Color(0xFF9AA0B2),
+              color: cs.onSurfaceVariant,
             ),
           ),
         ],
@@ -503,6 +507,7 @@ class _ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Row(
       children: [
         Expanded(
@@ -520,7 +525,7 @@ class _ActionButtons extends StatelessWidget {
           child: _ActionBtn(
             label: 'Chat',
             icon: Icons.chat_bubble_outline_rounded,
-            bg: const Color(0xFFEEF3FB),
+            bg: AppColors.navWalks.withValues(alpha: 0.1),
             fg: AppColors.navWalks,
             onTap: () =>
                 BaltoToast.info(context, 'Chat not connected yet.'),
@@ -531,8 +536,8 @@ class _ActionButtons extends StatelessWidget {
           child: _ActionBtn(
             label: 'SOS',
             icon: Icons.warning_amber_rounded,
-            bg: const Color(0xFFFFF3CD),
-            fg: const Color(0xFFB07D00),
+            bg: cs.surfaceContainerLow,
+            fg: AppColors.alert,
             onTap: () => BaltoToast.warning(
               context,
               'Emergency SOS will alert Balto support immediately.',
@@ -593,6 +598,7 @@ class _ActionBtn extends StatelessWidget {
 class _WellnessCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -620,12 +626,12 @@ class _WellnessCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Peace of mind',
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
-                    color: Color(0xFF1A1A2E),
+                    color: cs.onSurface,
                   ),
                 ),
                 const Text(
@@ -637,11 +643,11 @@ class _WellnessCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
+                Text(
                   'Your pet is enjoying the walk and has maintained a healthy, energetic activity level during the last 20 minutes.',
                   style: TextStyle(
                     fontSize: 13,
-                    color: Color(0xFF4A4A6A),
+                    color: cs.onSurfaceVariant,
                     height: 1.5,
                   ),
                 ),

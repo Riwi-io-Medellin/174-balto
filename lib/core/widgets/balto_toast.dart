@@ -68,7 +68,19 @@ class _BaltoToastContent extends StatelessWidget {
   final String message;
   final BaltoToastType type;
 
-  Color get _bg {
+  Color _bg(Brightness brightness) {
+    if (brightness == Brightness.dark) {
+      switch (type) {
+        case BaltoToastType.success:
+          return const Color(0xFF0E231A);
+        case BaltoToastType.error:
+          return const Color(0xFF291108);
+        case BaltoToastType.warning:
+          return const Color(0xFF241A06);
+        case BaltoToastType.info:
+          return const Color(0xFF0C1C2E);
+      }
+    }
     switch (type) {
       case BaltoToastType.success:
         return const Color(0xFFE8F8F2);
@@ -109,11 +121,13 @@ class _BaltoToastContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
+    final textColor = Theme.of(context).colorScheme.onSurface;
     return Material(
       color: Colors.transparent,
       child: Container(
         decoration: BoxDecoration(
-          color: _bg,
+          color: _bg(brightness),
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
@@ -147,10 +161,10 @@ class _BaltoToastContent extends StatelessWidget {
                         Expanded(
                           child: Text(
                             message,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Color(0xFF1F2937),
+                              color: textColor,
                               height: 1.4,
                             ),
                           ),

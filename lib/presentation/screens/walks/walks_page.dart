@@ -27,7 +27,6 @@ class _WalksView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
       body: BlocConsumer<MyWalksCubit, MyWalksState>(
         listener: (context, state) {
           if (state is MyWalksLoaded) {
@@ -133,9 +132,9 @@ class _WalksView extends StatelessWidget {
                     ),
                   ],
                   if (state.history.isNotEmpty) ...[
-                    const _SectionHeader(
+                    _SectionHeader(
                         label: 'History',
-                        color: Color(0xFF8A95A3)),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (ctx, i) =>
@@ -189,10 +188,11 @@ class _WalksAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return SliverAppBar(
       pinned: true,
       expandedHeight: 120,
-      backgroundColor: Colors.white,
+      backgroundColor: cs.surface,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       flexibleSpace: FlexibleSpaceBar(
@@ -210,17 +210,17 @@ class _WalksAppBar extends StatelessWidget {
                   color: AppColors.navWalks, size: 20),
             ),
             const SizedBox(width: 10),
-            const Text(
+            Text(
               'My Walks',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A1A2E),
+                color: cs.onSurface,
               ),
             ),
           ],
         ),
-        background: Container(color: Colors.white),
+        background: Container(color: cs.surface),
       ),
     );
   }
@@ -297,14 +297,14 @@ class _BookingCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
       child: Material(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.antiAlias,
         elevation: 0,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
           ),
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -341,9 +341,9 @@ class _BookingCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           _formatSlot(local),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Color(0xFF6B7280),
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -355,30 +355,30 @@ class _BookingCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(Icons.schedule_outlined,
-                      size: 13, color: Colors.grey.shade500),
+                      size: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   const SizedBox(width: 4),
                   Text(
                     '${booking.durationMinutes} min',
                     style: TextStyle(
-                        fontSize: 12, color: Colors.grey.shade600),
+                        fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   if (booking.totalPrice != null) ...[
                     const SizedBox(width: 16),
                     Icon(Icons.attach_money_rounded,
-                        size: 13, color: Colors.grey.shade500),
+                        size: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                     Text(
                       booking.totalPrice!.toStringAsFixed(2),
                       style: TextStyle(
-                          fontSize: 12, color: Colors.grey.shade600),
+                          fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ] else if (booking.snapshotHourlyRate != null) ...[
                     const SizedBox(width: 16),
                     Icon(Icons.attach_money_rounded,
-                        size: 13, color: Colors.grey.shade500),
+                        size: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                     Text(
                       '${booking.snapshotHourlyRate!.toStringAsFixed(2)}/hr',
                       style: TextStyle(
-                          fontSize: 12, color: Colors.grey.shade600),
+                          fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ],
                 ],
@@ -390,13 +390,13 @@ class _BookingCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(Icons.notes_rounded,
-                        size: 13, color: Colors.grey.shade500),
+                        size: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         booking.specialInstructions!,
                         style: TextStyle(
-                            fontSize: 12, color: Colors.grey.shade500),
+                            fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                     ),
                   ],
@@ -500,7 +500,7 @@ class _ProgressBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
             value: progress,
-            backgroundColor: const Color(0xFFE8F0F8),
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
             valueColor: const AlwaysStoppedAnimation<Color>(
                 AppColors.navWalkers),
             minHeight: 4,
@@ -529,7 +529,8 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (label, bg, fg) = _resolve();
+    final cs = Theme.of(context).colorScheme;
+    final (label, bg, fg) = _resolve(cs);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
@@ -547,7 +548,7 @@ class _StatusBadge extends StatelessWidget {
     );
   }
 
-  (String, Color, Color) _resolve() {
+  (String, Color, Color) _resolve(ColorScheme cs) {
     if (isInProgress) {
       return (
         'Live',
@@ -568,8 +569,8 @@ class _StatusBadge extends StatelessWidget {
         ),
       WalkBookingStatus.completed => (
           'Completed',
-          const Color(0xFFF0F0F0),
-          const Color(0xFF8A95A3),
+          cs.surfaceContainerLow,
+          cs.onSurfaceVariant,
         ),
       WalkBookingStatus.rejected => (
           'Rejected',
@@ -579,8 +580,8 @@ class _StatusBadge extends StatelessWidget {
       WalkBookingStatus.walkerCancelled ||
       WalkBookingStatus.ownerCancelled => (
           'Cancelled',
-          const Color(0xFFF0F0F0),
-          const Color(0xFF8A95A3),
+          cs.surfaceContainerLow,
+          cs.onSurfaceVariant,
         ),
     };
   }

@@ -21,7 +21,9 @@ class WalkerFilterChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.navWalkers : const Color(0xFFF0F2F5),
+          color: isSelected
+              ? AppColors.navWalkers
+              : Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(99),
         ),
         child: Text(
@@ -29,7 +31,9 @@ class WalkerFilterChip extends StatelessWidget {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : const Color(0xFF5A6473),
+            color: isSelected
+                ? Colors.white
+                : Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
       ),

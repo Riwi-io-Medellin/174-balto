@@ -20,6 +20,8 @@ import '../walkers/edit_walker_profile_screen.dart';
 import '../walkers/walker_availability_screen.dart';
 import '../walkers/walker_bookings_screen.dart';
 import '../../widgets/skeletons/profile_skeleton.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../bloc/theme/theme_cubit.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -43,11 +45,6 @@ class _ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<_ProfileView> {
   bool _twoFactor = true;
 
-  static const Color _textDark = Color(0xFF1F2937);
-  static const Color _textMid = Color(0xFF5A6473);
-  static const Color _textMuted = Color(0xFF8A93A0);
-  static const Color _textSection = Color(0xFF9AA2AE);
-
   static const Color _blue = Color(0xFF3A80C2);
   static const Color _green = Color(0xFF1BAA71);
   static const Color _purple = Color(0xFF5F36C2);
@@ -66,38 +63,13 @@ class _ProfileViewState extends State<_ProfileView> {
   @override
   Widget build(BuildContext context) {
     if (context.watch<ProfileCubit>().state is ProfileLoading) {
-      return Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFFE7EAFF),
-                Color(0xFFEDF0FB),
-                Color(0xFFF4F6FA),
-              ],
-            ),
-          ),
-          child: const SafeArea(child: ProfileSkeleton()),
-        ),
+      return const Scaffold(
+        body: SafeArea(child: ProfileSkeleton()),
       );
     }
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFE7EAFF),
-              Color(0xFFEDF0FB),
-              Color(0xFFF4F6FA),
-            ],
-          ),
-        ),
-        child: SafeArea(
+      body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -143,6 +115,25 @@ class _ProfileViewState extends State<_ProfileView> {
                       iconColor: _gold,
                       title: 'Emergency Contacts',
                       trailingValue: '2 added',
+                    ),
+                  ]),
+                  const SizedBox(height: 18),
+                  _buildSectionTitle('SETTINGS'),
+                  const SizedBox(height: 8),
+                  _buildListCard([
+                    _buildIconRow(
+                      icon: Icons.dark_mode_outlined,
+                      iconBgColor: const Color(0xFF1E1A2E),
+                      iconColor: AppColors.aiCoach,
+                      title: 'Dark Mode',
+                      trailing: BlocBuilder<ThemeCubit, ThemeMode>(
+                        builder: (ctx, mode) => Switch(
+                          value: mode == ThemeMode.dark,
+                          activeThumbColor: Colors.white,
+                          activeTrackColor: AppColors.aiCoach,
+                          onChanged: (_) => ctx.read<ThemeCubit>().toggle(),
+                        ),
+                      ),
                     ),
                   ]),
                   const SizedBox(height: 18),
@@ -232,7 +223,6 @@ class _ProfileViewState extends State<_ProfileView> {
               ),
             ),
           ),
-        ),
       ),
     );
   }
@@ -246,7 +236,7 @@ class _ProfileViewState extends State<_ProfileView> {
           children: [
             Text(
               'Welcome back, $name 👋',
-              style: const TextStyle(fontSize: 13, color: _textMid),
+              style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             GestureDetector(
               onTap: () => Navigator.of(context).push(
@@ -258,11 +248,11 @@ class _ProfileViewState extends State<_ProfileView> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                  border: Border.all(color: Theme.of(context).colorScheme.outline),
                 ),
-                child: const Icon(Icons.tune, size: 18, color: _textDark),
+                child: Icon(Icons.tune, size: 18, color: Theme.of(context).colorScheme.onSurface),
               ),
             ),
           ],
@@ -288,10 +278,10 @@ class _ProfileViewState extends State<_ProfileView> {
             children: [
               Text(
                 fullName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
-                  color: _textDark,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 2),
@@ -300,7 +290,7 @@ class _ProfileViewState extends State<_ProfileView> {
                     (createdAt != null
                         ? 'Member since ${_formatMonthYear(createdAt)}'
                         : '—'),
-                style: const TextStyle(fontSize: 12, color: _textMuted),
+                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 8),
               Container(
@@ -312,7 +302,7 @@ class _ProfileViewState extends State<_ProfileView> {
                   color: _bgGoldTint,
                   borderRadius: BorderRadius.circular(99),
                 ),
-                child: const Text(
+                child: Text(
                   '👑 PREMIUM MEMBER',
                   style: TextStyle(
                     fontSize: 10,
@@ -487,9 +477,9 @@ class _ProfileViewState extends State<_ProfileView> {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 1.5),
           ),
           alignment: Alignment.center,
           child: photoUrl != null && photoUrl.isNotEmpty
@@ -504,7 +494,7 @@ class _ProfileViewState extends State<_ProfileView> {
                       style: TextStyle(
                         fontSize: size * 0.22,
                         fontWeight: FontWeight.w700,
-                        color: _textDark,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -514,7 +504,7 @@ class _ProfileViewState extends State<_ProfileView> {
                   style: TextStyle(
                     fontSize: size * 0.22,
                     fontWeight: FontWeight.w700,
-                    color: _textDark,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
         ),
@@ -530,7 +520,7 @@ class _ProfileViewState extends State<_ProfileView> {
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2),
               ),
-              child: const Icon(Icons.check, size: 12, color: Colors.white),
+              child: Icon(Icons.check, size: 12, color: Colors.white),
             ),
           ),
       ],
@@ -548,7 +538,7 @@ class _ProfileViewState extends State<_ProfileView> {
         return Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -602,7 +592,7 @@ class _ProfileViewState extends State<_ProfileView> {
     return Container(
       width: 1,
       height: 48,
-      color: const Color(0xFFEFF1F5),
+      color: Theme.of(context).colorScheme.outlineVariant,
     );
   }
 
@@ -624,16 +614,16 @@ class _ProfileViewState extends State<_ProfileView> {
         const SizedBox(height: 8),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w800,
-            color: _textDark,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(fontSize: 11, color: _textMuted),
+          style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );
@@ -738,7 +728,7 @@ class _ProfileViewState extends State<_ProfileView> {
           const SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(fontSize: 11, color: _textDark),
+            style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface),
           ),
         ],
       ),
@@ -791,10 +781,10 @@ class _ProfileViewState extends State<_ProfileView> {
                 color: _green.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.directions_walk, color: _green, size: 22),
+              child: Icon(Icons.directions_walk, color: _green, size: 22),
             ),
             const SizedBox(width: 14),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -803,18 +793,18 @@ class _ProfileViewState extends State<_ProfileView> {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
-                      color: _textDark,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   SizedBox(height: 3),
                   Text(
                     'Earn money walking dogs in your area.',
-                    style: TextStyle(fontSize: 12, color: _textMid),
+                    style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: _textMuted),
+            Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurfaceVariant),
           ],
         ),
       ),
@@ -838,14 +828,14 @@ class _ProfileViewState extends State<_ProfileView> {
               color: _blue.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.hourglass_top_rounded,
               color: _blue,
               size: 22,
             ),
           ),
           const SizedBox(width: 14),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -854,13 +844,13 @@ class _ProfileViewState extends State<_ProfileView> {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: _textDark,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 SizedBox(height: 3),
                 Text(
                   'Your application is under review. We\'ll notify you within 24–48 hours.',
-                  style: TextStyle(fontSize: 12, color: _textMid),
+                  style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ],
             ),
@@ -889,10 +879,10 @@ class _ProfileViewState extends State<_ProfileView> {
                   color: _green.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.verified_rounded, color: _green, size: 22),
+                child: Icon(Icons.verified_rounded, color: _green, size: 22),
               ),
               const SizedBox(width: 14),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -901,13 +891,13 @@ class _ProfileViewState extends State<_ProfileView> {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: _textDark,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     SizedBox(height: 3),
                     Text(
                       'You\'re a verified walker. Pet owners can now book you.',
-                      style: TextStyle(fontSize: 12, color: _textMid),
+                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ],
                 ),
@@ -927,7 +917,7 @@ class _ProfileViewState extends State<_ProfileView> {
                     color: _green,
                     borderRadius: BorderRadius.circular(99),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Edit',
                     style: TextStyle(
                       fontSize: 12,
@@ -954,7 +944,7 @@ class _ProfileViewState extends State<_ProfileView> {
                   color: _green.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
@@ -997,7 +987,7 @@ class _ProfileViewState extends State<_ProfileView> {
                   color: _green.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(Icons.calendar_month_rounded, size: 16, color: _green),
@@ -1048,14 +1038,14 @@ class _ProfileViewState extends State<_ProfileView> {
                 color: _orange.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.error_outline_rounded,
                 color: _orange,
                 size: 22,
               ),
             ),
             const SizedBox(width: 14),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1064,18 +1054,18 @@ class _ProfileViewState extends State<_ProfileView> {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
-                      color: _textDark,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   SizedBox(height: 3),
                   Text(
                     'Your document was not accepted. Tap to upload a new one.',
-                    style: TextStyle(fontSize: 12, color: _textMid),
+                    style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: _textMuted),
+            Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurfaceVariant),
           ],
         ),
       ),
@@ -1092,17 +1082,17 @@ class _ProfileViewState extends State<_ProfileView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'My Pets',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: _textDark,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 Text(
                   '${pets.length} registered',
-                  style: const TextStyle(fontSize: 12, color: _textMuted),
+                  style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ],
             ),
@@ -1112,13 +1102,13 @@ class _ProfileViewState extends State<_ProfileView> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 24),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Text(
+                child: Text(
                   'No pets registered yet',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
+                  style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               )
             else
@@ -1155,7 +1145,7 @@ class _ProfileViewState extends State<_ProfileView> {
       child: Container(
         padding: const EdgeInsets.all(13),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
@@ -1177,10 +1167,10 @@ class _ProfileViewState extends State<_ProfileView> {
                     children: [
                       Text(
                         pet.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: _textDark,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -1190,7 +1180,7 @@ class _ProfileViewState extends State<_ProfileView> {
                           color: _bgGreenTint,
                           borderRadius: BorderRadius.circular(99),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Active',
                           style: TextStyle(
                             fontSize: 10,
@@ -1204,12 +1194,12 @@ class _ProfileViewState extends State<_ProfileView> {
                   const SizedBox(height: 3),
                   Text(
                     subtitle,
-                    style: const TextStyle(fontSize: 12, color: _textMuted),
+                    style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: _textMuted),
+            Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurfaceVariant),
           ],
         ),
       ),
@@ -1259,7 +1249,7 @@ class _ProfileViewState extends State<_ProfileView> {
           ),
         ),
         alignment: Alignment.center,
-        child: const Text(
+        child: Text(
           '+ Add New Pet',
           style: TextStyle(
             fontSize: 14,
@@ -1276,10 +1266,10 @@ class _ProfileViewState extends State<_ProfileView> {
       padding: const EdgeInsets.only(left: 4),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w700,
-          color: _textSection,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
           letterSpacing: 1.0,
         ),
       ),
@@ -1289,7 +1279,7 @@ class _ProfileViewState extends State<_ProfileView> {
   Widget _buildListCard(List<Widget> rows) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -1304,9 +1294,9 @@ class _ProfileViewState extends State<_ProfileView> {
   }
 
   Widget _divider() {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.symmetric(horizontal: 14),
-      child: Divider(height: 1, color: Color(0xFFF1F3F6)),
+      child: Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
     );
   }
 
@@ -1338,10 +1328,10 @@ class _ProfileViewState extends State<_ProfileView> {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: _textDark,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -1351,10 +1341,10 @@ class _ProfileViewState extends State<_ProfileView> {
               if (trailingValue != null)
                 Text(
                   trailingValue,
-                  style: const TextStyle(fontSize: 13, color: _textMuted),
+                  style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               const SizedBox(width: 4),
-              const Icon(Icons.chevron_right, size: 20, color: _textMuted),
+              Icon(Icons.chevron_right, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ],
           ],
         ),
@@ -1407,12 +1397,12 @@ class _ProfileViewState extends State<_ProfileView> {
                   color: _gold,
                   borderRadius: BorderRadius.circular(99),
                 ),
-                child: const Text(
+                child: Text(
                   '👑 PREMIUM',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: _textDark,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -1423,7 +1413,7 @@ class _ProfileViewState extends State<_ProfileView> {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              const Text(
+              Text(
                 'Balto Premium',
                 style: TextStyle(
                   fontSize: 22,
@@ -1469,7 +1459,7 @@ class _ProfileViewState extends State<_ProfileView> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'Manage Subscription',
                 style: TextStyle(
                   fontSize: 14,
@@ -1488,8 +1478,8 @@ class _ProfileViewState extends State<_ProfileView> {
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: _onSignOut,
-        icon: const Icon(Icons.logout, size: 18, color: _red),
-        label: const Text(
+        icon: Icon(Icons.logout, size: 18, color: _red),
+        label: Text(
           'Sign Out',
           style: TextStyle(
             fontSize: 15,
@@ -1498,7 +1488,7 @@ class _ProfileViewState extends State<_ProfileView> {
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
@@ -1510,10 +1500,10 @@ class _ProfileViewState extends State<_ProfileView> {
   }
 
   Widget _buildFooter() {
-    return const Center(
+    return Center(
       child: Text(
         'Balto · v2.4.0',
-        style: TextStyle(fontSize: 11, color: _textSection),
+        style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant),
       ),
     );
   }
@@ -1528,12 +1518,12 @@ class _PremiumCheck extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Icon(Icons.check_circle_outline, size: 14, color: Colors.white),
+        Icon(Icons.check_circle_outline, size: 14, color: Colors.white),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               color: Colors.white,
               fontWeight: FontWeight.w500,

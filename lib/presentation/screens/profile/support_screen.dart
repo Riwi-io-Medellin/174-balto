@@ -5,20 +5,13 @@ class SupportScreen extends StatelessWidget {
   const SupportScreen({super.key});
 
   static const Color _primary = Color(0xFF3A80C2);
-  static const Color _bg = Color(0xFFF0F4F4);
-  static const Color _textDark = Color(0xFF1A1A2E);
-  static const Color _textMuted = Color(0xFF6B7280);
-  static const Color _textLight = Color(0xFF9AA0B2);
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: _bg,
       appBar: AppBar(
         title: const Text('Support'),
-        backgroundColor: Colors.white,
-        foregroundColor: _textDark,
-        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -26,7 +19,7 @@ class SupportScreen extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cs.surface,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
@@ -40,20 +33,23 @@ class SupportScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildSupportItem(
+                context: context,
                 icon: Icons.help_outline,
                 title: 'Help Center',
                 subtitle: 'Guides and tutorials',
                 url: 'https://balto-help.example.com',
               ),
-              _divider(),
+              _divider(context),
               _buildSupportItem(
+                context: context,
                 icon: Icons.headset_mic_outlined,
                 title: 'Contact Support',
                 subtitle: 'support@balto.app',
                 url: 'mailto:support@balto.app',
               ),
-              _divider(),
+              _divider(context),
               _buildSupportItem(
+                context: context,
                 icon: Icons.chat_bubble_outline,
                 title: 'FAQs',
                 subtitle: 'Frequently asked questions',
@@ -67,11 +63,13 @@ class SupportScreen extends StatelessWidget {
   }
 
   Widget _buildSupportItem({
+    required BuildContext context,
     required IconData icon,
     required String title,
     required String subtitle,
     required String url,
   }) {
+    final cs = Theme.of(context).colorScheme;
     return InkWell(
       onTap: () => _openUrl(url),
       borderRadius: BorderRadius.circular(12),
@@ -95,21 +93,21 @@ class SupportScreen extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: _textDark,
+                      color: cs.onSurface,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(fontSize: 12, color: _textMuted),
+                    style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, size: 20, color: _textLight),
+            Icon(Icons.chevron_right, size: 20, color: cs.onSurfaceVariant),
           ],
         ),
       ),
@@ -123,10 +121,10 @@ class SupportScreen extends StatelessWidget {
     }
   }
 
-  Widget _divider() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4),
-      child: Divider(height: 1, color: Color(0xFFE0E4F0)),
+  Widget _divider(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Divider(height: 1, color: Theme.of(context).colorScheme.outlineVariant),
     );
   }
 }

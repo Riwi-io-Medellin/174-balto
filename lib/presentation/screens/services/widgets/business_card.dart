@@ -18,7 +18,7 @@ class BusinessCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
@@ -45,9 +45,9 @@ class BusinessCard extends StatelessWidget {
                     business.description,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF5A6473),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       height: 1.45,
                     ),
                   ),
@@ -228,10 +228,10 @@ class _InfoRow extends StatelessWidget {
         Expanded(
           child: Text(
             business.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF1F2937),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
@@ -253,10 +253,10 @@ class _MetaRow extends StatelessWidget {
         const SizedBox(width: 3),
         Text(
           '${business.rating}',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1F2937),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(width: 8),
@@ -282,10 +282,10 @@ class _MetaRow extends StatelessWidget {
           ),
         ),
         const Spacer(),
-        const Icon(Icons.location_on_rounded, size: 13, color: Color(0xFF8A93A0)),
+        Icon(Icons.location_on_rounded, size: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
         Text(
           '${business.distance.toStringAsFixed(1)}km',
-          style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0)),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );
@@ -308,15 +308,15 @@ class _FeatureChips extends StatelessWidget {
             (f) => Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFFF0F2F5),
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(99),
               ),
               child: Text(
                 f,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF5A6473),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ),

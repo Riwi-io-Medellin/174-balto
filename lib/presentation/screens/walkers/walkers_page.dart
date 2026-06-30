@@ -79,7 +79,6 @@ class _WalkersPageState extends State<WalkersPage> {
     return BlocProvider.value(
       value: _cubit,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF5F6FA),
         floatingActionButton: FloatingActionButton(
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute(
@@ -109,14 +108,14 @@ class _WalkersPageState extends State<WalkersPage> {
                 ),
               ),
               const SizedBox(height: 22),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
                   'Available Now',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF1F2937),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -142,16 +141,16 @@ class _WalkersPageState extends State<WalkersPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.cloud_off_rounded,
                     size: 48,
-                    color: Color(0xFFB0B8C1),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     state.message,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Color(0xFF5A6473)),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -183,16 +182,16 @@ class _WalkersPageState extends State<WalkersPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.search_off_rounded,
                     size: 48,
-                    color: Color(0xFFB0B8C1),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'No walkers found in your area.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 15, color: Color(0xFF8A93A0)),
+                    style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 16),
                   TextButton(
@@ -266,24 +265,24 @@ class _WalkersPageState extends State<WalkersPage> {
           ),
         ),
         const SizedBox(width: 10),
-        const Expanded(
+        Expanded(
           child: Text(
             'Community Walkers',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF1F2937),
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
         IconButton(
           onPressed: () {},
-          icon: const Icon(Icons.search_rounded, color: Color(0xFF1F2937)),
+          icon: Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.onSurface),
           visualDensity: VisualDensity.compact,
         ),
         IconButton(
           onPressed: () {},
-          icon: const Icon(Icons.tune_rounded, color: Color(0xFF1F2937)),
+          icon: Icon(Icons.tune_rounded, color: Theme.of(context).colorScheme.onSurface),
           visualDensity: VisualDensity.compact,
         ),
       ],

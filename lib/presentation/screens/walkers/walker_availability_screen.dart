@@ -242,9 +242,7 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
@@ -252,7 +250,6 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
             size: 20,
-            color: Color(0xFF1F2937),
           ),
         ),
         title: const Text(
@@ -260,7 +257,6 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1F2937),
           ),
         ),
         centerTitle: true,
@@ -299,18 +295,18 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline_rounded,
                       size: 48,
-                      color: Color(0xFF8A93A0),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       state.message,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: Color(0xFF5A6473),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -349,13 +345,13 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
           const SizedBox(height: 32),
           _buildSectionTitle('Date Exceptions'),
           const SizedBox(height: 4),
-          const Padding(
-            padding: EdgeInsets.only(bottom: 12),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
             child: Text(
               'Override your regular schedule for specific dates.',
               style: TextStyle(
                 fontSize: 13,
-                color: Color(0xFF5A6473),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -374,13 +370,14 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
 
   Widget _buildDaySection(int dayOfWeek) {
     final intervals = _weeklySchedule[dayOfWeek] ?? [];
+    final cs = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE0E4EC)),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -408,10 +405,10 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
               const SizedBox(width: 10),
               Text(
                 _dayNames[dayOfWeek],
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF1F2937),
+                  color: cs.onSurface,
                 ),
               ),
               const Spacer(),
@@ -448,7 +445,7 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
                 'No hours set',
                 style: TextStyle(
                   fontSize: 13,
-                  color: const Color(0xFF8A93A0),
+                  color: cs.onSurfaceVariant,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -498,13 +495,13 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
               '—',
               style: TextStyle(
                 fontSize: 16,
-                color: Color(0xFF8A93A0),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -547,30 +544,31 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
     required String label,
     required VoidCallback onTap,
   }) {
+    final cs = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFFF5F6FA),
+          color: cs.surfaceContainerLow,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFFE0E4EC)),
+          border: Border.all(color: cs.outlineVariant),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.schedule_rounded,
               size: 14,
-              color: Color(0xFF5A6473),
+              color: cs.onSurfaceVariant,
             ),
             const SizedBox(width: 6),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1F2937),
+                color: cs.onSurface,
               ),
             ),
           ],
@@ -582,27 +580,28 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
   // ─── Exceptions Section ────────────────────────────────────────────────────
 
   Widget _buildEmptyExceptions() {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE0E4EC)),
+        border: Border.all(color: cs.outlineVariant),
       ),
-      child: const Column(
+      child: Column(
         children: [
           Icon(
             Icons.event_busy_rounded,
             size: 36,
-            color: Color(0xFFB0B8C1),
+            color: cs.onSurfaceVariant,
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             'No exceptions yet',
             style: TextStyle(
               fontSize: 13,
-              color: Color(0xFF8A93A0),
+              color: cs.onSurfaceVariant,
             ),
           ),
         ],
@@ -611,13 +610,14 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
   }
 
   Widget _buildExceptionCard(int index, _ExceptionEntry entry) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE0E4EC)),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -647,10 +647,10 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
               Expanded(
                 child: Text(
                   _formatDate(entry.date),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF1F2937),
+                    color: cs.onSurface,
                   ),
                 ),
               ),
@@ -688,12 +688,12 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
                     decoration: BoxDecoration(
                       color: entry.isUnavailable
                           ? const Color(0xFFFFF0ED)
-                          : const Color(0xFFF5F6FA),
+                          : cs.surfaceContainerLow,
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: entry.isUnavailable
                             ? const Color(0xFFD05A24).withValues(alpha: 0.30)
-                            : const Color(0xFFE0E4EC),
+                            : cs.outlineVariant,
                       ),
                     ),
                     child: Text(
@@ -704,7 +704,7 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
                         fontWeight: FontWeight.w600,
                         color: entry.isUnavailable
                             ? const Color(0xFFD05A24)
-                            : const Color(0xFF1F2937),
+                            : cs.onSurface,
                       ),
                     ),
                   ),
@@ -771,10 +771,10 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w800,
-        color: Color(0xFF1F2937),
+        color: Theme.of(context).colorScheme.onSurface,
       ),
     );
   }

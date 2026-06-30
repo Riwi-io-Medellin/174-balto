@@ -32,14 +32,17 @@ class GreetingHeader extends StatelessWidget {
             children: [
               Text(
                 _greeting,
-                style: const TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
               Text(
                 firstName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF1F2937),
+                  color: Theme.of(context).colorScheme.onSurface,
                   height: 1.1,
                 ),
               ),
@@ -116,7 +119,7 @@ class _NotificationButton extends StatelessWidget {
         width: 44,
         height: 44,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
@@ -126,10 +129,10 @@ class _NotificationButton extends StatelessWidget {
             ),
           ],
         ),
-        child: const Icon(
+        child: Icon(
           Icons.notifications_outlined,
           size: 22,
-          color: Color(0xFF1F2937),
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );

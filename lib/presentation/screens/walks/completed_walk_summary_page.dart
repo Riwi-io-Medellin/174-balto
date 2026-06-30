@@ -11,7 +11,6 @@ class CompletedWalkSummaryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
       body: CustomScrollView(
         slivers: [
           _SummaryAppBar(walk: walk),
@@ -47,10 +46,11 @@ class _SummaryAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return SliverAppBar(
       pinned: true,
-      backgroundColor: Colors.white,
-      foregroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: cs.surface,
+      foregroundColor: cs.onSurface,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       title: Column(
@@ -58,17 +58,17 @@ class _SummaryAppBar extends StatelessWidget {
         children: [
           Text(
             '${walk.petName}\'s Walk',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1A2E),
+              color: cs.onSurface,
             ),
           ),
-          const Text(
+          Text(
             'Summary',
             style: TextStyle(
               fontSize: 12,
-              color: Color(0xFF8A95A3),
+              color: cs.onSurfaceVariant,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -236,6 +236,7 @@ class _RoutePreviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       height: 160,
       decoration: BoxDecoration(
@@ -261,21 +262,21 @@ class _RoutePreviewCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: cs.surface.withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.route_outlined,
+                    const Icon(Icons.route_outlined,
                         color: AppColors.navWalks, size: 13),
-                    SizedBox(width: 5),
+                    const SizedBox(width: 5),
                     Text(
                       'Route Preview',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF1A1A2E),
+                        color: cs.onSurface,
                       ),
                     ),
                   ],
@@ -447,10 +448,11 @@ class _GridTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
@@ -477,9 +479,9 @@ class _GridTile extends StatelessWidget {
               ),
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
-                  color: Color(0xFF9AA0B2),
+                  color: cs.onSurfaceVariant,
                 ),
               ),
             ],
@@ -497,10 +499,11 @@ class _WalkerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -536,10 +539,10 @@ class _WalkerCard extends StatelessWidget {
                   children: [
                     Text(
                       walk.walkerName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
-                        color: Color(0xFF1A1A2E),
+                        color: cs.onSurface,
                       ),
                     ),
                     const SizedBox(width: 5),
@@ -547,9 +550,9 @@ class _WalkerCard extends StatelessWidget {
                         color: AppColors.navWalks, size: 15),
                   ],
                 ),
-                const Text(
+                Text(
                   'Your Walker',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                  style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                 ),
               ],
             ),
@@ -561,10 +564,10 @@ class _WalkerCard extends StatelessWidget {
               const SizedBox(width: 3),
               Text(
                 walk.walkerRating.toStringAsFixed(1),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
-                  color: Color(0xFF1A1A2E),
+                  color: cs.onSurface,
                 ),
               ),
             ],
@@ -582,11 +585,12 @@ class _RatingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final rating = walk.userRating!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -599,17 +603,17 @@ class _RatingCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.star_outline_rounded,
+              const Icon(Icons.star_outline_rounded,
                   color: Color(0xFFE8A84C), size: 18),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Your Rating',
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
-                  color: Color(0xFF1A1A2E),
+                  color: cs.onSurface,
                 ),
               ),
             ],
@@ -629,9 +633,9 @@ class _RatingCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             _ratingLabel(rating.round()),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Color(0xFF4A4A6A),
+              color: cs.onSurfaceVariant,
               fontWeight: FontWeight.w600,
             ),
           ),
