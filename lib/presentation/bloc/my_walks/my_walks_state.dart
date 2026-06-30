@@ -34,6 +34,9 @@ class MyWalksLoaded extends MyWalksState {
   List<WalkBooking> get inProgress {
     final now = DateTime.now();
     return (bookings.where((b) {
+      // Backend sets status to "in_progress" once walker starts — always live.
+      if (b.status == WalkBookingStatus.inProgress) return true;
+      // Accepted + inside scheduled window = in progress too.
       if (b.status != WalkBookingStatus.accepted) return false;
       final end = b.slotStart.add(Duration(minutes: b.durationMinutes));
       return !b.slotStart.isAfter(now) && !end.isBefore(now);
@@ -49,6 +52,8 @@ class MyWalksLoaded extends MyWalksState {
   List<WalkBooking> get upcoming {
     final now = DateTime.now();
     return (bookings.where((b) {
+      // inProgress bookings are shown in the inProgress section, not here.
+      if (b.status == WalkBookingStatus.inProgress) return false;
       if (b.status != WalkBookingStatus.accepted) return false;
       return b.slotStart.isAfter(now);
     }).toList()

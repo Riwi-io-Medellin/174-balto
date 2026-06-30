@@ -7,6 +7,7 @@ import '../../widgets/skeletons/walker_bookings_skeleton.dart';
 import '../../../domain/entities/walk_booking.dart';
 import '../../bloc/walker_booking/walker_booking_cubit.dart';
 import '../../bloc/walker_booking/walker_booking_state.dart';
+import 'walker_live_walk_screen.dart';
 
 class WalkerBookingsScreen extends StatelessWidget {
   const WalkerBookingsScreen({super.key});
@@ -218,6 +219,16 @@ class _BookingCard extends StatelessWidget {
   static const _green = Color(0xFF1BAA71);
   static const _orange = Color(0xFFD05A24);
 
+  bool _canStart() {
+    if (booking.status != WalkBookingStatus.accepted) return false;
+    final now = DateTime.now();
+    // Allow starting from 15 minutes before the scheduled time
+    final window = booking.slotStart.subtract(const Duration(minutes: 15));
+    final end =
+        booking.slotStart.add(Duration(minutes: booking.durationMinutes));
+    return now.isAfter(window) && now.isBefore(end);
+  }
+
   @override
   Widget build(BuildContext context) {
     final local = booking.slotStart.toLocal();
@@ -363,6 +374,33 @@ class _BookingCard extends StatelessWidget {
             ],
             if (tabType == _TabType.upcoming) ...[
               const SizedBox(height: 12),
+              if (_canStart())
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            WalkerLiveWalkScreen(booking: booking),
+                      ),
+                    ),
+                    icon: const Icon(Icons.directions_walk_rounded, size: 18),
+                    label: const Text(
+                      'Start Walk',
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _green,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+              if (_canStart()) const SizedBox(height: 8),
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(
@@ -451,6 +489,7 @@ class _StatusBadge extends StatelessWidget {
     final (label, color) = switch (status) {
       WalkBookingStatus.pending => ('Pending', const Color(0xFFF59E0B)),
       WalkBookingStatus.accepted => ('Upcoming', const Color(0xFF3A80C2)),
+      WalkBookingStatus.inProgress => ('Live', const Color(0xFF1BAA71)),
       WalkBookingStatus.completed => ('Completed', const Color(0xFF1BAA71)),
       WalkBookingStatus.rejected => ('Rejected', const Color(0xFFD05A24)),
       WalkBookingStatus.walkerCancelled => ('Cancelled', Colors.grey),

@@ -8,6 +8,7 @@ import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/walk_booking.dart';
 import '../../bloc/my_walks/my_walks_cubit.dart';
 import '../../bloc/my_walks/my_walks_state.dart';
+import 'live_walk_screen.dart';
 
 class WalksPage extends StatelessWidget {
   const WalksPage({super.key});
@@ -270,10 +271,16 @@ class _BookingCard extends StatelessWidget {
   final WalkBooking booking;
 
   bool _isInProgress() {
+    // Backend status "in_progress" means walker has started.
+    if (booking.status == WalkBookingStatus.inProgress) return true;
     if (booking.status != WalkBookingStatus.accepted) return false;
+    // Accepted + active session = still live (started before scheduled slot).
+    if (booking.walkSessionId != null) return true;
+    // Accepted + inside scheduled window.
     final now = DateTime.now();
+    final window = booking.slotStart.subtract(const Duration(minutes: 5));
     final end = booking.slotStart.add(Duration(minutes: booking.durationMinutes));
-    return !booking.slotStart.isAfter(now) && !end.isBefore(now);
+    return now.isAfter(window) && now.isBefore(end);
   }
 
   bool _canCancel() {
@@ -301,13 +308,22 @@ class _BookingCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.antiAlias,
         elevation: 0,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.shade100),
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
+        child: InkWell(
+          onTap: inProgress
+              ? () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => LiveWalkScreen(booking: booking),
+                    ),
+                  )
+              : null,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey.shade100),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -439,6 +455,7 @@ class _BookingCard extends StatelessWidget {
             ],
           ),
         ),
+        ),
       ),
     );
   }
@@ -565,6 +582,11 @@ class _StatusBadge extends StatelessWidget {
           'Upcoming',
           AppColors.navWalks.withValues(alpha: 0.12),
           AppColors.navWalks,
+        ),
+      WalkBookingStatus.inProgress => (
+          'Live',
+          AppColors.navWalkers.withValues(alpha: 0.12),
+          AppColors.navWalkers,
         ),
       WalkBookingStatus.completed => (
           'Completed',

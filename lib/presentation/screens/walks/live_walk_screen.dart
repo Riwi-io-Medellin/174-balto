@@ -1,59 +1,217 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/di/injection.dart';
+import '../../../core/services/walk_tracking_service.dart';
+import '../../../core/storage/token_storage.dart';
 import '../../../core/widgets/balto_toast.dart';
-import '../../../domain/entities/walk.dart';
+import '../../../domain/entities/walk_booking.dart';
+import '../../../domain/repositories/pet_repository.dart';
+import '../../../domain/repositories/walk_booking_repository.dart';
+import '../../../domain/repositories/walk_session_repository.dart';
+import '../../../domain/repositories/walker_repository.dart';
+import '../../bloc/live_walk/live_walk_cubit.dart';
+import '../../bloc/live_walk/live_walk_state.dart';
+import 'walk_route_summary_screen.dart';
 
 class LiveWalkScreen extends StatelessWidget {
-  const LiveWalkScreen({super.key, required this.walk});
+  const LiveWalkScreen({super.key, required this.booking});
 
-  final Walk walk;
+  final WalkBooking booking;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 5,
-            child: _MapSection(walk: walk),
-          ),
-          Expanded(
-            flex: 6,
-            child: _StatusPanel(walk: walk),
-          ),
-        ],
+    return BlocProvider<LiveWalkCubit>(
+      create: (_) => LiveWalkCubit(
+        booking: booking,
+        walkerRepository: sl<WalkerRepository>(),
+        petRepository: sl<PetRepository>(),
+        trackingService: WalkTrackingService(),
+        tokenStorage: sl<TokenStorage>(),
+        walkBookingRepository: sl<WalkBookingRepository>(),
+        walkSessionRepository: sl<WalkSessionRepository>(),
+      )..start(),
+      child: const _LiveWalkView(),
+    );
+  }
+}
+
+// ── View ─────────────────────────────────────────────────────────────────────
+
+class _LiveWalkView extends StatefulWidget {
+  const _LiveWalkView();
+
+  @override
+  State<_LiveWalkView> createState() => _LiveWalkViewState();
+}
+
+class _LiveWalkViewState extends State<_LiveWalkView> {
+  GoogleMapController? _mapController;
+
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<LiveWalkCubit, LiveWalkState>(
+      listener: (context, state) {
+        if (state is LiveWalkActive && state.currentPosition != null) {
+          _mapController?.animateCamera(
+            CameraUpdate.newLatLng(state.currentPosition!),
+          );
+        }
+        if (state is LiveWalkCompleted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => WalkRouteSummaryScreen(
+                sessionId: state.sessionId,
+                distanceKm: state.distanceKm,
+                elapsedSeconds: state.elapsedSeconds,
+              ),
+            ),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5F7FA),
+        body: BlocBuilder<LiveWalkCubit, LiveWalkState>(
+          builder: (context, state) {
+            if (state is LiveWalkError) {
+              return _ErrorView(
+                message: state.message,
+                onRetry: () => context.read<LiveWalkCubit>().retry(),
+              );
+            }
+            if (state is LiveWalkWaiting) {
+              return const _WaitingView();
+            }
+            return Column(
+              children: [
+                Expanded(
+                  flex: 5,
+                  child: _MapSection(
+                    state: state,
+                    onMapCreated: (c) => _mapController = c,
+                  ),
+                ),
+                Expanded(
+                  flex: 6,
+                  child: _StatusPanel(state: state),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-// ── Map ──────────────────────────────────────────────────────────────────────
+// ── Map ───────────────────────────────────────────────────────────────────────
 
 class _MapSection extends StatelessWidget {
-  const _MapSection({required this.walk});
+  const _MapSection({required this.state, required this.onMapCreated});
 
-  final Walk walk;
+  final LiveWalkState state;
+  final void Function(GoogleMapController) onMapCreated;
 
   @override
   Widget build(BuildContext context) {
+    final active = state is LiveWalkActive ? state as LiveWalkActive : null;
+    final hasPosition = active?.currentPosition != null;
+
     return Stack(
       fit: StackFit.expand,
       children: [
-        CustomPaint(painter: _MapPainter()),
-        CustomPaint(painter: _RoutePainter()),
-        _PetMarker(petName: walk.petName),
+        if (hasPosition)
+          GoogleMap(
+            onMapCreated: onMapCreated,
+            initialCameraPosition: CameraPosition(
+              target: active!.currentPosition!,
+              zoom: 16,
+            ),
+            markers: {
+              Marker(
+                markerId: const MarkerId('walker'),
+                position: active.currentPosition!,
+                icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueBlue,
+                ),
+                infoWindow: InfoWindow(title: '${active.petName} · now'),
+              ),
+            },
+            polylines: active.routePoints.length >= 2
+                ? {
+                    Polyline(
+                      polylineId: const PolylineId('route'),
+                      points: active.routePoints,
+                      color: AppColors.navWalks,
+                      width: 5,
+                      jointType: JointType.round,
+                      startCap: Cap.roundCap,
+                      endCap: Cap.roundCap,
+                    ),
+                  }
+                : {},
+            myLocationButtonEnabled: false,
+            zoomControlsEnabled: false,
+            mapToolbarEnabled: false,
+          )
+        else ...[
+          CustomPaint(painter: _MapPainter()),
+          CustomPaint(painter: _RoutePainter()),
+        ],
+
+        // Connecting overlay (shown before first GPS point arrives)
+        if (!hasPosition)
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              decoration: BoxDecoration(
+                color: Colors.black54,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    'Connecting to walker...',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
         Positioned(
           top: MediaQuery.of(context).padding.top + 8,
           left: 12,
-          child: _BackButton(),
+          child: const _BackButton(),
         ),
         const Positioned(
           top: 0,
           right: 0,
           left: 0,
-          child: _UpdatedBadge(),
+          child: _LiveBadge(),
         ),
       ],
     );
@@ -61,6 +219,8 @@ class _MapSection extends StatelessWidget {
 }
 
 class _BackButton extends StatelessWidget {
+  const _BackButton();
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -81,8 +241,8 @@ class _BackButton extends StatelessWidget {
   }
 }
 
-class _UpdatedBadge extends StatelessWidget {
-  const _UpdatedBadge();
+class _LiveBadge extends StatelessWidget {
+  const _LiveBadge();
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +253,8 @@ class _UpdatedBadge extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(top: 12, right: 16),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -108,22 +269,20 @@ class _UpdatedBadge extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      AppColors.navWalks.withValues(alpha: 0.6),
-                    ),
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: AppColors.navWalkers,
+                    shape: BoxShape.circle,
                   ),
                 ),
                 const SizedBox(width: 6),
                 const Text(
-                  'Updated 5 seconds ago',
+                  'Live',
                   style: TextStyle(
                     fontSize: 11,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.w700,
                     color: Color(0xFF4A4A6A),
                   ),
                 ),
@@ -136,63 +295,7 @@ class _UpdatedBadge extends StatelessWidget {
   }
 }
 
-class _PetMarker extends StatelessWidget {
-  const _PetMarker({required this.petName});
-
-  final String petName;
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      left: MediaQuery.of(context).size.width * 0.52,
-      top: MediaQuery.of(context).size.height * 0.16,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A1A2E),
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.25),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Text(
-              '$petName · now',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: AppColors.navWalks,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.navWalks.withValues(alpha: 0.4),
-                  blurRadius: 12,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-            child: const Icon(Icons.pets, color: Colors.white, size: 22),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
+// Placeholder map painters shown while awaiting first GPS point
 class _MapPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -211,7 +314,6 @@ class _MapPainter extends CustomPainter {
 
     final block = Paint()..color = const Color(0xFFD4DDD0);
 
-    // Blocks
     for (var i = 0; i < 6; i++) {
       for (var j = 0; j < 8; j++) {
         canvas.drawRRect(
@@ -229,7 +331,6 @@ class _MapPainter extends CustomPainter {
       }
     }
 
-    // Horizontal roads
     for (var j = 0; j <= 7; j++) {
       canvas.drawLine(
         Offset(0, (j + 0.5) * size.height / 7),
@@ -237,7 +338,6 @@ class _MapPainter extends CustomPainter {
         j % 3 == 0 ? road : roadSm,
       );
     }
-    // Vertical roads
     for (var i = 0; i <= 5; i++) {
       canvas.drawLine(
         Offset((i + 0.5) * size.width / 5, 0),
@@ -268,39 +368,175 @@ class _RoutePainter extends CustomPainter {
     );
 
     final paint = Paint()
-      ..color = AppColors.navWalks
+      ..color = AppColors.navWalks.withValues(alpha: 0.4)
       ..strokeWidth = 4
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
 
     canvas.drawPath(path, paint);
-
-    // Start dot
-    canvas.drawCircle(
-      Offset(size.width * 0.2, size.height * 0.85),
-      7,
-      Paint()..color = AppColors.navWalks.withValues(alpha: 0.4),
-    );
-    canvas.drawCircle(
-      Offset(size.width * 0.2, size.height * 0.85),
-      4,
-      Paint()..color = AppColors.navWalks,
-    );
   }
 
   @override
   bool shouldRepaint(_) => false;
 }
 
-// ── Status Panel ─────────────────────────────────────────────────────────────
+// ── Waiting ───────────────────────────────────────────────────────────────────
 
-class _StatusPanel extends StatelessWidget {
-  const _StatusPanel({required this.walk});
-
-  final Walk walk;
+class _WaitingView extends StatelessWidget {
+  const _WaitingView();
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: AppColors.navWalkers.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.directions_walk_rounded,
+                    size: 40,
+                    color: AppColors.navWalkers,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Waiting for your walker',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1A1A2E),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'The map will appear automatically once the walker starts the walk.',
+                  style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                const SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: AppColors.navWalkers,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => context.read<LiveWalkCubit>().retry(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.navWalkers,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                  child: const Text('Check now'),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Go Back'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Error ─────────────────────────────────────────────────────────────────────
+
+class _ErrorView extends StatelessWidget {
+  const _ErrorView({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.wifi_off_rounded,
+                    size: 56, color: Colors.grey),
+                const SizedBox(height: 16),
+                const Text(
+                  'Could not connect to the walk',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF1A1A2E),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  message,
+                  style: const TextStyle(
+                      fontSize: 13, color: Color(0xFF6B7280)),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: onRetry,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.navWalks,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Retry'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Go Back'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Status Panel ──────────────────────────────────────────────────────────────
+
+class _StatusPanel extends StatelessWidget {
+  const _StatusPanel({required this.state});
+
+  final LiveWalkState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final active = state is LiveWalkActive ? state as LiveWalkActive : null;
+
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -314,41 +550,58 @@ class _StatusPanel extends StatelessWidget {
           ),
         ],
       ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE0E0E0),
-                  borderRadius: BorderRadius.circular(2),
-                ),
+      child: active == null
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.navWalks),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE0E0E0),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _WalkerRow(
+                    name: active.walkerName,
+                    avatarUrl: active.walkerAvatarUrl,
+                    rating: active.walkerRating,
+                  ),
+                  const SizedBox(height: 20),
+                  _StatsRow(
+                    elapsedSeconds: active.elapsedSeconds,
+                    distanceKm: active.distanceKm,
+                  ),
+                  const SizedBox(height: 20),
+                  _ActionButtons(walkerName: active.walkerName),
+                  const SizedBox(height: 20),
+                  const _WellnessCard(),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            _WalkerRow(walk: walk),
-            const SizedBox(height: 20),
-            _StatsRow(walk: walk),
-            const SizedBox(height: 20),
-            _ActionButtons(walk: walk),
-            const SizedBox(height: 20),
-            _WellnessCard(),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
     );
   }
 }
 
 class _WalkerRow extends StatelessWidget {
-  const _WalkerRow({required this.walk});
+  const _WalkerRow({
+    required this.name,
+    required this.avatarUrl,
+    required this.rating,
+  });
 
-  final Walk walk;
+  final String name;
+  final String avatarUrl;
+  final double rating;
 
   @override
   Widget build(BuildContext context) {
@@ -356,7 +609,7 @@ class _WalkerRow extends StatelessWidget {
       children: [
         ClipOval(
           child: Image.network(
-            walk.walkerAvatarUrl,
+            avatarUrl,
             width: 50,
             height: 50,
             fit: BoxFit.cover,
@@ -375,7 +628,7 @@ class _WalkerRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                walk.walkerName,
+                name,
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 17,
@@ -390,7 +643,8 @@ class _WalkerRow extends StatelessWidget {
           ),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          padding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             color: const Color(0xFFFFF8E6),
             borderRadius: BorderRadius.circular(20),
@@ -402,7 +656,7 @@ class _WalkerRow extends StatelessWidget {
                   color: Color(0xFFE8A84C), size: 15),
               const SizedBox(width: 3),
               Text(
-                walk.walkerRating.toStringAsFixed(1),
+                rating.toStringAsFixed(1),
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
@@ -418,9 +672,13 @@ class _WalkerRow extends StatelessWidget {
 }
 
 class _StatsRow extends StatelessWidget {
-  const _StatsRow({required this.walk});
+  const _StatsRow({
+    required this.elapsedSeconds,
+    required this.distanceKm,
+  });
 
-  final Walk walk;
+  final int elapsedSeconds;
+  final double distanceKm;
 
   @override
   Widget build(BuildContext context) {
@@ -429,9 +687,9 @@ class _StatsRow extends StatelessWidget {
         Expanded(
           child: _StatTile(
             icon: Icons.route_outlined,
-            value: walk.distanceKm != null
-                ? '${walk.distanceKm!.toStringAsFixed(1)} km'
-                : '—',
+            value: distanceKm > 0
+                ? '${distanceKm.toStringAsFixed(2)} km'
+                : '0.00 km',
             label: 'Distance',
             color: AppColors.navWalks,
           ),
@@ -440,13 +698,21 @@ class _StatsRow extends StatelessWidget {
         Expanded(
           child: _StatTile(
             icon: Icons.timer_outlined,
-            value: '${walk.elapsedMinutes} min',
+            value: _formatTime(elapsedSeconds),
             label: 'Duration',
             color: AppColors.navWalkers,
           ),
         ),
       ],
     );
+  }
+
+  static String _formatTime(int seconds) {
+    if (seconds < 60) return '$seconds sec';
+    final m = seconds ~/ 60;
+    if (m < 60) return '$m min';
+    final h = m ~/ 60;
+    return '${h}h ${(m % 60).toString().padLeft(2, '0')}m';
   }
 }
 
@@ -497,9 +763,9 @@ class _StatTile extends StatelessWidget {
 }
 
 class _ActionButtons extends StatelessWidget {
-  const _ActionButtons({required this.walk});
+  const _ActionButtons({required this.walkerName});
 
-  final Walk walk;
+  final String walkerName;
 
   @override
   Widget build(BuildContext context) {
@@ -512,7 +778,7 @@ class _ActionButtons extends StatelessWidget {
             bg: AppColors.navWalks,
             fg: Colors.white,
             onTap: () =>
-                BaltoToast.info(context, 'Calling ${walk.walkerName}...'),
+                BaltoToast.info(context, 'Calling $walkerName...'),
           ),
         ),
         const SizedBox(width: 10),
@@ -522,8 +788,7 @@ class _ActionButtons extends StatelessWidget {
             icon: Icons.chat_bubble_outline_rounded,
             bg: const Color(0xFFEEF3FB),
             fg: AppColors.navWalks,
-            onTap: () =>
-                BaltoToast.info(context, 'Chat not connected yet.'),
+            onTap: () => BaltoToast.info(context, 'Chat not connected yet.'),
           ),
         ),
         const SizedBox(width: 10),
@@ -591,6 +856,8 @@ class _ActionBtn extends StatelessWidget {
 }
 
 class _WellnessCard extends StatelessWidget {
+  const _WellnessCard();
+
   @override
   Widget build(BuildContext context) {
     return Container(
