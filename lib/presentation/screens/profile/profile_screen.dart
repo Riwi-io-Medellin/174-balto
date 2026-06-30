@@ -56,7 +56,6 @@ class _ProfileViewState extends State<_ProfileView> {
   static const Color _purple = Color(0xFF5F36C2);
   static const Color _orange = Color(0xFFD05A24);
   static const Color _red = Color(0xFFE5544B);
-  static const Color _gold = Color(0xFFF6C86A);
   static const Color _indigo = Color(0xFF5563E0);
 
   static const Color _bgBlueTint = Color(0xFFEAF2FB);
@@ -138,9 +137,10 @@ class _ProfileViewState extends State<_ProfileView> {
                       ),
                     ),
                   ]),
-                  const SizedBox(height: 18),
-                  _buildPremiumCard(),
-                  const SizedBox(height: 18),
+                  // TODO: Re-implement when subscription system is ready
+                  // const SizedBox(height: 18),
+                  // _buildPremiumCard(),
+                  // const SizedBox(height: 18),
                   _buildSectionTitle('SUPPORT'),
                   const SizedBox(height: 8),
                   _buildListCard([
@@ -1092,79 +1092,80 @@ class _ProfileViewState extends State<_ProfileView> {
     );
   }
 
-  Widget _buildPremiumCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF6D7CFF), Color(0xFF7C6BF5), Color(0xFF5F6BE8)],
-          stops: [0.0, 0.52, 1.0],
-        ),
-        boxShadow: [
-          BoxShadow(color: const Color(0xFF6D7CFF).withValues(alpha: 0.35), blurRadius: 18, offset: const Offset(0, 8)),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('CURRENT PLAN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1.0, color: Colors.white.withValues(alpha: 0.7))),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(color: _gold, borderRadius: BorderRadius.circular(99)),
-                child: const Text('👑 PREMIUM', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: _textDark)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              const Text('Balto Premium', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white)),
-              const SizedBox(width: 6),
-              Text('· \$19/mo', style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.7))),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: const [
-              Expanded(child: _PremiumCheck(label: 'Priority Booking')),
-              Expanded(child: _PremiumCheck(label: 'Advanced Tracking')),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: const [
-              Expanded(child: _PremiumCheck(label: 'Walk Reports')),
-              Expanded(child: _PremiumCheck(label: 'AI Pet Insights')),
-            ],
-          ),
-          const SizedBox(height: 18),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: _purple,
-                elevation: 0,
-                padding: const EdgeInsets.symmetric(vertical: 13),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: const Text('Manage Subscription', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // TODO: Re-implement when subscription system is ready
+  // Widget _buildPremiumCard() {
+  //   return Container(
+  //     width: double.infinity,
+  //     padding: const EdgeInsets.all(20),
+  //     decoration: BoxDecoration(
+  //       borderRadius: BorderRadius.circular(16),
+  //       gradient: const LinearGradient(
+  //         begin: Alignment.topLeft,
+  //         end: Alignment.bottomRight,
+  //         colors: [Color(0xFF6D7CFF), Color(0xFF7C6BF5), Color(0xFF5F6BE8)],
+  //         stops: [0.0, 0.52, 1.0],
+  //       ),
+  //       boxShadow: [
+  //         BoxShadow(color: Color(0xFF6D7CFF).withValues(alpha: 0.35), blurRadius: 18, offset: const Offset(0, 8)),
+  //       ],
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           children: [
+  //             Text('CURRENT PLAN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1.0, color: Colors.white.withValues(alpha: 0.7))),
+  //             Container(
+  //               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+  //               decoration: BoxDecoration(color: _gold, borderRadius: BorderRadius.circular(99)),
+  //               child: const Text('👑 PREMIUM', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: _textDark)),
+  //             ),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 10),
+  //         Row(
+  //           crossAxisAlignment: CrossAxisAlignment.baseline,
+  //           textBaseline: TextBaseline.alphabetic,
+  //           children: [
+  //             const Text('Balto Premium', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white)),
+  //             const SizedBox(width: 6),
+  //             Text('· \$19/mo', style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.7))),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 16),
+  //         Row(
+  //           children: const [
+  //             Expanded(child: _PremiumCheck(label: 'Priority Booking')),
+  //             Expanded(child: _PremiumCheck(label: 'Advanced Tracking')),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 10),
+  //         Row(
+  //           children: const [
+  //             Expanded(child: _PremiumCheck(label: 'Walk Reports')),
+  //             Expanded(child: _PremiumCheck(label: 'AI Pet Insights')),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 18),
+  //         SizedBox(
+  //           width: double.infinity,
+  //           child: ElevatedButton(
+  //             onPressed: () {},
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: Colors.white,
+  //               foregroundColor: _purple,
+  //               elevation: 0,
+  //               padding: const EdgeInsets.symmetric(vertical: 13),
+  //               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  //             ),
+  //             child: const Text('Manage Subscription', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildSignOut() {
     return SizedBox(
@@ -1190,19 +1191,20 @@ class _ProfileViewState extends State<_ProfileView> {
   }
 }
 
-class _PremiumCheck extends StatelessWidget {
-  const _PremiumCheck({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Icon(Icons.check_circle_outline, size: 14, color: Colors.white),
-        const SizedBox(width: 6),
-        Expanded(child: Text(label, style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500))),
-      ],
-    );
-  }
-}
+// TODO: Re-implement when subscription system is ready
+// class _PremiumCheck extends StatelessWidget {
+//   const _PremiumCheck({required this.label});
+//
+//   final String label;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       children: [
+//         const Icon(Icons.check_circle_outline, size: 14, color: Colors.white),
+//         const SizedBox(width: 6),
+//         Expanded(child: Text(label, style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500))),
+//       ],
+//     );
+//   }
+// }
