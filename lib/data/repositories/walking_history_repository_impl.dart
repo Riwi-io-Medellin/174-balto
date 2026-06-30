@@ -11,8 +11,9 @@ class WalkingHistoryRepositoryImpl implements WalkingHistoryRepository {
   @override
   Future<int> getMyWalkCount() async {
     try {
-      final history = await _remote.getMyHistory();
-      return history.length;
+      final result = await _remote.getMyHistory();
+      final items = result['items'] as List?;
+      return items?.length ?? 0;
     } on WalkingHistoryFailure {
       rethrow;
     } on DioException catch (e) {

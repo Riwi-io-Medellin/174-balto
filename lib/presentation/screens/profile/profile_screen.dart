@@ -19,7 +19,10 @@ import '../walkers/walker_bookings_screen.dart';
 import 'edit_profile_screen.dart';
 import 'privacy_settings_screen.dart';
 import 'profile_settings_screen.dart';
+import 'faq_screen.dart';
+import 'help_center_screen.dart';
 import 'support_screen.dart';
+import '../notifications/notifications_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -54,14 +57,12 @@ class _ProfileViewState extends State<_ProfileView> {
   static const Color _orange = Color(0xFFD05A24);
   static const Color _red = Color(0xFFE5544B);
   static const Color _gold = Color(0xFFF6C86A);
-  static const Color _goldText = Color(0xFFA8791F);
   static const Color _indigo = Color(0xFF5563E0);
 
   static const Color _bgBlueTint = Color(0xFFEAF2FB);
   static const Color _bgGreenTint = Color(0xFFE8F5EE);
   static const Color _bgPurpleTint = Color(0xFFEEF0FF);
   static const Color _bgOrangeTint = Color(0xFFFFF1E6);
-  static const Color _bgGoldTint = Color(0xFFFBF6E9);
 
   @override
   Widget build(BuildContext context) {
@@ -96,36 +97,6 @@ class _ProfileViewState extends State<_ProfileView> {
                   _buildWalkerSection(),
                   const SizedBox(height: 18),
                   _buildMyPets(),
-                  const SizedBox(height: 18),
-                  _buildPersonalInformationFromState(),
-                  const SizedBox(height: 18),
-                  _buildSectionTitle('PREFERENCES'),
-                  const SizedBox(height: 8),
-                  _buildListCard([
-                    _buildIconRow(
-                      icon: Icons.person_outline,
-                      iconBgColor: _bgBlueTint,
-                      iconColor: _blue,
-                      title: 'Preferred Walker Gender',
-                      trailingValue: 'No preference',
-                    ),
-                    _divider(),
-                    _buildIconRow(
-                      icon: Icons.directions_walk,
-                      iconBgColor: _bgGreenTint,
-                      iconColor: _green,
-                      title: 'Walking Preferences',
-                      trailingValue: 'Mornings',
-                    ),
-                    _divider(),
-                    _buildIconRow(
-                      icon: Icons.shield_outlined,
-                      iconBgColor: _bgGoldTint,
-                      iconColor: _gold,
-                      title: 'Emergency Contacts',
-                      trailingValue: '2 added',
-                    ),
-                  ]),
                   const SizedBox(height: 18),
                   _buildSectionTitle('PRIVACY & SECURITY'),
                   const SizedBox(height: 8),
@@ -180,7 +151,7 @@ class _ProfileViewState extends State<_ProfileView> {
                       title: 'Help Center',
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const SupportScreen(),
+                          builder: (_) => const HelpCenterScreen(),
                         ),
                       ),
                     ),
@@ -204,7 +175,7 @@ class _ProfileViewState extends State<_ProfileView> {
                       title: 'FAQs',
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const SupportScreen(),
+                          builder: (_) => const FaqScreen(),
                         ),
                       ),
                     ),
@@ -260,6 +231,7 @@ class _ProfileViewState extends State<_ProfileView> {
   Widget _buildIdentityRow({
     required String firstName,
     required String fullName,
+    required String email,
     required DateTime? createdAt,
     String? errorMessage,
     String? photoUrl,
@@ -282,31 +254,16 @@ class _ProfileViewState extends State<_ProfileView> {
               ),
               const SizedBox(height: 2),
               Text(
+                email,
+                style: const TextStyle(fontSize: 12, color: _textMid),
+              ),
+              const SizedBox(height: 1),
+              Text(
                 errorMessage ??
                     (createdAt != null
                         ? 'Member since ${_formatMonthYear(createdAt)}'
                         : '—'),
-                style: const TextStyle(fontSize: 12, color: _textMuted),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: _bgGoldTint,
-                  borderRadius: BorderRadius.circular(99),
-                ),
-                child: const Text(
-                  '👑 PREMIUM MEMBER',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: _goldText,
-                    letterSpacing: 0.5,
-                  ),
-                ),
+                style: const TextStyle(fontSize: 11, color: _textMuted),
               ),
             ],
           ),
@@ -330,6 +287,7 @@ class _ProfileViewState extends State<_ProfileView> {
           return _buildIdentityRow(
             firstName: state.user.firstName,
             fullName: state.user.fullName,
+            email: state.user.email,
             createdAt: state.user.createdAt,
             photoUrl: state.user.photoUrl,
           );
@@ -338,6 +296,7 @@ class _ProfileViewState extends State<_ProfileView> {
           return _buildIdentityRow(
             firstName: '—',
             fullName: 'Could not load profile',
+            email: '',
             createdAt: null,
             errorMessage: state.message,
           );
@@ -345,65 +304,6 @@ class _ProfileViewState extends State<_ProfileView> {
         return _buildIdentitySkeleton();
       },
     );
-  }
-
-  Widget _buildPersonalInformationFromState() {
-    return BlocBuilder<ProfileCubit, ProfileState>(
-      builder: (context, state) {
-        String email = '—';
-        String phone = '—';
-        String address = '—';
-        if (state is ProfileLoaded) {
-          email = state.user.email;
-          phone = _formatPhone(state.user.phone, state.user.phoneExtra);
-          address = _formatAddress(state.user.address, state.user.location);
-        }
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle('PERSONAL INFORMATION'),
-            const SizedBox(height: 8),
-            _buildListCard([
-              _buildIconRow(
-                icon: Icons.mail_outline,
-                iconBgColor: _bgBlueTint,
-                iconColor: _blue,
-                title: 'Email',
-                trailingValue: email,
-              ),
-              _divider(),
-              _buildIconRow(
-                icon: Icons.phone_outlined,
-                iconBgColor: _bgGreenTint,
-                iconColor: _green,
-                title: 'Phone Number',
-                trailingValue: phone,
-              ),
-              _divider(),
-              _buildIconRow(
-                icon: Icons.place_outlined,
-                iconBgColor: _bgOrangeTint,
-                iconColor: _orange,
-                title: 'Address',
-                trailingValue: address,
-              ),
-            ]),
-          ],
-        );
-      },
-    );
-  }
-
-  String _formatPhone(String phone, String? extra) {
-    return extra == null || extra.isEmpty ? phone : '$phone · $extra';
-  }
-
-  String _formatAddress(String? address, String? location) {
-    final parts = <String>[
-      if (address != null && address.isNotEmpty) address,
-      if (location != null && location.isNotEmpty) location,
-    ];
-    return parts.isEmpty ? '—' : parts.join(', ');
   }
 
   Widget _buildIdentitySkeleton() {
@@ -518,9 +418,6 @@ class _ProfileViewState extends State<_ProfileView> {
       builder: (context, state) {
         final petCount = state is ProfileLoaded ? state.petCount : 0;
         final walkCount = state is ProfileLoaded ? state.walkCount : 0;
-        final avgRating = state is ProfileLoaded ? state.averageRating : 0.0;
-        final isWalker = state is ProfileLoaded &&
-            state.walkerProfile?.status == WalkerStatus.approved;
         return Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
@@ -545,26 +442,14 @@ class _ProfileViewState extends State<_ProfileView> {
                   label: 'Pets Registered',
                 ),
               ),
-              if (isWalker) ...[
-                _statDivider(),
-                Expanded(
-                  child: _buildStatCell(
-                    icon: Icons.directions_walk,
-                    iconBg: _bgGreenTint,
-                    iconColor: _green,
-                    value: '$walkCount',
-                    label: 'Completed Walks',
-                  ),
-                ),
-              ],
               _statDivider(),
               Expanded(
                 child: _buildStatCell(
-                  icon: Icons.star,
-                  iconBg: _bgGoldTint,
-                  iconColor: _gold,
-                  value: avgRating.toStringAsFixed(1),
-                  label: 'Average Rating',
+                  icon: Icons.directions_walk,
+                  iconBg: _bgGreenTint,
+                  iconColor: _green,
+                  value: '$walkCount',
+                  label: 'Total Walks',
                 ),
               ),
             ],
@@ -616,6 +501,9 @@ class _ProfileViewState extends State<_ProfileView> {
   }
 
   Widget _buildQuickActions() {
+    final unreadCount = context.watch<ProfileCubit>().state is ProfileLoaded
+        ? (context.watch<ProfileCubit>().state as ProfileLoaded).unreadNotificationCount
+        : 0;
     return Row(
       children: [
         Expanded(
@@ -652,19 +540,16 @@ class _ProfileViewState extends State<_ProfileView> {
         ),
         Expanded(
           child: _buildQuickAction(
-            icon: Icons.credit_card,
-            iconBg: _bgBlueTint,
-            iconColor: _blue,
-            label: 'Payments',
-          ),
-        ),
-        Expanded(
-          child: _buildQuickAction(
-            icon: Icons.notifications_outlined,
+            icon: Icons.notifications_active,
             iconBg: _bgOrangeTint,
             iconColor: _orange,
-            label: 'Alerts',
-            hasDot: true,
+            label: 'Notifications',
+            hasDot: unreadCount > 0,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const NotificationsScreen(),
+              ),
+            ),
           ),
         ),
       ],

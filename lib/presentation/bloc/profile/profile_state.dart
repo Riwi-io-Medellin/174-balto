@@ -24,18 +24,18 @@ class ProfileLoaded extends ProfileState {
     required this.user,
     this.pets = const [],
     this.walkCount = 0,
-    this.averageRating = 0.0,
     this.walkerProfile,
+    this.unreadNotificationCount = 0,
   });
 
   final User user;
   final List<Pet> pets;
   final int walkCount;
-  final double averageRating;
 
-  /// null  → user has never applied to become a walker
-  /// non-null → user has an application; check [walkerProfile.status]
+  /// null  => user has never applied to become a walker
+  /// non-null => user has an application; check [walkerProfile.status]
   final WalkerProfile? walkerProfile;
+  final int unreadNotificationCount;
 
   int get petCount => pets.length;
 
@@ -44,8 +44,8 @@ class ProfileLoaded extends ProfileState {
         user,
         pets,
         walkCount,
-        averageRating,
         walkerProfile,
+        unreadNotificationCount,
       ];
 }
 

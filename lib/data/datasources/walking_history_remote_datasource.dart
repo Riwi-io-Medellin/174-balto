@@ -7,13 +7,13 @@ class WalkingHistoryRemoteDataSource {
 
   final Dio _dio;
 
-  Future<List<Map<String, dynamic>>> getMyHistory() async {
+  Future<Map<String, dynamic>> getMyHistory() async {
     final response = await _dio.get<dynamic>('/walking-history/me');
     final status = response.statusCode ?? 0;
     final data = response.data;
 
-    if (status == 200 && data is List) {
-      return data.cast<Map<String, dynamic>>();
+    if (status == 200 && data is Map<String, dynamic>) {
+      return data;
     }
 
     if (data is Map<String, dynamic> &&

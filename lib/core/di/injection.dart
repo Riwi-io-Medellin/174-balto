@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/datasources/feedback_remote_datasource.dart';
 import '../../data/datasources/me_remote_datasource.dart';
+import '../../data/datasources/notification_remote_datasource.dart';
 import '../../data/datasources/pet_remote_datasource.dart';
 import '../../data/datasources/upload_remote_datasource.dart';
 import '../../data/datasources/user_remote_datasource.dart';
@@ -15,6 +16,7 @@ import '../../data/datasources/walking_history_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../data/repositories/feedback_repository_impl.dart';
 import '../../data/repositories/me_repository_impl.dart';
+import '../../data/repositories/notification_repository_impl.dart';
 import '../../data/repositories/pet_repository_impl.dart';
 import '../../data/repositories/upload_repository_impl.dart';
 import '../../data/repositories/user_repository_impl.dart';
@@ -26,6 +28,7 @@ import '../../data/repositories/walking_history_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/repositories/feedback_repository.dart';
 import '../../domain/repositories/me_repository.dart';
+import '../../domain/repositories/notification_repository.dart';
 import '../../domain/repositories/pet_repository.dart';
 import '../../domain/repositories/upload_repository.dart';
 import '../../domain/repositories/user_repository.dart';
@@ -83,6 +86,14 @@ void setupDependencies() {
   );
   sl.registerLazySingleton<WalkingHistoryRepository>(
     () => WalkingHistoryRepositoryImpl(sl<WalkingHistoryRemoteDataSource>()),
+  );
+
+  // Notifications
+  sl.registerLazySingleton<NotificationRemoteDataSource>(
+    () => NotificationRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(sl<NotificationRemoteDataSource>()),
   );
 
   // Upload
@@ -151,6 +162,7 @@ void setupDependencies() {
       petRepository: sl<PetRepository>(),
       walkingHistoryRepository: sl<WalkingHistoryRepository>(),
       walkerProfileRepository: sl<WalkerProfileRepository>(),
+      notificationRepository: sl<NotificationRepository>(),
     ),
   );
   sl.registerFactory<WalkerCubit>(() => WalkerCubit(sl<WalkerRepository>()));

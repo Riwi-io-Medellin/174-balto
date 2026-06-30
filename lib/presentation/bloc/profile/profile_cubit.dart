@@ -5,6 +5,7 @@ import '../../../core/utils/jwt_decoder.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/entities/user.dart';
 import '../../../domain/entities/walker_profile.dart';
+import '../../../domain/repositories/notification_repository.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../../domain/repositories/user_repository.dart';
 import '../../../domain/repositories/walker_profile_repository.dart';
@@ -18,11 +19,13 @@ class ProfileCubit extends Cubit<ProfileState> {
     required PetRepository petRepository,
     required WalkingHistoryRepository walkingHistoryRepository,
     required WalkerProfileRepository walkerProfileRepository,
+    required NotificationRepository notificationRepository,
   })  : _userRepository = userRepository,
         _tokenStorage = tokenStorage,
         _petRepository = petRepository,
         _walkingHistoryRepository = walkingHistoryRepository,
         _walkerProfileRepository = walkerProfileRepository,
+        _notificationRepository = notificationRepository,
         super(const ProfileInitial());
 
   final UserRepository _userRepository;
@@ -30,6 +33,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   final PetRepository _petRepository;
   final WalkingHistoryRepository _walkingHistoryRepository;
   final WalkerProfileRepository _walkerProfileRepository;
+  final NotificationRepository _notificationRepository;
 
   Future<void> load() async {
     emit(const ProfileLoading());
@@ -49,6 +53,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       final petsFuture = _petRepository.getMyPets();
       final walkCountFuture = _walkingHistoryRepository.getMyWalkCount();
       final walkerProfileFuture = _walkerProfileRepository.getMyProfile();
+      final unreadCountFuture = _notificationRepository.getUnreadCount();
 
       final User user = await userFuture;
       final savedPets = await _safeAwait<List<Pet>>(
@@ -63,13 +68,17 @@ class ProfileCubit extends Cubit<ProfileState> {
         walkerProfileFuture,
         onError: (_) => null,
       );
+      final unreadCount = await _safeAwait<int>(
+        unreadCountFuture,
+        onError: (_) => 0,
+      );
 
       emit(ProfileLoaded(
         user: user,
         pets: savedPets,
         walkCount: walkCount,
-        averageRating: 0.0,
         walkerProfile: walkerProfile,
+        unreadNotificationCount: unreadCount,
       ));
     } on UserFailure catch (e) {
       emit(ProfileError(e.code, e.message));
