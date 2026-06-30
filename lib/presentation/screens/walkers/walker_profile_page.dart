@@ -1129,8 +1129,9 @@ class _AvailabilitySlotsSection extends StatelessWidget {
   final List<AvailableSlot> slots;
 
   String _formatTime(DateTime dt) {
-    final hour = dt.hour;
-    final minute = dt.minute;
+    final local = dt.toLocal();
+    final hour = local.hour;
+    final minute = local.minute;
     final period = hour < 12 ? 'AM' : 'PM';
     final h = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
     final m = minute.toString().padLeft(2, '0');
