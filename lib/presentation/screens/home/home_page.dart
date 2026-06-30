@@ -14,6 +14,8 @@ import 'widgets/pet_hero_card.dart';
 import 'widgets/quick_care_grid.dart';
 import 'widgets/walk_card.dart';
 import '../pets/manage_pets_screen.dart';
+import '../../widgets/skeletons/home_skeleton.dart';
+import '../../widgets/skeletons/walks_skeleton.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key, this.onOpenServices});
@@ -81,6 +83,8 @@ class _HomeViewState extends State<_HomeView>
         body: SafeArea(
           child: BlocBuilder<ProfileCubit, ProfileState>(
             builder: (context, state) {
+              if (state is ProfileLoading) return const HomeSkeleton();
+
               final firstName =
                   state is ProfileLoaded ? state.user.firstName : 'there';
               final photoUrl =
@@ -146,12 +150,7 @@ class _WalksSection extends StatelessWidget {
     return BlocBuilder<MyWalksCubit, MyWalksState>(
       builder: (context, state) {
         if (state is MyWalksLoading || state is MyWalksInitial) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          );
+          return const WalksSkeleton();
         }
 
         if (state is! MyWalksLoaded) return const SizedBox.shrink();

@@ -10,6 +10,7 @@ import '../../bloc/walker/walker_cubit.dart';
 import '../../bloc/walker/walker_state.dart';
 import '../../screens/walkers/walker_profile_page.dart';
 import 'business_profile_page.dart';
+import '../../widgets/skeletons/services_skeleton.dart';
 import 'widgets/business_card.dart';
 import 'widgets/compact_walker_card.dart';
 import 'widgets/service_category_chip.dart';
@@ -110,10 +111,7 @@ class _ServicesPageState extends State<ServicesPage> {
                 child: BlocBuilder<WalkerCubit, WalkerState>(
                   builder: (context, walkerState) {
                     if (walkerState is WalkerLoading) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                            color: AppColors.navWalkers),
-                      );
+                      return const ServicesSkeleton();
                     }
 
                     if (walkerState is WalkerError) {

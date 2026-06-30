@@ -19,6 +19,7 @@ import '../walkers/become_walker_screen.dart';
 import '../walkers/edit_walker_profile_screen.dart';
 import '../walkers/walker_availability_screen.dart';
 import '../walkers/walker_bookings_screen.dart';
+import '../../widgets/skeletons/profile_skeleton.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -64,6 +65,25 @@ class _ProfileViewState extends State<_ProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    if (context.watch<ProfileCubit>().state is ProfileLoading) {
+      return Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFFE7EAFF),
+                Color(0xFFEDF0FB),
+                Color(0xFFF4F6FA),
+              ],
+            ),
+          ),
+          child: const SafeArea(child: ProfileSkeleton()),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
