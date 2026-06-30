@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:geolocator/geolocator.dart';
+import 'package:geolocator_android/geolocator_android.dart';
 
 class WalkerLiveWalkService {
   StreamSubscription<Position>? _positionSub;
@@ -9,10 +11,28 @@ class WalkerLiveWalkService {
   Stream<Position> get positionStream => _positionController.stream;
 
   Future<void> start() async {
-    const settings = LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 10,
-    );
+    final LocationSettings settings;
+
+    if (Platform.isAndroid) {
+      settings = AndroidSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+        // Foreground service keeps GPS alive with screen locked.
+        foregroundNotificationConfig: const ForegroundNotificationConfig(
+          notificationTitle: 'Balto — Walk in progress',
+          notificationText: 'Recording your route in the background.',
+          enableWakeLock: true,
+          enableWifiLock: true,
+        ),
+      );
+    } else {
+      // iOS: UIBackgroundModes = location in Info.plist handles background.
+      settings = const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 10,
+      );
+    }
+
     _positionSub = Geolocator.getPositionStream(locationSettings: settings)
         .listen(_positionController.add);
   }

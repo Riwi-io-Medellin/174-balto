@@ -9,6 +9,7 @@ import '../../../domain/entities/walk_booking.dart';
 import '../../bloc/my_walks/my_walks_cubit.dart';
 import '../../bloc/my_walks/my_walks_state.dart';
 import 'live_walk_screen.dart';
+import 'walk_route_summary_screen.dart';
 
 class WalksPage extends StatelessWidget {
   const WalksPage({super.key});
@@ -90,6 +91,24 @@ class _WalksView extends StatelessWidget {
           }
 
           if (state is MyWalksLoaded) {
+            final now = DateTime.now();
+            final completedToday = state.history
+                .where((b) =>
+                    b.status == WalkBookingStatus.completed &&
+                    b.slotStart.year == now.year &&
+                    b.slotStart.month == now.month &&
+                    b.slotStart.day == now.day)
+                .toList()
+              ..sort((a, b) => b.slotStart.compareTo(a.slotStart));
+            final olderHistory = state.history
+                .where((b) => !completedToday.contains(b))
+                .toList();
+            final isEmpty = state.inProgress.isEmpty &&
+                state.pending.isEmpty &&
+                state.upcoming.isEmpty &&
+                completedToday.isEmpty &&
+                olderHistory.isEmpty;
+
             return RefreshIndicator(
               color: AppColors.navWalks,
               onRefresh: () => context.read<MyWalksCubit>().refresh(),
@@ -133,19 +152,31 @@ class _WalksView extends StatelessWidget {
                       ),
                     ),
                   ],
-                  if (state.history.isNotEmpty) ...[
+                  if (completedToday.isNotEmpty) ...[
+                    const _SectionHeader(
+                        label: 'Completed Today',
+                        color: Color(0xFF1BAA71)),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (ctx, i) =>
+                            _BookingCard(booking: completedToday[i]),
+                        childCount: completedToday.length,
+                      ),
+                    ),
+                  ],
+                  if (olderHistory.isNotEmpty) ...[
                     const _SectionHeader(
                         label: 'History',
                         color: Color(0xFF8A95A3)),
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (ctx, i) =>
-                            _BookingCard(booking: state.history[i]),
-                        childCount: state.history.length,
+                            _BookingCard(booking: olderHistory[i]),
+                        childCount: olderHistory.length,
                       ),
                     ),
                   ],
-                  if (state.isEmpty)
+                  if (isEmpty)
                     SliverFillRemaining(
                       child: Center(
                         child: Column(
@@ -316,7 +347,21 @@ class _BookingCard extends StatelessWidget {
                       builder: (_) => LiveWalkScreen(booking: booking),
                     ),
                   )
-              : null,
+              : booking.status == WalkBookingStatus.completed &&
+                      booking.walkSessionId != null
+                  ? () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => WalkRouteSummaryScreen(
+                            sessionId: booking.walkSessionId!,
+                            distanceKm:
+                                (booking.actualDistanceMeters ?? 0) / 1000,
+                            elapsedSeconds: booking.actualDurationSeconds ??
+                                booking.durationMinutes * 60,
+                          ),
+                        ),
+                      )
+                  : null,
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),

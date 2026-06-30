@@ -42,8 +42,11 @@ class BaltoBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // viewPadding.bottom is the raw system nav bar height (gesture strip or
+    // 3-button bar). Adding it ensures the pill always floats above it.
+    final systemBottom = MediaQuery.of(context).viewPadding.bottom;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: EdgeInsets.fromLTRB(20, 8, 20, (systemBottom > 0 ? systemBottom : 16)),
       child: Container(
         height: 68,
         decoration: BoxDecoration(

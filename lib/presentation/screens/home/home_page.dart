@@ -12,7 +12,6 @@ import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
 import '../pets/manage_pets_screen.dart';
 import '../walks/live_walk_screen.dart';
-import '../walks/walk_route_summary_screen.dart';
 import '../../widgets/skeletons/home_skeleton.dart';
 import 'widgets/daily_tip_card.dart';
 import 'widgets/greeting_header.dart';
@@ -211,13 +210,6 @@ class _WalksSection extends StatelessWidget {
           cards.add(const SizedBox(height: 10));
         }
 
-        // Completed today card
-        final completedToday = _findCompletedToday(state);
-        if (completedToday != null) {
-          cards.add(_CompletedTodayCard(booking: completedToday));
-          cards.add(const SizedBox(height: 10));
-        }
-
         if (cards.isEmpty) {
           return const _EmptyWalksCard();
         }
@@ -231,35 +223,8 @@ class _WalksSection extends StatelessWidget {
   }
 
   WalkBooking? _findLiveBooking(MyWalksLoaded state) {
-    // Backend status "in_progress" is the authoritative signal the walk started.
     for (final b in state.bookings) {
       if (b.status == WalkBookingStatus.inProgress) return b;
-    }
-    // Accepted + session started (may still be "accepted" on stale data).
-    for (final b in state.bookings) {
-      if (b.status == WalkBookingStatus.accepted && b.walkSessionId != null) {
-        return b;
-      }
-    }
-    // Fallback: accepted + inside scheduled window.
-    final now = DateTime.now();
-    for (final b in state.bookings) {
-      if (b.status != WalkBookingStatus.accepted) continue;
-      final window = b.slotStart.subtract(const Duration(minutes: 5));
-      final end = b.slotStart.add(Duration(minutes: b.durationMinutes));
-      if (now.isAfter(window) && now.isBefore(end)) return b;
-    }
-    return null;
-  }
-
-  WalkBooking? _findCompletedToday(MyWalksLoaded state) {
-    final today = DateTime.now();
-    for (final b in state.history) {
-      if (b.status != WalkBookingStatus.completed) continue;
-      final d = b.slotStart;
-      if (d.year == today.year && d.month == today.month && d.day == today.day) {
-        return b;
-      }
     }
     return null;
   }
@@ -464,77 +429,6 @@ class _UpcomingWalkCard extends StatelessWidget {
   String _weekday(int w) => const [
         '', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
       ][w];
-}
-
-// ── Completed today card ───────────────────────────────────────────────────────
-
-class _CompletedTodayCard extends StatelessWidget {
-  const _CompletedTodayCard({required this.booking});
-
-  final WalkBooking booking;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => WalkRouteSummaryScreen(
-            sessionId: booking.walkSessionId ?? '',
-            distanceKm: (booking.actualDistanceMeters ?? 0) / 1000,
-            elapsedSeconds:
-                booking.actualDurationSeconds ?? booking.durationMinutes * 60,
-          ),
-        ),
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: const Color(0xFFFBF6E9),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFF1C97A).withValues(alpha: 0.6)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF6C86A).withValues(alpha: 0.25),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.directions_walk_rounded,
-                color: Color(0xFFA8791F),
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Today's walk — completed",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF1F2937),
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    '${booking.durationMinutes} min · Tap to see summary',
-                    style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0)),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.chevron_right, size: 20, color: Color(0xFF8A93A0)),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 // ── Empty / loading states ─────────────────────────────────────────────────────
