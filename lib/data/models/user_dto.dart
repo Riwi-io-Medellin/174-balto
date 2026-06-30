@@ -14,6 +14,8 @@ class UserDto {
     this.address,
     this.photoUrl,
     required this.createdAt,
+    this.latitude,
+    this.longitude,
   });
 
   final String id;
@@ -28,6 +30,8 @@ class UserDto {
   final String? address;
   final String? photoUrl;
   final DateTime createdAt;
+  final double? latitude;
+  final double? longitude;
 
   factory UserDto.fromJson(Map<String, dynamic> json) {
     return UserDto(
@@ -43,6 +47,8 @@ class UserDto {
       address: json['address'] as String?,
       photoUrl: json['photoUrl'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String).toLocal(),
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
     );
   }
 
@@ -59,5 +65,7 @@ class UserDto {
         address: address,
         photoUrl: photoUrl,
         createdAt: createdAt,
+        latitude: latitude,
+        longitude: longitude,
       );
 }

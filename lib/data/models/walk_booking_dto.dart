@@ -16,6 +16,9 @@ class BookingResponseDto {
     this.walkSessionId,
     this.actualDistanceMeters,
     this.actualDurationSeconds,
+    this.ownerLatitude,
+    this.ownerLongitude,
+    this.ownerAddress,
   });
 
   factory BookingResponseDto.fromJson(Map<String, dynamic> json) {
@@ -34,6 +37,9 @@ class BookingResponseDto {
       walkSessionId: json['walkSessionId'] as String?,
       actualDistanceMeters: (json['totalDistanceMeters'] as num?)?.toDouble(),
       actualDurationSeconds: json['totalDurationSeconds'] as int?,
+      ownerLatitude: (json['ownerLatitude'] as num?)?.toDouble(),
+      ownerLongitude: (json['ownerLongitude'] as num?)?.toDouble(),
+      ownerAddress: json['ownerAddress'] as String?,
     );
   }
 
@@ -75,6 +81,9 @@ class BookingResponseDto {
   final String? walkSessionId;
   final double? actualDistanceMeters;
   final int? actualDurationSeconds;
+  final double? ownerLatitude;
+  final double? ownerLongitude;
+  final String? ownerAddress;
 
   WalkBooking toEntity() => WalkBooking(
         id: id,
@@ -91,5 +100,8 @@ class BookingResponseDto {
         walkSessionId: walkSessionId,
         actualDistanceMeters: actualDistanceMeters,
         actualDurationSeconds: actualDurationSeconds,
+        ownerLatitude: ownerLatitude,
+        ownerLongitude: ownerLongitude,
+        ownerAddress: ownerAddress,
       );
 }

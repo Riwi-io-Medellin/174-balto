@@ -56,6 +56,7 @@ class WalkerProfileRepositoryImpl implements WalkerProfileRepository {
     double? serviceRadiusKm,
     int? yearsOfExperience,
     bool? isAcceptingBookings,
+    int? maxDogs,
     double? workLatitude,
     double? workLongitude,
   }) async {
@@ -66,6 +67,7 @@ class WalkerProfileRepositoryImpl implements WalkerProfileRepository {
         serviceRadiusKm: serviceRadiusKm,
         yearsOfExperience: yearsOfExperience,
         isAcceptingBookings: isAcceptingBookings,
+        maxDogs: maxDogs,
         workLatitude: workLatitude,
         workLongitude: workLongitude,
       );

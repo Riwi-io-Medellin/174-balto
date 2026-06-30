@@ -19,6 +19,7 @@ abstract class WalkerProfileRepository {
     double? serviceRadiusKm,
     int? yearsOfExperience,
     bool? isAcceptingBookings,
+    int? maxDogs,
     double? workLatitude,
     double? workLongitude,
   });

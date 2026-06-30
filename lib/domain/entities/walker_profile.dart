@@ -16,6 +16,7 @@ class WalkerProfile extends Equatable {
     this.serviceRadiusKm,
     this.yearsOfExperience,
     this.isAcceptingBookings = false,
+    this.maxDogs,
     this.documentName,
     this.documentNumber,
     this.workLatitude,
@@ -36,6 +37,7 @@ class WalkerProfile extends Equatable {
   final double? serviceRadiusKm;
   final int? yearsOfExperience;
   final bool isAcceptingBookings;
+  final int? maxDogs;
   final String? documentName;
   final String? documentNumber;
   final double? workLatitude;
@@ -57,6 +59,7 @@ class WalkerProfile extends Equatable {
         serviceRadiusKm,
         yearsOfExperience,
         isAcceptingBookings,
+        maxDogs,
         documentName,
         documentNumber,
         workLatitude,

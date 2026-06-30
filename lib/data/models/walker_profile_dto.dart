@@ -14,6 +14,7 @@ class WalkerProfileDto {
     this.serviceRadiusKm,
     this.yearsOfExperience,
     this.isAcceptingBookings = false,
+    this.maxDogs,
     this.documentName,
     this.documentNumber,
     this.workLatitude,
@@ -37,6 +38,7 @@ class WalkerProfileDto {
       serviceRadiusKm: (json['serviceRadiusKm'] as num?)?.toDouble(),
       yearsOfExperience: json['yearsOfExperience'] as int?,
       isAcceptingBookings: json['isAcceptingBookings'] as bool? ?? false,
+      maxDogs: json['maxDogs'] as int?,
       documentName: json['documentName'] as String?,
       documentNumber: json['documentNumber'] as String?,
       workLatitude: (json['workLatitude'] as num?)?.toDouble(),
@@ -72,6 +74,7 @@ class WalkerProfileDto {
   final double? serviceRadiusKm;
   final int? yearsOfExperience;
   final bool isAcceptingBookings;
+  final int? maxDogs;
   final String? documentName;
   final String? documentNumber;
   final double? workLatitude;
@@ -103,6 +106,7 @@ class WalkerProfileDto {
         serviceRadiusKm: serviceRadiusKm,
         yearsOfExperience: yearsOfExperience,
         isAcceptingBookings: isAcceptingBookings,
+        maxDogs: maxDogs,
         documentName: documentName,
         documentNumber: documentNumber,
         workLatitude: workLatitude,

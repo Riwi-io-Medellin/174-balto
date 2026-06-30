@@ -36,6 +36,8 @@ class UserRepositoryImpl implements UserRepository {
     String? location,
     String? address,
     String? photoUrl,
+    double? latitude,
+    double? longitude,
   }) async {
     try {
       final data = <String, dynamic>{
@@ -48,6 +50,8 @@ class UserRepositoryImpl implements UserRepository {
         if (location case final v?) 'location': v,
         if (address case final v?) 'address': v,
         if (photoUrl case final v?) 'photoUrl': v,
+        if (latitude case final v?) 'latitude': v,
+        if (longitude case final v?) 'longitude': v,
       };
       final dto = await _remote.update(id, data);
       return dto.toEntity();

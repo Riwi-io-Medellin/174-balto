@@ -16,6 +16,7 @@ class WalkBookingRepositoryImpl implements WalkBookingRepository {
     required DateTime slotStart,
     required int durationMinutes,
     String? specialInstructions,
+    bool isExclusive = false,
   }) async {
     try {
       final dto = await _remote.createBooking(
@@ -24,6 +25,7 @@ class WalkBookingRepositoryImpl implements WalkBookingRepository {
         slotStart: slotStart.toIso8601String(),
         durationMinutes: durationMinutes,
         specialInstructions: specialInstructions,
+        isExclusive: isExclusive,
       );
       return dto.toEntity();
     } on WalkBookingFailure {

@@ -16,7 +16,7 @@ class WalkerLiveWalkService {
     if (Platform.isAndroid) {
       settings = AndroidSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 10,
+        distanceFilter: 0,
         // Foreground service keeps GPS alive with screen locked.
         foregroundNotificationConfig: const ForegroundNotificationConfig(
           notificationTitle: 'Balto — Walk in progress',
@@ -29,7 +29,7 @@ class WalkerLiveWalkService {
       // iOS: UIBackgroundModes = location in Info.plist handles background.
       settings = const LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 10,
+        distanceFilter: 0,
       );
     }
 

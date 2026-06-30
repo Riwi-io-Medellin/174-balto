@@ -14,6 +14,7 @@ class WalkBookingRemoteDataSource {
     required String slotStart,
     required int durationMinutes,
     String? specialInstructions,
+    bool isExclusive = false,
   }) async {
     final body = <String, dynamic>{
       'walkerId': walkerId,
@@ -22,6 +23,7 @@ class WalkBookingRemoteDataSource {
       'durationMinutes': durationMinutes,
       if (specialInstructions != null && specialInstructions.isNotEmpty)
         'specialInstructions': specialInstructions,
+      if (isExclusive) 'isExclusive': true,
     };
 
     final response = await _dio.post<dynamic>('/walk-bookings/', data: body);

@@ -46,6 +46,8 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
       }
 
       _sessionId = await _sessionRepository.startSession(booking.id);
+      // ignore: avoid_print
+      print('[WalkerLive] Session started: $_sessionId');
 
       await _liveWalkService.start();
 
@@ -65,6 +67,8 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
   }
 
   void _onPosition(Position position) {
+    // ignore: avoid_print
+    print('[WalkerLive] GPS fix: ${position.latitude}, ${position.longitude} acc=${position.accuracy}m');
     final s = state;
     if (s is! WalkerLiveWalkActive) return;
 
@@ -87,7 +91,8 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
     if (id != null) {
       _sessionRepository
           .addLocation(id, position.latitude, position.longitude)
-          .catchError((_) {});
+          // ignore: avoid_print
+          .catchError((e) => print('[WalkerLive] addLocation error: $e'));
     }
   }
 

@@ -14,6 +14,8 @@ class User extends Equatable {
     this.address,
     this.photoUrl,
     required this.createdAt,
+    this.latitude,
+    this.longitude,
   });
 
   final String id;
@@ -28,6 +30,8 @@ class User extends Equatable {
   final String? address;
   final String? photoUrl;
   final DateTime createdAt;
+  final double? latitude;
+  final double? longitude;
 
   String get fullName => '$firstName $lastName';
 
@@ -45,5 +49,7 @@ class User extends Equatable {
         address,
         photoUrl,
         createdAt,
+        latitude,
+        longitude,
       ];
 }

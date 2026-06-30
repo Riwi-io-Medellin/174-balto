@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -91,6 +93,7 @@ class _WalkerBookingsView extends StatelessWidget {
                     emptyMessage: 'No pending bookings.',
                     isPerformingAction: state.isPerformingAction,
                     tabType: _TabType.pending,
+                    acceptedBookings: state.upcoming,
                   ),
                   _BookingList(
                     bookings: state.upcoming,
@@ -166,12 +169,14 @@ class _BookingList extends StatelessWidget {
     required this.emptyMessage,
     required this.isPerformingAction,
     required this.tabType,
+    this.acceptedBookings = const [],
   });
 
   final List<WalkBooking> bookings;
   final String emptyMessage;
   final bool isPerformingAction;
   final _TabType tabType;
+  final List<WalkBooking> acceptedBookings;
 
   @override
   Widget build(BuildContext context) {
@@ -199,10 +204,20 @@ class _BookingList extends StatelessWidget {
                 booking: bookings[index],
                 isPerformingAction: isPerformingAction,
                 tabType: tabType,
+                acceptedBookings: acceptedBookings,
               ),
             ),
     );
   }
+}
+
+double _haversineKm(double lat1, double lon1, double lat2, double lon2) {
+  const r = 6371.0;
+  final dLat = (lat2 - lat1) * pi / 180;
+  final dLon = (lon2 - lon1) * pi / 180;
+  final a = sin(dLat / 2) * sin(dLat / 2) +
+      cos(lat1 * pi / 180) * cos(lat2 * pi / 180) * sin(dLon / 2) * sin(dLon / 2);
+  return r * 2 * atan2(sqrt(a), sqrt(1 - a));
 }
 
 class _BookingCard extends StatelessWidget {
@@ -210,11 +225,13 @@ class _BookingCard extends StatelessWidget {
     required this.booking,
     required this.isPerformingAction,
     required this.tabType,
+    this.acceptedBookings = const [],
   });
 
   final WalkBooking booking;
   final bool isPerformingAction;
   final _TabType tabType;
+  final List<WalkBooking> acceptedBookings;
 
   static const _green = Color(0xFF1BAA71);
   static const _orange = Color(0xFFD05A24);
@@ -229,6 +246,20 @@ class _BookingCard extends StatelessWidget {
     return now.isAfter(window) && now.isBefore(end);
   }
 
+  double? _minDistanceKmToAccepted() {
+    if (booking.ownerLatitude == null || booking.ownerLongitude == null) return null;
+    double? minDist;
+    for (final b in acceptedBookings) {
+      if (b.ownerLatitude == null || b.ownerLongitude == null) continue;
+      final d = _haversineKm(
+        booking.ownerLatitude!, booking.ownerLongitude!,
+        b.ownerLatitude!, b.ownerLongitude!,
+      );
+      if (minDist == null || d < minDist) minDist = d;
+    }
+    return minDist;
+  }
+
   @override
   Widget build(BuildContext context) {
     final local = booking.slotStart.toLocal();
@@ -240,12 +271,18 @@ class _BookingCard extends StatelessWidget {
             ? '\$${booking.snapshotHourlyRate!.toStringAsFixed(2)}/hr'
             : null;
 
+    final distKm = tabType == _TabType.pending ? _minDistanceKmToAccepted() : null;
+    final isFarAway = distKm != null && distKm > 3.0;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: isFarAway ? const Color(0xFFFFD97A) : Colors.grey.shade200,
+          width: isFarAway ? 1.5 : 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -311,6 +348,50 @@ class _BookingCard extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ],
+            if (tabType == _TabType.pending && booking.ownerAddress != null) ...[
+              const SizedBox(height: 8),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.place_rounded, size: 14, color: Color(0xFF3A80C2)),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      booking.ownerAddress!,
+                      style: const TextStyle(fontSize: 12, color: Color(0xFF3A80C2)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+            if (isFarAway) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF8EC),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFFFD97A)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.warning_amber_rounded,
+                        size: 15, color: Color(0xFFB87300)),
+                    const SizedBox(width: 7),
+                    Expanded(
+                      child: Text(
+                        '${distKm.toStringAsFixed(1)} km from your accepted walk — accepting may be difficult.',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFFB87300),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
             if (tabType == _TabType.pending) ...[

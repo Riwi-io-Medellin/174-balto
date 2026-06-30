@@ -21,14 +21,14 @@ class CreatePetScreen extends StatefulWidget {
 class _CreatePetScreenState extends State<CreatePetScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
-  final _speciesCtrl = TextEditingController();
-  final _breedCtrl = TextEditingController();
   final _weightCtrl = TextEditingController();
   final _descriptionCtrl = TextEditingController();
   final _picker = ImagePicker();
   DateTime? _birthDate;
   XFile? _pickedImage;
   bool _saving = false;
+  String? _selectedSpecies;
+  String? _selectedBreed;
 
   static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
@@ -36,32 +36,32 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
   static const Color _textDark = Color(0xFF1A1A2E);
   static const Color _textMuted = Color(0xFF6B7280);
 
-  static const _speciesSuggestions = [
-    'Dog', 'Cat', 'Bird', 'Rabbit', 'Fish',
-    'Hamster', 'Turtle', 'Guinea Pig', 'Parrot', 'Snake',
+  static const _speciesList = [
+    'Dog', 'Cat', 'Rabbit', 'Hamster', 'Guinea Pig', 'Ferret',
+    'Bird', 'Fish', 'Turtle', 'Snake', 'Chinchilla', 'Parrot',
   ];
 
-  static const _breedSuggestions = <String, List<String>>{
-    'Dog': ['Golden Retriever', 'Labrador', 'Bulldog', 'Poodle', 'German Shepherd', 'Beagle', 'Husky', 'Chihuahua', 'Rottweiler', 'Dachshund'],
-    'Cat': ['Persian', 'Siamese', 'Maine Coon', 'British Shorthair', 'Bengal', 'Ragdoll', 'Abyssinian', 'Sphynx'],
-    'Bird': ['Canary', 'Parakeet', 'Cockatiel', 'African Grey', 'Lovebird', 'Macaw'],
-    'Rabbit': ['Holland Lop', 'Lionhead', 'Mini Rex', 'Dutch', 'Angora'],
-    'Hamster': ['Syrian', 'Dwarf', 'Roborovski'],
-    'Guinea Pig': ['American', 'Peruvian', 'Teddy', 'Silkie'],
+  static const _breedOptions = <String, List<String>>{
+    'Dog': [
+      'Mixed-breed',
+      'Labrador Retriever', 'Golden Retriever', 'French Bulldog', 'Bulldog',
+      'Poodle', 'Beagle', 'Rottweiler', 'German Shepherd', 'Yorkshire Terrier',
+      'Dachshund', 'Husky', 'Boxer', 'Chihuahua', 'Shih Tzu',
+      'Doberman', 'Border Collie', 'Pomeranian', 'Maltese', 'Schnauzer',
+      'Cocker Spaniel', 'Great Dane',
+    ],
+    'Cat': [
+      'Mixed-breed',
+      'Persian', 'Siamese', 'Maine Coon', 'Ragdoll', 'Bengal',
+      'British Shorthair', 'Abyssinian', 'Sphynx', 'Russian Blue',
+      'Scottish Fold', 'Birman', 'American Shorthair',
+      'Norwegian Forest Cat', 'Burmese', 'Turkish Angora',
+    ],
   };
-
-  @override
-  void initState() {
-    super.initState();
-    _speciesCtrl.addListener(() => setState(() {}));
-    _breedCtrl.addListener(() => setState(() {}));
-  }
 
   @override
   void dispose() {
     _nameCtrl.dispose();
-    _speciesCtrl.dispose();
-    _breedCtrl.dispose();
     _weightCtrl.dispose();
     _descriptionCtrl.dispose();
     super.dispose();
@@ -79,6 +79,29 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
         borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 16),
+    );
+  }
+
+  InputDecoration _dropdownDecoration({required String hint, required IconData icon}) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: _textMuted, fontSize: 14),
+      prefixIcon: Icon(icon, color: _textMuted, size: 20),
+      filled: true,
+      fillColor: _inputFill,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: _primary, width: 1.5),
+      ),
+      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
   }
 
@@ -116,8 +139,8 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
 
       await sl<PetRepository>().create(
         name: _nameCtrl.text.trim(),
-        species: _speciesCtrl.text.trim().isEmpty ? null : _speciesCtrl.text.trim(),
-        breed: _breedCtrl.text.trim().isEmpty ? null : _breedCtrl.text.trim(),
+        species: _selectedSpecies,
+        breed: _selectedBreed,
         birthDate: _birthDate,
         description: _descriptionCtrl.text.trim().isEmpty ? null : _descriptionCtrl.text.trim(),
         photoUrl: photoUrl,
@@ -189,35 +212,12 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                   validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
                 ),
                 const SizedBox(height: 20),
-                _buildSuggestionField(
-                  label: 'Species',
-                  controller: _speciesCtrl,
-                  hint: 'e.g. Dog, Cat or type your own',
-                  icon: Icons.category_outlined,
-                  suggestions: _speciesSuggestions,
-                  onChipTap: (s) => setState(() {
-                    _speciesCtrl.text = s;
-                    _speciesCtrl.selection = TextSelection.fromPosition(
-                      TextPosition(offset: s.length),
-                    );
-                    _breedCtrl.clear();
-                  }),
-                ),
+                _buildSpeciesDropdown(),
                 const SizedBox(height: 20),
-                _buildSuggestionField(
-                  label: 'Breed',
-                  controller: _breedCtrl,
-                  hint: 'e.g. Golden Retriever or type your own',
-                  icon: Icons.style_outlined,
-                  suggestions: _breedSuggestions[_speciesCtrl.text] ?? const [],
-                  onChipTap: (s) => setState(() {
-                    _breedCtrl.text = s;
-                    _breedCtrl.selection = TextSelection.fromPosition(
-                      TextPosition(offset: s.length),
-                    );
-                  }),
-                ),
-                const SizedBox(height: 20),
+                if (_breedOptions.containsKey(_selectedSpecies)) ...[
+                  _buildBreedDropdown(),
+                  const SizedBox(height: 20),
+                ],
                 _fieldLabel('Birth Date'),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -302,56 +302,56 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
     );
   }
 
-  Widget _buildSuggestionField({
-    required String label,
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    required List<String> suggestions,
-    required void Function(String) onChipTap,
-  }) {
+  Widget _buildSpeciesDropdown() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _fieldLabel(label),
+        _fieldLabel('Species'),
         const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          style: const TextStyle(fontSize: 14, color: _textDark),
-          decoration: _decoration(hint: hint, icon: icon),
-        ),
-        if (suggestions.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 6,
-            runSpacing: 4,
-            children: suggestions.map((s) {
-              final selected = controller.text == s;
-              return GestureDetector(
-                onTap: () => onChipTap(s),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: selected ? _primary.withValues(alpha: 0.12) : _inputFill,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: selected ? _primary : Colors.transparent,
-                    ),
-                  ),
-                  child: Text(
-                    s,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: selected ? _primary : _textMuted,
-                      fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
+        DropdownButtonFormField<String>(
+          value: _selectedSpecies,
+          isExpanded: true,
+          decoration: _dropdownDecoration(
+            hint: 'Select species',
+            icon: Icons.category_outlined,
           ),
-        ],
+          style: const TextStyle(fontSize: 14, color: _textDark),
+          dropdownColor: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          items: _speciesList
+              .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+              .toList(),
+          onChanged: (value) => setState(() {
+            _selectedSpecies = value;
+            _selectedBreed = null;
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBreedDropdown() {
+    final breeds = _breedOptions[_selectedSpecies] ?? [];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _fieldLabel('Breed'),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: _selectedBreed,
+          isExpanded: true,
+          decoration: _dropdownDecoration(
+            hint: 'Select breed',
+            icon: Icons.style_outlined,
+          ),
+          style: const TextStyle(fontSize: 14, color: _textDark),
+          dropdownColor: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          items: breeds
+              .map((b) => DropdownMenuItem(value: b, child: Text(b)))
+              .toList(),
+          onChanged: (value) => setState(() => _selectedBreed = value),
+        ),
       ],
     );
   }

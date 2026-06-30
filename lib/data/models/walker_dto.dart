@@ -18,6 +18,7 @@ class WalkerSummaryDto {
     this.serviceRadiusKm,
     required this.distanceKm,
     required this.hasAvailability,
+    this.maxDogs,
   });
 
   factory WalkerSummaryDto.fromJson(Map<String, dynamic> json) {
@@ -33,6 +34,7 @@ class WalkerSummaryDto {
       serviceRadiusKm: (json['serviceRadiusKm'] as num?)?.toDouble(),
       distanceKm: (json['distanceKm'] as num).toDouble(),
       hasAvailability: json['hasAvailability'] as bool? ?? false,
+      maxDogs: json['maxDogs'] as int?,
     );
   }
 
@@ -47,6 +49,7 @@ class WalkerSummaryDto {
   final double? serviceRadiusKm;
   final double distanceKm;
   final bool hasAvailability;
+  final int? maxDogs;
 
   Walker toEntity() => Walker(
         id: id,
@@ -66,7 +69,7 @@ class WalkerSummaryDto {
         galleryImages: const [],
         pricePerWalk: hourlyRate,
         serviceArea: '',
-        maxDogs: null,
+        maxDogs: maxDogs,
         completedWalks: null,
         avatarUrl: profilePhoto,
       );
@@ -87,6 +90,7 @@ class WalkerDetailDto {
     required this.averageRating,
     required this.totalReviews,
     required this.completedWalks,
+    this.maxDogs,
     this.weeklyAvailability = const [],
     this.availableSlots = const [],
   });
@@ -107,6 +111,7 @@ class WalkerDetailDto {
       averageRating: (json['averageRating'] as num).toDouble(),
       totalReviews: json['totalReviews'] as int,
       completedWalks: json['completedWalks'] as int,
+      maxDogs: json['maxDogs'] as int?,
       weeklyAvailability: weekly is List
           ? AvailabilitySlotDto.fromJsonList(weekly)
               .map((d) => d.toEntity())
@@ -130,6 +135,7 @@ class WalkerDetailDto {
   final double averageRating;
   final int totalReviews;
   final int completedWalks;
+  final int? maxDogs;
   final List<AvailabilitySlot> weeklyAvailability;
   final List<AvailableSlot> availableSlots;
 
@@ -152,7 +158,7 @@ class WalkerDetailDto {
         pricePerWalk: hourlyRate,
         serviceArea: workLocation,
         serviceRadiusKm: serviceRadiusKm,
-        maxDogs: null,
+        maxDogs: maxDogs,
         completedWalks: completedWalks,
         avatarUrl: profilePhoto,
         weeklyAvailability: weeklyAvailability,

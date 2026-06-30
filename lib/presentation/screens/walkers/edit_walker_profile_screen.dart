@@ -24,6 +24,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
   late final TextEditingController _priceCtrl;
   late final TextEditingController _yearsCtrl;
   late final TextEditingController _radiusCtrl;
+  late final TextEditingController _maxDogsCtrl;
 
   bool _isAcceptingBookings = true;
   bool _saving = false;
@@ -42,6 +43,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
     _priceCtrl = TextEditingController();
     _yearsCtrl = TextEditingController();
     _radiusCtrl = TextEditingController();
+    _maxDogsCtrl = TextEditingController();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       try {
@@ -65,6 +67,8 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
               wp.serviceRadiusKm != null
                   ? wp.serviceRadiusKm.toString()
                   : '';
+          _maxDogsCtrl.text =
+              wp.maxDogs != null ? wp.maxDogs.toString() : '';
           _isAcceptingBookings = wp.isAcceptingBookings;
           setState(() => _initialized = true);
         }
@@ -82,6 +86,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
     _priceCtrl.dispose();
     _yearsCtrl.dispose();
     _radiusCtrl.dispose();
+    _maxDogsCtrl.dispose();
     super.dispose();
   }
 
@@ -96,6 +101,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
         serviceRadiusKm: double.tryParse(_radiusCtrl.text.trim()),
         yearsOfExperience: int.tryParse(_yearsCtrl.text.trim()),
         isAcceptingBookings: _isAcceptingBookings,
+        maxDogs: int.tryParse(_maxDogsCtrl.text.trim()),
       );
 
       if (!mounted) return;
@@ -311,6 +317,25 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
             if (v == null || v.isEmpty) return null;
             final n = double.tryParse(v);
             if (n == null || n <= 0) return 'Invalid.';
+            return null;
+          },
+        ),
+        const SizedBox(height: 16),
+        _fieldLabel('Max Dogs per Walk'),
+        const SizedBox(height: 4),
+        Text(
+          'Owners booking with a priority (solo) walk will be charged a 50% surcharge.',
+          style: const TextStyle(fontSize: 12, color: _textMuted),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _maxDogsCtrl,
+          keyboardType: TextInputType.number,
+          decoration: _inputDecoration(hint: '3'),
+          validator: (v) {
+            if (v == null || v.isEmpty) return null;
+            final n = int.tryParse(v);
+            if (n == null || n < 1) return 'Must be at least 1.';
             return null;
           },
         ),

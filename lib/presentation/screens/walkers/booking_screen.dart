@@ -10,6 +10,8 @@ import '../../../domain/entities/walker.dart';
 import '../../bloc/walk_booking/walk_booking_cubit.dart';
 import '../../bloc/walk_booking/walk_booking_state.dart';
 import '../pets/create_pet_screen.dart';
+import '../../bloc/profile/profile_cubit.dart';
+import '../profile/edit_profile_screen.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key, required this.walker});
@@ -166,6 +168,7 @@ class _BookingScreenState extends State<BookingScreen> {
         instructionsCtrl: _instructionsCtrl,
         cubit: _cubit,
         walkerName: widget.walker.name,
+        walker: widget.walker,
         onAddPet: () => Navigator.of(context)
             .push(MaterialPageRoute(builder: (_) => const CreatePetScreen()))
             .then((_) => _cubit.initialize(widget.walker.id)),
@@ -184,6 +187,7 @@ class _FormBody extends StatelessWidget {
     required this.instructionsCtrl,
     required this.cubit,
     required this.walkerName,
+    required this.walker,
     required this.onAddPet,
   });
 
@@ -191,6 +195,7 @@ class _FormBody extends StatelessWidget {
   final TextEditingController instructionsCtrl;
   final WalkBookingCubit cubit;
   final String walkerName;
+  final Walker walker;
   final VoidCallback onAddPet;
 
   @override
@@ -198,6 +203,11 @@ class _FormBody extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
       children: [
+        _PickupAddressCard(
+          address: form.ownerAddress,
+          city: form.ownerCity,
+        ),
+        const SizedBox(height: 24),
         _SectionTitle(title: 'Your Pet', subtitle: "Who's going for a walk?"),
         const SizedBox(height: 12),
         _PetSelector(
@@ -229,6 +239,13 @@ class _FormBody extends StatelessWidget {
           onSelect: cubit.selectSlot,
           onRefresh: cubit.refreshSlots,
         ),
+        if (walker.maxDogs != null && walker.maxDogs! > 1) ...[
+          const SizedBox(height: 24),
+          _ExclusiveWalkToggle(
+            isExclusive: form.isExclusive,
+            onToggle: cubit.toggleExclusive,
+          ),
+        ],
         const SizedBox(height: 24),
         const _SectionTitle(
           title: 'Special Instructions',
@@ -261,6 +278,95 @@ class _FormBody extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// ─── Exclusive Walk Toggle ────────────────────────────────────────────────────
+
+class _ExclusiveWalkToggle extends StatelessWidget {
+  const _ExclusiveWalkToggle({
+    required this.isExclusive,
+    required this.onToggle,
+  });
+
+  final bool isExclusive;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onToggle,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isExclusive
+              ? const Color(0xFFFFF8EC)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isExclusive
+                ? const Color(0xFFFFD97A)
+                : const Color(0xFFE0E4EC),
+            width: isExclusive ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: isExclusive
+                    ? const Color(0xFFFFD97A).withValues(alpha: 0.3)
+                    : const Color(0xFFE0E4EC),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.shield_rounded,
+                size: 20,
+                color: isExclusive
+                    ? const Color(0xFFB87300)
+                    : const Color(0xFF8A93A0),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Priority (Solo) Walk',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: isExclusive
+                          ? const Color(0xFFB87300)
+                          : const Color(0xFF1F2937),
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    'Your dog walks alone — recommended for energetic or reactive dogs. +50% fare.',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF8A93A0),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Switch(
+              value: isExclusive,
+              onChanged: (_) => onToggle(),
+              activeTrackColor: const Color(0xFFB87300),
+              activeThumbColor: Colors.white,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -768,16 +874,21 @@ class _BookingFooter extends StatelessWidget {
   final WalkBookingForm form;
   final VoidCallback onConfirm;
 
-  String get _priceEstimate {
+  ({String total, bool hasSurcharge}) get _priceInfo {
     final rate = walker.pricePerWalk;
-    if (rate == null) return '';
+    if (rate == null) return (total: '', hasSurcharge: false);
     final hours = form.selectedDuration / 60;
-    final total = rate * hours;
-    return '\$${total.toStringAsFixed(0)}';
+    final base = rate * hours;
+    final total = form.isExclusive ? base * 1.5 : base;
+    return (
+      total: '\$${total.toStringAsFixed(0)}',
+      hasSurcharge: form.isExclusive,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final price = _priceInfo;
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -793,13 +904,13 @@ class _BookingFooter extends StatelessWidget {
         ),
         child: Row(
           children: [
-            if (_priceEstimate.isNotEmpty) ...[
+            if (price.total.isNotEmpty) ...[
               Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _priceEstimate,
+                    price.total,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
@@ -807,10 +918,14 @@ class _BookingFooter extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'est. ${form.selectedDuration} min',
-                    style: const TextStyle(
+                    price.hasSurcharge
+                        ? 'est. ${form.selectedDuration} min · solo +50%'
+                        : 'est. ${form.selectedDuration} min',
+                    style: TextStyle(
                       fontSize: 12,
-                      color: Color(0xFF8A93A0),
+                      color: price.hasSurcharge
+                          ? const Color(0xFFB87300)
+                          : const Color(0xFF8A93A0),
                     ),
                   ),
                 ],
@@ -843,6 +958,159 @@ class _BookingFooter extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─── Pickup Address Card ──────────────────────────────────────────────────────
+
+class _PickupAddressCard extends StatelessWidget {
+  const _PickupAddressCard({this.address, this.city});
+
+  final String? address;
+  final String? city;
+
+  bool get _hasAddress =>
+      (address != null && address!.isNotEmpty) ||
+      (city != null && city!.isNotEmpty);
+
+  @override
+  Widget build(BuildContext context) {
+    if (_hasAddress) {
+      final lines = [
+        if (address != null && address!.isNotEmpty) address!,
+        if (city != null && city!.isNotEmpty) city!,
+      ];
+      return Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE0E4EC)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: AppColors.navWalkers.withValues(alpha: 0.10),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.place_rounded,
+                size: 18,
+                color: AppColors.navWalkers,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Pickup address',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1F2937),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    lines.join(', '),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF5A6473),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider(
+                    create: (_) => sl<ProfileCubit>()..load(),
+                    child: const EditProfileScreen(),
+                  ),
+                ),
+              ),
+              child: const Text(
+                'Edit',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.navWalkers,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF8EC),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFFFD97A)),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.warning_amber_rounded,
+            size: 20,
+            color: Color(0xFFB87300),
+          ),
+          const SizedBox(width: 10),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'No pickup address set',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1F2937),
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'Add your address so the walker knows where to pick up your dog.',
+                  style: TextStyle(fontSize: 12, color: Color(0xFF5A6473)),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          GestureDetector(
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const EditProfileScreen(),
+              ),
+            ),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFB87300),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                'Set address',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

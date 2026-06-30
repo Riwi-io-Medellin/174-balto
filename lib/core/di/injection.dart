@@ -186,6 +186,8 @@ void setupDependencies() {
       sl<WalkBookingRepository>(),
       sl<WalkerRepository>(),
       sl<PetRepository>(),
+      sl<UserRepository>(),
+      sl<TokenStorage>(),
     ),
   );
   sl.registerFactory<WalkerAvailabilityCubit>(

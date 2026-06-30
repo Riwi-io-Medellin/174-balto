@@ -7,6 +7,7 @@ abstract class WalkBookingRepository {
     required DateTime slotStart,
     required int durationMinutes,
     String? specialInstructions,
+    bool isExclusive = false,
   });
 
   Future<List<WalkBooking>> getMyBookings({String? status});

@@ -86,6 +86,7 @@ class WalkerProfileRemoteDataSource {
     double? serviceRadiusKm,
     int? yearsOfExperience,
     bool? isAcceptingBookings,
+    int? maxDogs,
     double? workLatitude,
     double? workLongitude,
   }) async {
@@ -99,6 +100,7 @@ class WalkerProfileRemoteDataSource {
     if (isAcceptingBookings != null) {
       body['isAcceptingBookings'] = isAcceptingBookings;
     }
+    if (maxDogs != null) body['maxDogs'] = maxDogs;
     if (workLatitude != null) body['workLatitude'] = workLatitude;
     if (workLongitude != null) body['workLongitude'] = workLongitude;
 

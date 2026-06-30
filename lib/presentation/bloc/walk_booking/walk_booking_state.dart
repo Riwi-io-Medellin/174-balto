@@ -35,6 +35,9 @@ class WalkBookingForm extends WalkBookingState {
     this.isLoadingSlots = false,
     this.slotsError,
     this.hadConflict = false,
+    this.ownerAddress,
+    this.ownerCity,
+    this.isExclusive = false,
   });
 
   final List<Pet> pets;
@@ -46,9 +49,16 @@ class WalkBookingForm extends WalkBookingState {
   final String instructions;
   final bool isLoadingSlots;
   final String? slotsError;
+  final String? ownerAddress;
+  final String? ownerCity;
+  final bool isExclusive;
 
   /// True for one state cycle to trigger a conflict warning toast.
   final bool hadConflict;
+
+  bool get hasPickupAddress =>
+      (ownerAddress != null && ownerAddress!.isNotEmpty) ||
+      (ownerCity != null && ownerCity!.isNotEmpty);
 
   bool get canConfirm =>
       selectedPet != null && selectedSlot != null && !isLoadingSlots;
@@ -67,6 +77,9 @@ class WalkBookingForm extends WalkBookingState {
     String? slotsError,
     bool clearSlotsError = false,
     bool? hadConflict,
+    String? ownerAddress,
+    String? ownerCity,
+    bool? isExclusive,
   }) {
     return WalkBookingForm(
       pets: pets ?? this.pets,
@@ -79,6 +92,9 @@ class WalkBookingForm extends WalkBookingState {
       isLoadingSlots: isLoadingSlots ?? this.isLoadingSlots,
       slotsError: clearSlotsError ? null : (slotsError ?? this.slotsError),
       hadConflict: hadConflict ?? false,
+      ownerAddress: ownerAddress ?? this.ownerAddress,
+      ownerCity: ownerCity ?? this.ownerCity,
+      isExclusive: isExclusive ?? this.isExclusive,
     );
   }
 
@@ -94,6 +110,9 @@ class WalkBookingForm extends WalkBookingState {
         isLoadingSlots,
         slotsError,
         hadConflict,
+        ownerAddress,
+        ownerCity,
+        isExclusive,
       ];
 }
 

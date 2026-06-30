@@ -4,6 +4,7 @@
         <!-- Keeps location stream alive when screen is locked (foreground service) -->
         <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
         <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+        <uses-permission android:name="android.permission.WAKE_LOCK" />
         <application
             android:label="Balto"
             android:name="${applicationName}"

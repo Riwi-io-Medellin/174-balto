@@ -1,8 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/storage/token_storage.dart';
+import '../../../core/utils/jwt_decoder.dart';
 import '../../../domain/entities/available_slot.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/repositories/pet_repository.dart';
+import '../../../domain/repositories/user_repository.dart';
 import '../../../domain/repositories/walk_booking_repository.dart';
 import '../../../domain/repositories/walker_repository.dart';
 import 'walk_booking_state.dart';
@@ -12,11 +15,15 @@ class WalkBookingCubit extends Cubit<WalkBookingState> {
     this._bookingRepository,
     this._walkerRepository,
     this._petRepository,
+    this._userRepository,
+    this._tokenStorage,
   ) : super(const WalkBookingInitial());
 
   final WalkBookingRepository _bookingRepository;
   final WalkerRepository _walkerRepository;
   final PetRepository _petRepository;
+  final UserRepository _userRepository;
+  final TokenStorage _tokenStorage;
 
   String? _walkerId;
   WalkBookingForm? _lastForm;
@@ -25,17 +32,22 @@ class WalkBookingCubit extends Cubit<WalkBookingState> {
     _walkerId = walkerId;
     emit(const WalkBookingLoading());
     try {
-      final pets = await _petRepository.getMyPets();
+      final petsResult = _petRepository.getMyPets();
+      final addressResult = _loadOwnerAddress();
+      final pets = await petsResult;
       if (pets.isEmpty) {
         emit(const WalkBookingNoPets());
         return;
       }
+      final (address, city) = await addressResult;
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
       final initial = WalkBookingForm(
         pets: pets,
         selectedPet: pets.length == 1 ? pets.first : null,
         selectedDate: today,
+        ownerAddress: address,
+        ownerCity: city,
       );
       emit(initial);
       _loadSlots(initial);
@@ -43,6 +55,19 @@ class WalkBookingCubit extends Cubit<WalkBookingState> {
       emit(WalkBookingError(e.code, e.message));
     } catch (e) {
       emit(WalkBookingError('UNKNOWN', e.toString()));
+    }
+  }
+
+  Future<(String?, String?)> _loadOwnerAddress() async {
+    try {
+      final token = await _tokenStorage.readAccessToken();
+      if (token == null) return (null, null);
+      final userId = JwtDecoder.extractUserId(token);
+      if (userId == null) return (null, null);
+      final user = await _userRepository.getById(userId);
+      return (user.address, user.location);
+    } catch (_) {
+      return (null, null);
     }
   }
 
@@ -88,6 +113,12 @@ class WalkBookingCubit extends Cubit<WalkBookingState> {
     final s = _form;
     if (s == null) return;
     emit(s.copyWith(instructions: text));
+  }
+
+  void toggleExclusive() {
+    final s = _form;
+    if (s == null) return;
+    emit(s.copyWith(isExclusive: !s.isExclusive));
   }
 
   Future<void> refreshSlots() async {
@@ -151,6 +182,7 @@ class WalkBookingCubit extends Cubit<WalkBookingState> {
         durationMinutes: s.selectedDuration,
         specialInstructions:
             s.instructions.trim().isEmpty ? null : s.instructions.trim(),
+        isExclusive: s.isExclusive,
       );
       emit(WalkBookingSuccess(booking));
     } on WalkBookingFailure catch (e) {

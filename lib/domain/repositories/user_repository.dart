@@ -13,6 +13,8 @@ abstract class UserRepository {
     String? location,
     String? address,
     String? photoUrl,
+    double? latitude,
+    double? longitude,
   });
 }
 

@@ -8,6 +8,7 @@ import '../../../domain/repositories/auth_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
 import '../../screens/pets/create_pet_screen.dart';
+import '../../screens/pets/edit_pet_screen.dart';
 import '../../screens/pets/manage_pets_screen.dart';
 import '../../screens/pets/pet_detail_screen.dart';
 import '../auth/change_password_screen.dart';
@@ -45,8 +46,6 @@ class _ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<_ProfileView> {
-  bool _twoFactor = true;
-
   static const Color _textDark = Color(0xFF1F2937);
   static const Color _textMid = Color(0xFF5A6473);
   static const Color _textMuted = Color(0xFF8A93A0);
@@ -137,12 +136,7 @@ class _ProfileViewState extends State<_ProfileView> {
                       iconBgColor: _bgGreenTint,
                       iconColor: _green,
                       title: 'Two-Factor Authentication',
-                      trailing: Switch(
-                        value: _twoFactor,
-                        activeThumbColor: Colors.white,
-                        activeTrackColor: _green,
-                        onChanged: (v) => setState(() => _twoFactor = v),
-                      ),
+                      onTap: () => _showComingSoonSheet('Two-Factor Authentication'),
                     ),
                     _divider(),
                     _buildIconRow(
@@ -1003,7 +997,24 @@ class _ProfileViewState extends State<_ProfileView> {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: _textMuted),
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<ProfileCubit>(),
+                    child: EditPetScreen(pet: pet),
+                  ),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: _bgPurpleTint,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.edit_outlined, size: 16, color: _purple),
+              ),
+            ),
           ],
         ),
       ),
@@ -1186,6 +1197,69 @@ class _ProfileViewState extends State<_ProfileView> {
   //     ),
   //   );
   // }
+
+  void _showComingSoonSheet(String feature) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE5E7EB),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 28),
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: _bgPurpleTint,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.rocket_launch_outlined, size: 30, color: _purple),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Coming Soon',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: _textDark),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '$feature is not available yet.\nWe\'re working hard to bring it to you soon!',
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 14, color: _textMid, height: 1.5),
+            ),
+            const SizedBox(height: 28),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _purple,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: const Text('Got it', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _buildSignOut() {
     return SizedBox(
