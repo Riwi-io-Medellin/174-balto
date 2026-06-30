@@ -65,7 +65,7 @@ class _ServicesPageState extends State<ServicesPage> {
       case 3:
         return kMockBusinesses.where((b) => b.isStore).toList();
       default:
-        return [...kMockBusinesses, ...walkers];
+        return [...walkers, ...kMockBusinesses];
     }
   }
 

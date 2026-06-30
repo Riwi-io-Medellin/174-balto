@@ -340,9 +340,10 @@ class _LiveWalkCard extends StatelessWidget {
   }
 
   String _formatTime(DateTime dt) {
-    final h = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
-    final m = dt.minute.toString().padLeft(2, '0');
-    final ampm = dt.hour < 12 ? 'AM' : 'PM';
+    final local = dt.toLocal();
+    final h = local.hour % 12 == 0 ? 12 : local.hour % 12;
+    final m = local.minute.toString().padLeft(2, '0');
+    final ampm = local.hour < 12 ? 'AM' : 'PM';
     return 'Today, $h:$m $ampm · ${booking.durationMinutes} min';
   }
 }
@@ -411,18 +412,19 @@ class _UpcomingWalkCard extends StatelessWidget {
   }
 
   String _formatSlot(DateTime dt, int durationMinutes) {
+    final local = dt.toLocal();
     final now = DateTime.now();
     final isToday =
-        dt.year == now.year && dt.month == now.month && dt.day == now.day;
-    final isTomorrow = dt.difference(DateTime(now.year, now.month, now.day)).inDays == 1;
+        local.year == now.year && local.month == now.month && local.day == now.day;
+    final isTomorrow = local.difference(DateTime(now.year, now.month, now.day)).inDays == 1;
     final dayLabel = isToday
         ? 'Today'
         : isTomorrow
             ? 'Tomorrow'
-            : '${_weekday(dt.weekday)}, ${dt.day}/${dt.month}';
-    final h = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
-    final m = dt.minute.toString().padLeft(2, '0');
-    final ampm = dt.hour < 12 ? 'AM' : 'PM';
+            : '${_weekday(local.weekday)}, ${local.day}/${local.month}';
+    final h = local.hour % 12 == 0 ? 12 : local.hour % 12;
+    final m = local.minute.toString().padLeft(2, '0');
+    final ampm = local.hour < 12 ? 'AM' : 'PM';
     return '$dayLabel, $h:$m $ampm · $durationMinutes min';
   }
 
