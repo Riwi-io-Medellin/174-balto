@@ -272,7 +272,9 @@ class _InputBar extends StatelessWidget {
         left: 16,
         right: 8,
         top: 10,
-        bottom: 10 + MediaQuery.of(context).viewInsets.bottom,
+        bottom: 10 + (MediaQuery.of(context).viewInsets.bottom > 0
+            ? MediaQuery.of(context).viewInsets.bottom
+            : MediaQuery.of(context).padding.bottom),
       ),
       child: Row(
         children: [

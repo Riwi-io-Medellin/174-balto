@@ -91,6 +91,7 @@ class _MainShellState extends State<MainShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
+      extendBody: true,
       body: _buildBody(),
       bottomNavigationBar: BaltoBottomNavBar(
         currentIndex: _currentIndex,

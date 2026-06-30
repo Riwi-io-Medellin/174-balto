@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import 'nav_item_model.dart';
@@ -42,29 +44,46 @@ class BaltoBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: Container(
-        height: 68,
-        decoration: BoxDecoration(
-          color: AppColors.navBarBackground,
-          borderRadius: BorderRadius.circular(40),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.10),
-              blurRadius: 20,
-              spreadRadius: 0,
-              offset: const Offset(0, 4),
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.white.withValues(alpha: 0.0),
+                Colors.white.withValues(alpha: 0.88),
+              ],
             ),
-          ],
-        ),
-        child: Row(
-          children: List.generate(
-            _items.length,
-            (index) => _NavItem(
-              model: _items[index],
-              isActive: index == currentIndex,
-              onTap: () => onTap(index),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Container(
+              height: 68,
+              decoration: BoxDecoration(
+                color: AppColors.navBarBackground,
+                borderRadius: BorderRadius.circular(40),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.10),
+                    blurRadius: 20,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: List.generate(
+                  _items.length,
+                  (index) => _NavItem(
+                    model: _items[index],
+                    isActive: index == currentIndex,
+                    onTap: () => onTap(index),
+                  ),
+                ),
+              ),
             ),
           ),
         ),
