@@ -47,6 +47,7 @@ class PetRepositoryImpl implements PetRepository {
     DateTime? birthDate,
     String? description,
     String? photoUrl,
+    double? weight,
   }) async {
     try {
       final request = <String, dynamic>{
@@ -57,6 +58,7 @@ class PetRepositoryImpl implements PetRepository {
           'birthDate': v.toIso8601String().split('T').first,
         if (description case final v?) 'description': v,
         if (photoUrl case final v?) 'photoUrl': v,
+        if (weight case final v?) 'weight': v,
       };
       final dto = await _remote.create(request);
       return dto.toEntity();
@@ -79,6 +81,7 @@ class PetRepositoryImpl implements PetRepository {
     DateTime? birthDate,
     String? description,
     String? photoUrl,
+    double? weight,
   }) async {
     try {
       final request = <String, dynamic>{
@@ -89,6 +92,7 @@ class PetRepositoryImpl implements PetRepository {
           'birthDate': v.toIso8601String().split('T').first,
         if (description case final v?) 'description': v,
         if (photoUrl case final v?) 'photoUrl': v,
+        if (weight case final v?) 'weight': v,
       };
       final dto = await _remote.update(id, request);
       return dto.toEntity();

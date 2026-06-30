@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../core/di/injection.dart';
+import '../../../core/widgets/balto_toast.dart';
 import '../../../main.dart';
 import '../../bloc/auth/auth_cubit.dart';
 import '../../bloc/auth/auth_state.dart';
@@ -59,13 +60,12 @@ class _LoginViewState extends State<_LoginView> {
     context.read<AuthCubit>().login(
           email: _emailCtrl.text.trim(),
           password: _passwordCtrl.text,
+          rememberMe: _rememberDevice,
         );
   }
 
   void _showSnack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
-    );
+    BaltoToast.error(context, message);
   }
 
   String _mapErrorMessage(String code, String fallback) {

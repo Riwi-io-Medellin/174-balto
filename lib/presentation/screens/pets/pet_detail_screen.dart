@@ -2,35 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/di/injection.dart';
+import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
 import 'edit_pet_screen.dart';
 
-class PetDetailScreen extends StatefulWidget {
+class PetDetailScreen extends StatelessWidget {
   const PetDetailScreen({super.key, required this.petId});
 
   final String petId;
 
-  @override
-  State<PetDetailScreen> createState() => _PetDetailScreenState();
-}
-
-class _PetDetailScreenState extends State<PetDetailScreen> {
   static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _textDark = Color(0xFF1A1A2E);
   static const Color _textMuted = Color(0xFF6B7280);
-  static const Color _danger = Color(0xFFE5544B);
+  static const Color _red = Color(0xFFE53935);
 
-  bool _deleting = false;
-
-  Pet? _findPet() {
+  Pet? _findPet(BuildContext context) {
     final state = context.read<ProfileCubit>().state;
     if (state is ProfileLoaded) {
       try {
-        return state.pets.firstWhere((p) => p.id == widget.petId);
+        return state.pets.firstWhere((p) => p.id == petId);
       } catch (_) {
         return null;
       }
@@ -38,61 +32,43 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
     return null;
   }
 
-  Future<void> _onEdit(Pet pet) async {
-    final cubit = context.read<ProfileCubit>();
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider.value(
-          value: cubit,
-          child: EditPetScreen(pet: pet),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _onDelete(Pet pet) async {
+  Future<void> _confirmDelete(BuildContext context, Pet pet) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete pet?'),
-        content: Text('This will permanently remove ${pet.name}.'),
+        title: const Text('Delete Pet'),
+        content: Text('Remove ${pet.name} from your pets? This cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: const Text('Cancel'),
           ),
           TextButton(
-            style: TextButton.styleFrom(foregroundColor: _danger),
             onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: _red),
             child: const Text('Delete'),
           ),
         ],
       ),
     );
-    if (confirmed != true) return;
-    if (!mounted) return;
 
-    setState(() => _deleting = true);
-    final cubit = context.read<ProfileCubit>();
-    final navigator = Navigator.of(context);
-    final messenger = ScaffoldMessenger.of(context);
+    if (confirmed != true || !context.mounted) return;
+
     try {
       await sl<PetRepository>().delete(pet.id);
-      navigator.pop();
-      messenger.showSnackBar(
-        SnackBar(content: Text('${pet.name} deleted')),
-      );
-      cubit.load();
+      await context.read<ProfileCubit>().load();
+      if (!context.mounted) return;
+      BaltoToast.success(context, '${pet.name} removed.');
+      Navigator.of(context).pop();
     } catch (e) {
-      if (!mounted) return;
-      setState(() => _deleting = false);
-      messenger.showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (!context.mounted) return;
+      BaltoToast.error(context, 'Error: ${e.toString()}');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final pet = _findPet();
+    final pet = _findPet(context);
     if (pet == null) {
       return const Scaffold(
         backgroundColor: _bg,
@@ -115,12 +91,19 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             tooltip: 'Edit',
-            onPressed: _deleting ? null : () => _onEdit(pet),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<ProfileCubit>(),
+                  child: EditPetScreen(pet: pet),
+                ),
+              ),
+            ),
           ),
           IconButton(
-            icon: const Icon(Icons.delete_outline, color: _danger),
+            icon: const Icon(Icons.delete_outline, color: _red),
             tooltip: 'Delete',
-            onPressed: _deleting ? null : () => _onDelete(pet),
+            onPressed: () => _confirmDelete(context, pet),
           ),
         ],
       ),
@@ -160,6 +143,10 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                   _infoRow(Icons.style_outlined, 'Breed', pet.breed ?? 'Not specified'),
                   const SizedBox(height: 12),
                   _infoRow(Icons.cake_outlined, 'Age', age),
+                  if (pet.weight != null) ...[
+                    const SizedBox(height: 12),
+                    _infoRow(Icons.monitor_weight_outlined, 'Weight', '${pet.weight!.toStringAsFixed(1)} kg'),
+                  ],
                   if (pet.description != null) ...[
                     const SizedBox(height: 16),
                     const Divider(color: Color(0xFFE0E4F0)),

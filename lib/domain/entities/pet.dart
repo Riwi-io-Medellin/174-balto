@@ -10,6 +10,7 @@ class Pet extends Equatable {
     this.birthDate,
     this.description,
     this.photoUrl,
+    this.weight,
     required this.createdAt,
   });
 
@@ -21,6 +22,7 @@ class Pet extends Equatable {
   final DateTime? birthDate;
   final String? description;
   final String? photoUrl;
+  final double? weight;
   final DateTime createdAt;
 
   @override
@@ -33,6 +35,7 @@ class Pet extends Equatable {
         birthDate,
         description,
         photoUrl,
+        weight,
         createdAt,
       ];
 }

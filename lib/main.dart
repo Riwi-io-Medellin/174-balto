@@ -7,14 +7,19 @@ import 'presentation/screens/auth/login_screen.dart';
 import 'presentation/screens/home/home_page.dart';
 import 'presentation/screens/profile/profile_screen.dart';
 import 'presentation/screens/services/services_page.dart';
+import 'presentation/screens/walks/walks_page.dart';
+import 'presentation/screens/walkers/walkers_page.dart';
 import 'presentation/widgets/bottom_nav/balto_bottom_nav_bar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupDependencies();
-  // TEMP: clear stale tokens from previous backend. Remove after first run.
-  await sl<TokenStorage>().clear();
-  final token = await sl<TokenStorage>().readAccessToken();
+  final tokenStorage = sl<TokenStorage>();
+  final rememberMe = await tokenStorage.readRememberMe();
+  if (rememberMe != true) {
+    await tokenStorage.clear();
+  }
+  final token = await tokenStorage.readAccessToken();
   runApp(BaltoApp(isLoggedIn: token != null));
 }
 
@@ -53,30 +58,32 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
+  int _servicesFilter = 0;
 
-  static const List<String> _pageTitles = [
-    'Home',
-    'Walks',
-    'Walkers',
-    'Coach',
-    'Profile',
-  ];
+  void _openServices(int filter) {
+    setState(() {
+      _servicesFilter = filter;
+      _currentIndex = 2;
+    });
+  }
 
   Widget _buildBody() {
     switch (_currentIndex) {
       case 0:
-        return const HomeScreen();
+        return HomeScreen(onOpenServices: _openServices);
+      case 1:
+        return const WalksPage();
       case 2:
-        return const ServicesPage();
+        return ServicesPage(
+          key: ValueKey(_servicesFilter),
+          initialFilter: _servicesFilter,
+        );
+      case 3:
+        return const WalkersPage();
       case 4:
         return const ProfileScreen();
       default:
-        return Center(
-          child: Text(
-            _pageTitles[_currentIndex],
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-          ),
-        );
+        return const SizedBox.shrink();
     }
   }
 

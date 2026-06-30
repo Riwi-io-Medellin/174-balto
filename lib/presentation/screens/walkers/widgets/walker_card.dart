@@ -122,6 +122,42 @@ class WalkerCard extends StatelessWidget {
                   ),
                 ),
               ),
+            if (walker.isAcceptingBookings)
+              Positioned(
+                bottom: 12,
+                left: 12,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1BAA71),
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Text(
+                        'Available',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: 0.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -171,6 +207,19 @@ class WalkerCard extends StatelessWidget {
           style: const TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
         ),
         const Spacer(),
+        if (walker.yearsOfExperience > 0) ...[
+          const Icon(
+            Icons.work_outline_rounded,
+            size: 14,
+            color: Color(0xFF8A93A0),
+          ),
+          const SizedBox(width: 2),
+          Text(
+            '${walker.yearsOfExperience}yr',
+            style: const TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
+          ),
+          const SizedBox(width: 8),
+        ],
         const Icon(
           Icons.location_on_rounded,
           size: 14,

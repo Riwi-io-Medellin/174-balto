@@ -42,8 +42,8 @@ class QuickCareGrid extends StatelessWidget {
       icon: Icons.pets,
       title: 'My Pets',
       subtitle: 'Manage profiles',
-      backgroundColor: Color(0xFFFFF3E8),
-      iconColor: AppColors.alert,
+      backgroundColor: Color(0xFFF0EAFB),
+      iconColor: AppColors.aiCoach,
     ),
   ];
 

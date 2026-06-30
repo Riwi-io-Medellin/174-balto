@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../core/di/injection.dart';
+import '../../../core/widgets/balto_toast.dart';
 import '../../../main.dart';
 import '../../bloc/auth/auth_cubit.dart';
 import '../../bloc/auth/auth_state.dart';
@@ -79,7 +80,7 @@ class _RegisterViewState extends State<_RegisterView> {
 
   void _submit() {
     if (!_acceptTerms) {
-      _showSnack('You must accept the Terms and Privacy Policy.');
+      BaltoToast.warning(context, 'You must accept the Terms and Privacy Policy.');
       return;
     }
     if (!(_formKey.currentState?.validate() ?? false)) return;
@@ -95,10 +96,12 @@ class _RegisterViewState extends State<_RegisterView> {
         );
   }
 
-  void _showSnack(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
-    );
+  void _showSnack(String message, {bool isSuccess = false}) {
+    if (isSuccess) {
+      BaltoToast.success(context, message);
+    } else {
+      BaltoToast.error(context, message);
+    }
   }
 
   String _mapErrorMessage(String code, String fallback) {
@@ -121,7 +124,7 @@ class _RegisterViewState extends State<_RegisterView> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          _showSnack('Account created. Welcome to Balto.');
+          _showSnack('Account created. Welcome to Balto!', isSuccess: true);
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute<void>(builder: (_) => const MainShell()),
             (route) => false,

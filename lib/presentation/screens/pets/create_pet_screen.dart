@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/di/injection.dart';
+import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../../domain/repositories/upload_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
@@ -21,6 +23,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
   final _nameCtrl = TextEditingController();
   final _speciesCtrl = TextEditingController();
   final _breedCtrl = TextEditingController();
+  final _weightCtrl = TextEditingController();
   final _descriptionCtrl = TextEditingController();
   final _picker = ImagePicker();
   DateTime? _birthDate;
@@ -33,19 +36,38 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
   static const Color _textDark = Color(0xFF1A1A2E);
   static const Color _textMuted = Color(0xFF6B7280);
 
+  static const _speciesSuggestions = [
+    'Dog', 'Cat', 'Bird', 'Rabbit', 'Fish',
+    'Hamster', 'Turtle', 'Guinea Pig', 'Parrot', 'Snake',
+  ];
+
+  static const _breedSuggestions = <String, List<String>>{
+    'Dog': ['Golden Retriever', 'Labrador', 'Bulldog', 'Poodle', 'German Shepherd', 'Beagle', 'Husky', 'Chihuahua', 'Rottweiler', 'Dachshund'],
+    'Cat': ['Persian', 'Siamese', 'Maine Coon', 'British Shorthair', 'Bengal', 'Ragdoll', 'Abyssinian', 'Sphynx'],
+    'Bird': ['Canary', 'Parakeet', 'Cockatiel', 'African Grey', 'Lovebird', 'Macaw'],
+    'Rabbit': ['Holland Lop', 'Lionhead', 'Mini Rex', 'Dutch', 'Angora'],
+    'Hamster': ['Syrian', 'Dwarf', 'Roborovski'],
+    'Guinea Pig': ['American', 'Peruvian', 'Teddy', 'Silkie'],
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _speciesCtrl.addListener(() => setState(() {}));
+    _breedCtrl.addListener(() => setState(() {}));
+  }
+
   @override
   void dispose() {
     _nameCtrl.dispose();
     _speciesCtrl.dispose();
     _breedCtrl.dispose();
+    _weightCtrl.dispose();
     _descriptionCtrl.dispose();
     super.dispose();
   }
 
-  InputDecoration _decoration({
-    required String hint,
-    required IconData icon,
-  }) {
+  InputDecoration _decoration({required String hint, required IconData icon}) {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(color: _textMuted, fontSize: 14),
@@ -67,9 +89,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
-    if (picked != null) {
-      setState(() => _birthDate = picked);
-    }
+    if (picked != null) setState(() => _birthDate = picked);
   }
 
   Future<void> _pickImage() async {
@@ -78,9 +98,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
       maxWidth: 1200,
       maxHeight: 1200,
     );
-    if (image != null) {
-      setState(() => _pickedImage = image);
-    }
+    if (image != null) setState(() => _pickedImage = image);
   }
 
   Future<void> _save() async {
@@ -93,31 +111,27 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
         photoUrl = await sl<UploadRepository>().uploadImage(_pickedImage!.path);
       }
 
+      final weightText = _weightCtrl.text.trim();
+      final weight = weightText.isNotEmpty ? double.tryParse(weightText) : null;
+
       await sl<PetRepository>().create(
         name: _nameCtrl.text.trim(),
-        species:
-            _speciesCtrl.text.trim().isEmpty ? null : _speciesCtrl.text.trim(),
-        breed:
-            _breedCtrl.text.trim().isEmpty ? null : _breedCtrl.text.trim(),
+        species: _speciesCtrl.text.trim().isEmpty ? null : _speciesCtrl.text.trim(),
+        breed: _breedCtrl.text.trim().isEmpty ? null : _breedCtrl.text.trim(),
         birthDate: _birthDate,
-        description: _descriptionCtrl.text.trim().isEmpty
-            ? null
-            : _descriptionCtrl.text.trim(),
+        description: _descriptionCtrl.text.trim().isEmpty ? null : _descriptionCtrl.text.trim(),
         photoUrl: photoUrl,
+        weight: weight,
       );
 
       await context.read<ProfileCubit>().load();
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pet added successfully')),
-      );
+      BaltoToast.success(context, 'Pet added successfully.');
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+      BaltoToast.error(context, 'Error: ${e.toString()}');
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -171,34 +185,37 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                 TextFormField(
                   controller: _nameCtrl,
                   style: const TextStyle(fontSize: 14, color: _textDark),
-                  decoration: _decoration(
-                    hint: 'Pet name',
-                    icon: Icons.pets,
-                  ),
-                  validator: (v) =>
-                      v?.trim().isEmpty == true ? 'Required' : null,
+                  decoration: _decoration(hint: 'Pet name', icon: Icons.pets),
+                  validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
                 ),
                 const SizedBox(height: 20),
-                _fieldLabel('Species'),
-                const SizedBox(height: 8),
-                TextFormField(
+                _buildSuggestionField(
+                  label: 'Species',
                   controller: _speciesCtrl,
-                  style: const TextStyle(fontSize: 14, color: _textDark),
-                  decoration: _decoration(
-                    hint: 'e.g. Dog, Cat',
-                    icon: Icons.category_outlined,
-                  ),
+                  hint: 'e.g. Dog, Cat or type your own',
+                  icon: Icons.category_outlined,
+                  suggestions: _speciesSuggestions,
+                  onChipTap: (s) => setState(() {
+                    _speciesCtrl.text = s;
+                    _speciesCtrl.selection = TextSelection.fromPosition(
+                      TextPosition(offset: s.length),
+                    );
+                    _breedCtrl.clear();
+                  }),
                 ),
                 const SizedBox(height: 20),
-                _fieldLabel('Breed'),
-                const SizedBox(height: 8),
-                TextFormField(
+                _buildSuggestionField(
+                  label: 'Breed',
                   controller: _breedCtrl,
-                  style: const TextStyle(fontSize: 14, color: _textDark),
-                  decoration: _decoration(
-                    hint: 'e.g. Golden Retriever',
-                    icon: Icons.style_outlined,
-                  ),
+                  hint: 'e.g. Golden Retriever or type your own',
+                  icon: Icons.style_outlined,
+                  suggestions: _breedSuggestions[_speciesCtrl.text] ?? const [],
+                  onChipTap: (s) => setState(() {
+                    _breedCtrl.text = s;
+                    _breedCtrl.selection = TextSelection.fromPosition(
+                      TextPosition(offset: s.length),
+                    );
+                  }),
                 ),
                 const SizedBox(height: 20),
                 _fieldLabel('Birth Date'),
@@ -220,6 +237,21 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                         : null,
                   ),
                   onTap: _pickDate,
+                ),
+                const SizedBox(height: 20),
+                _fieldLabel('Weight (kg)'),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _weightCtrl,
+                  style: const TextStyle(fontSize: 14, color: _textDark),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                  ],
+                  decoration: _decoration(
+                    hint: 'e.g. 12.5',
+                    icon: Icons.monitor_weight_outlined,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 _fieldLabel('Description'),
@@ -253,17 +285,12 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                             height: 22,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
                         : const Text(
                             'Add Pet',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                   ),
                 ),
@@ -272,6 +299,60 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSuggestionField({
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    required List<String> suggestions,
+    required void Function(String) onChipTap,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _fieldLabel(label),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          style: const TextStyle(fontSize: 14, color: _textDark),
+          decoration: _decoration(hint: hint, icon: icon),
+        ),
+        if (suggestions.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: suggestions.map((s) {
+              final selected = controller.text == s;
+              return GestureDetector(
+                onTap: () => onChipTap(s),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: selected ? _primary.withValues(alpha: 0.12) : _inputFill,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: selected ? _primary : Colors.transparent,
+                    ),
+                  ),
+                  child: Text(
+                    s,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: selected ? _primary : _textMuted,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ],
     );
   }
 
@@ -319,7 +400,6 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                 border: Border.all(
                   color: _primary.withValues(alpha: 0.3),
                   width: 1.5,
-                  strokeAlign: BorderSide.strokeAlignInside,
                 ),
               ),
               child: Column(

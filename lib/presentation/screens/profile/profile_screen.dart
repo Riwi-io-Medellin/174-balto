@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/di/injection.dart';
-
 import '../../../domain/entities/pet.dart';
-import '../../../domain/entities/user.dart';
+import '../../../domain/entities/walker_profile.dart';
+import '../../../domain/repositories/auth_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
-import '../auth/change_password_screen.dart';
-import '../auth/login_screen.dart';
 import '../../screens/pets/create_pet_screen.dart';
+import '../../screens/pets/manage_pets_screen.dart';
 import '../../screens/pets/pet_detail_screen.dart';
+import '../auth/login_screen.dart';
+import '../walkers/become_walker_screen.dart';
+import '../walkers/edit_walker_profile_screen.dart';
+import '../walkers/walker_availability_screen.dart';
+import '../walkers/walker_bookings_screen.dart';
 import 'edit_profile_screen.dart';
 import 'privacy_settings_screen.dart';
 import 'profile_settings_screen.dart';
-import 'help_center_screen.dart';
-import 'faq_screen.dart';
+import 'support_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -41,8 +41,6 @@ class _ProfileView extends StatefulWidget {
 
 class _ProfileViewState extends State<_ProfileView> {
   bool _twoFactor = true;
-  bool _uploadingAvatar = false;
-  final ImagePicker _picker = ImagePicker();
 
   static const Color _textDark = Color(0xFF1F2937);
   static const Color _textMid = Color(0xFF5A6473);
@@ -63,8 +61,6 @@ class _ProfileViewState extends State<_ProfileView> {
   static const Color _bgPurpleTint = Color(0xFFEEF0FF);
   static const Color _bgOrangeTint = Color(0xFFFFF1E6);
   static const Color _bgGoldTint = Color(0xFFFBF6E9);
-  static const Color _bgAddPet = Color(0xFFFFF6E9);
-  static const Color _addPetBorder = Color(0xFFF1C97A);
 
   @override
   Widget build(BuildContext context) {
@@ -82,165 +78,137 @@ class _ProfileViewState extends State<_ProfileView> {
           ),
         ),
         child: SafeArea(
-          child: BlocListener<ProfileCubit, ProfileState>(
-            listenWhen: (_, current) => current is ProfileSignedOut,
-            listener: (context, _) => Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
-              (_) => false,
-            ),
-            child: RefreshIndicator(
-              onRefresh: () => context.read<ProfileCubit>().load(),
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildHeader(),
-                      const SizedBox(height: 16),
-                      _buildIdentityRowFromState(),
-                      const SizedBox(height: 18),
-                      _buildStatsCard(),
-                      const SizedBox(height: 18),
-                      _buildQuickActions(),
-                      const SizedBox(height: 22),
-                      _buildMyPets(),
-                      const SizedBox(height: 18),
-                      _buildPersonalInformationFromState(),
-                      const SizedBox(height: 18),
-                      _buildSectionTitle('PREFERENCES'),
-                      const SizedBox(height: 8),
-                      _buildListCard([
-                        _buildIconRow(
-                          icon: Icons.person_outline,
-                          iconBgColor: _bgBlueTint,
-                          iconColor: _blue,
-                          title: 'Preferred Walker Gender',
-                          trailingValue: 'No preference',
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 16),
+                  _buildIdentityRowFromState(),
+                  const SizedBox(height: 18),
+                  _buildStatsCard(),
+                  const SizedBox(height: 18),
+                  _buildQuickActions(),
+                  const SizedBox(height: 22),
+                  _buildWalkerSection(),
+                  const SizedBox(height: 18),
+                  _buildMyPets(),
+                  const SizedBox(height: 18),
+                  _buildPersonalInformationFromState(),
+                  const SizedBox(height: 18),
+                  _buildSectionTitle('PREFERENCES'),
+                  const SizedBox(height: 8),
+                  _buildListCard([
+                    _buildIconRow(
+                      icon: Icons.person_outline,
+                      iconBgColor: _bgBlueTint,
+                      iconColor: _blue,
+                      title: 'Preferred Walker Gender',
+                      trailingValue: 'No preference',
+                    ),
+                    _divider(),
+                    _buildIconRow(
+                      icon: Icons.directions_walk,
+                      iconBgColor: _bgGreenTint,
+                      iconColor: _green,
+                      title: 'Walking Preferences',
+                      trailingValue: 'Mornings',
+                    ),
+                    _divider(),
+                    _buildIconRow(
+                      icon: Icons.shield_outlined,
+                      iconBgColor: _bgGoldTint,
+                      iconColor: _gold,
+                      title: 'Emergency Contacts',
+                      trailingValue: '2 added',
+                    ),
+                  ]),
+                  const SizedBox(height: 18),
+                  _buildSectionTitle('PRIVACY & SECURITY'),
+                  const SizedBox(height: 8),
+                  _buildListCard([
+                    _buildIconRow(
+                      icon: Icons.lock_outline,
+                      iconBgColor: _bgBlueTint,
+                      iconColor: _blue,
+                      title: 'Change Password',
+                    ),
+                    _divider(),
+                    _buildIconRow(
+                      icon: Icons.verified_user_outlined,
+                      iconBgColor: _bgGreenTint,
+                      iconColor: _green,
+                      title: 'Two-Factor Authentication',
+                      trailing: Switch(
+                        value: _twoFactor,
+                        activeThumbColor: Colors.white,
+                        activeTrackColor: _green,
+                        onChanged: (v) => setState(() => _twoFactor = v),
+                      ),
+                    ),
+                    _divider(),
+                    _buildIconRow(
+                      icon: Icons.visibility_outlined,
+                      iconBgColor: _bgPurpleTint,
+                      iconColor: _purple,
+                      title: 'Privacy Settings',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const PrivacySettingsScreen(),
                         ),
-                        _divider(),
-                        _buildIconRow(
-                          icon: Icons.directions_walk,
-                          iconBgColor: _bgGreenTint,
-                          iconColor: _green,
-                          title: 'Walking Preferences',
-                          trailingValue: 'Mornings',
+                      ),
+                    ),
+                  ]),
+                  const SizedBox(height: 18),
+                  _buildPremiumCard(),
+                  const SizedBox(height: 18),
+                  _buildSectionTitle('SUPPORT'),
+                  const SizedBox(height: 8),
+                  _buildListCard([
+                    _buildIconRow(
+                      icon: Icons.help_outline,
+                      iconBgColor: _bgBlueTint,
+                      iconColor: _blue,
+                      title: 'Help Center',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const SupportScreen(),
                         ),
-                        _divider(),
-                        _buildIconRow(
-                          icon: Icons.shield_outlined,
-                          iconBgColor: _bgGoldTint,
-                          iconColor: _gold,
-                          title: 'Emergency Contacts',
-                          trailingValue: '2 added',
+                      ),
+                    ),
+                    _divider(),
+                    _buildIconRow(
+                      icon: Icons.headset_mic_outlined,
+                      iconBgColor: _bgGreenTint,
+                      iconColor: _green,
+                      title: 'Contact Support',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const SupportScreen(),
                         ),
-                      ]),
-                      const SizedBox(height: 18),
-                      _buildSectionTitle('PRIVACY & SECURITY'),
-                      const SizedBox(height: 8),
-                      _buildListCard([
-                        _buildIconRow(
-                          icon: Icons.lock_outline,
-                          iconBgColor: _bgBlueTint,
-                          iconColor: _blue,
-                          title: 'Change Password',
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const ChangePasswordScreen(),
-                              ),
-                            );
-                          },
+                      ),
+                    ),
+                    _divider(),
+                    _buildIconRow(
+                      icon: Icons.chat_bubble_outline,
+                      iconBgColor: _bgPurpleTint,
+                      iconColor: _purple,
+                      title: 'FAQs',
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const SupportScreen(),
                         ),
-                        _divider(),
-                        _buildIconRow(
-                          icon: Icons.verified_user_outlined,
-                          iconBgColor: _bgGreenTint,
-                          iconColor: _green,
-                          title: 'Two-Factor Authentication',
-                          trailing: Switch(
-                            value: _twoFactor,
-                            activeThumbColor: Colors.white,
-                            activeTrackColor: _green,
-                            onChanged: (v) => setState(() => _twoFactor = v),
-                          ),
-                        ),
-                        _divider(),
-                        _buildIconRow(
-                          icon: Icons.visibility_outlined,
-                          iconBgColor: _bgPurpleTint,
-                          iconColor: _purple,
-                          title: 'Privacy Settings',
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const PrivacySettingsScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ]),
-                      const SizedBox(height: 18),
-                      _buildPremiumCard(),
-                      const SizedBox(height: 18),
-                      _buildSectionTitle('SUPPORT'),
-                      const SizedBox(height: 8),
-                      _buildListCard([
-                        _buildIconRow(
-                          icon: Icons.help_outline,
-                          iconBgColor: _bgBlueTint,
-                          iconColor: _blue,
-                          title: 'Help Center',
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const HelpCenterScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                        _divider(),
-                        _buildIconRow(
-                          icon: Icons.headset_mic_outlined,
-                          iconBgColor: _bgGreenTint,
-                          iconColor: _green,
-                          title: 'Contact Support',
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            launchUrl(
-                              Uri.parse('mailto:support@balto.app'),
-                              mode: LaunchMode.externalApplication,
-                            );
-                          },
-                        ),
-                        _divider(),
-                        _buildIconRow(
-                          icon: Icons.chat_bubble_outline,
-                          iconBgColor: _bgPurpleTint,
-                          iconColor: _purple,
-                          title: 'FAQs',
-                          onTap: () {
-                            HapticFeedback.lightImpact();
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const FaqScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ]),
-                      const SizedBox(height: 18),
-                      _buildSignOut(),
-                      const SizedBox(height: 20),
-                      _buildFooter(),
-                      const SizedBox(height: 20),
-                    ],
-                  ),
-                ),
+                      ),
+                    ),
+                  ]),
+                  const SizedBox(height: 18),
+                  _buildSignOut(),
+                  const SizedBox(height: 20),
+                  _buildFooter(),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
           ),
@@ -260,28 +228,21 @@ class _ProfileViewState extends State<_ProfileView> {
               'Welcome back, $name 👋',
               style: const TextStyle(fontSize: 13, color: _textMid),
             ),
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const ProfileSettingsScreen(),
-                    ),
-                  );
-                },
-                child: Container(
-                  width: 36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
-                  ),
-                  child: const Icon(Icons.tune, size: 18, color: _textDark),
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const ProfileSettingsScreen(),
                 ),
+              ),
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                ),
+                child: const Icon(Icons.tune, size: 18, color: _textDark),
               ),
             ),
           ],
@@ -296,18 +257,10 @@ class _ProfileViewState extends State<_ProfileView> {
     required DateTime? createdAt,
     String? errorMessage,
     String? photoUrl,
-    VoidCallback? onAvatarTap,
   }) {
     return Row(
       children: [
-        _buildAvatar(
-          firstName,
-          size: 64,
-          withCheck: onAvatarTap == null,
-          photoUrl: photoUrl,
-          onTap: onAvatarTap,
-          loading: _uploadingAvatar,
-        ),
+        _buildAvatar(firstName, size: 64, withCheck: true, photoUrl: photoUrl),
         const SizedBox(width: 14),
         Expanded(
           child: Column(
@@ -358,18 +311,8 @@ class _ProfileViewState extends State<_ProfileView> {
 
   String _formatMonthYear(DateTime date) {
     const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December',
     ];
     return '${months[date.month - 1]} ${date.year}';
   }
@@ -377,18 +320,14 @@ class _ProfileViewState extends State<_ProfileView> {
   Widget _buildIdentityRowFromState() {
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
-    if (state is ProfileLoaded) {
-      return _buildIdentityRow(
-        firstName: state.user.firstName,
-        fullName: state.user.fullName,
-        createdAt: state.user.createdAt,
-        photoUrl: state.user.photoUrl,
-        onAvatarTap: () {
-          HapticFeedback.lightImpact();
-          _onChangeAvatar(state.user);
-        },
-      );
-    }
+        if (state is ProfileLoaded) {
+          return _buildIdentityRow(
+            firstName: state.user.firstName,
+            fullName: state.user.fullName,
+            createdAt: state.user.createdAt,
+            photoUrl: state.user.photoUrl,
+          );
+        }
         if (state is ProfileError) {
           return _buildIdentityRow(
             firstName: '—',
@@ -502,84 +441,54 @@ class _ProfileViewState extends State<_ProfileView> {
   }
 
   Future<void> _onSignOut() async {
-    HapticFeedback.mediumImpact();
-    await context.read<ProfileCubit>().signOut();
+    await sl<AuthRepository>().logout();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
+      (_) => false,
+    );
   }
 
-  Widget _buildAvatar(
-    String name, {
-    required double size,
-    bool withCheck = false,
-    String? photoUrl,
-    VoidCallback? onTap,
-    bool loading = false,
-  }) {
-    final initials = name.isEmpty
-        ? '—'
-        : name.trim().split(RegExp(r'\s+')).take(2).map((p) => p[0].toUpperCase()).join();
-    final circle = Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
-        image: photoUrl != null && photoUrl.isNotEmpty
-            ? DecorationImage(image: NetworkImage(photoUrl), fit: BoxFit.cover)
-            : null,
-      ),
-      alignment: Alignment.center,
-      child: photoUrl != null && photoUrl.isNotEmpty
-          ? null
-          : Text(
-              initials,
-              style: TextStyle(
-                fontSize: size * 0.32,
-                fontWeight: FontWeight.w700,
-                color: _textDark,
-              ),
-            ),
-    );
-
-    final stack = Stack(
+  Widget _buildAvatar(String name, {required double size, bool withCheck = false, String? photoUrl}) {
+    return Stack(
       clipBehavior: Clip.none,
       children: [
-        circle,
-        if (loading)
-          Positioned.fill(
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.black38,
-                shape: BoxShape.circle,
-              ),
-              child: const Center(
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            border: Border.all(color: const Color(0xFFE5E7EB), width: 1.5),
+          ),
+          alignment: Alignment.center,
+          child: photoUrl != null && photoUrl.isNotEmpty
+              ? ClipOval(
+                  child: Image.network(
+                    photoUrl,
+                    width: size,
+                    height: size,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _e, _s) => Text(
+                      name,
+                      style: TextStyle(
+                        fontSize: size * 0.22,
+                        fontWeight: FontWeight.w700,
+                        color: _textDark,
+                      ),
+                    ),
+                  ),
+                )
+              : Text(
+                  name,
+                  style: TextStyle(
+                    fontSize: size * 0.22,
+                    fontWeight: FontWeight.w700,
+                    color: _textDark,
                   ),
                 ),
-              ),
-            ),
-          ),
-        if (onTap != null)
-          Positioned(
-            right: -2,
-            bottom: -2,
-            child: Container(
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                color: _blue,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-              ),
-              child: const Icon(Icons.camera_alt, size: 11, color: Colors.white),
-            ),
-          )
-        else if (withCheck)
+        ),
+        if (withCheck)
           Positioned(
             right: -2,
             bottom: -2,
@@ -596,46 +505,6 @@ class _ProfileViewState extends State<_ProfileView> {
           ),
       ],
     );
-
-    if (onTap == null) return stack;
-    return Material(
-      color: Colors.transparent,
-      shape: const CircleBorder(),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: () {
-          HapticFeedback.lightImpact();
-          onTap();
-        },
-        child: stack,
-      ),
-    );
-  }
-
-  Future<void> _onChangeAvatar(User user) async {
-    if (_uploadingAvatar) return;
-    final image = await _picker.pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1200,
-      maxHeight: 1200,
-    );
-    if (image == null) return;
-    setState(() => _uploadingAvatar = true);
-    try {
-      await context.read<ProfileCubit>().updateAvatar(image.path);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile photo updated')),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not upload photo: $e')),
-      );
-    } finally {
-      if (mounted) setState(() => _uploadingAvatar = false);
-    }
   }
 
   Widget _buildStatsCard() {
@@ -644,6 +513,8 @@ class _ProfileViewState extends State<_ProfileView> {
         final petCount = state is ProfileLoaded ? state.petCount : 0;
         final walkCount = state is ProfileLoaded ? state.walkCount : 0;
         final avgRating = state is ProfileLoaded ? state.averageRating : 0.0;
+        final isWalker = state is ProfileLoaded &&
+            state.walkerProfile?.status == WalkerStatus.approved;
         return Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
@@ -665,19 +536,21 @@ class _ProfileViewState extends State<_ProfileView> {
                   iconBg: _bgPurpleTint,
                   iconColor: _purple,
                   value: '$petCount',
-                  label: 'Dogs Registered',
+                  label: 'Pets Registered',
                 ),
               ),
-              _statDivider(),
-              Expanded(
-                child: _buildStatCell(
-                  icon: Icons.directions_walk,
-                  iconBg: _bgGreenTint,
-                  iconColor: _green,
-                  value: '$walkCount',
-                  label: 'Completed Walks',
+              if (isWalker) ...[
+                _statDivider(),
+                Expanded(
+                  child: _buildStatCell(
+                    icon: Icons.directions_walk,
+                    iconBg: _bgGreenTint,
+                    iconColor: _green,
+                    value: '$walkCount',
+                    label: 'Completed Walks',
+                  ),
                 ),
-              ),
+              ],
               _statDivider(),
               Expanded(
                 child: _buildStatCell(
@@ -758,9 +631,17 @@ class _ProfileViewState extends State<_ProfileView> {
         Expanded(
           child: _buildQuickAction(
             icon: Icons.pets,
-            iconBg: _bgOrangeTint,
-            iconColor: _orange,
+            iconBg: _bgPurpleTint,
+            iconColor: _purple,
             label: 'Manage Pets',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<ProfileCubit>(),
+                  child: const ManagePetsScreen(),
+                ),
+              ),
+            ),
           ),
         ),
         Expanded(
@@ -792,56 +673,336 @@ class _ProfileViewState extends State<_ProfileView> {
     bool hasDot = false,
     VoidCallback? onTap,
   }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Material(
-          color: Colors.transparent,
-          clipBehavior: Clip.antiAlias,
-          borderRadius: BorderRadius.circular(18),
-          child: InkWell(
-            onTap: onTap == null
-                ? null
-                : () {
-                    HapticFeedback.lightImpact();
-                    onTap();
-                  },
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: iconBg,
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  child: Icon(icon, size: 22, color: iconColor),
+    return GestureDetector(
+      onTap: onTap ?? () {},
+      child: Column(
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: iconBg,
+                  borderRadius: BorderRadius.circular(18),
                 ),
-                if (hasDot)
-                  Positioned(
-                    right: -2,
-                    top: -2,
-                    child: Container(
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        color: _red,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 1.5),
-                      ),
+                child: Icon(icon, size: 22, color: iconColor),
+              ),
+              if (hasDot)
+                Positioned(
+                  right: -2,
+                  top: -2,
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: _red,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 1.5),
                     ),
                   ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 11, color: _textDark),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWalkerSection() {
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        if (state is! ProfileLoaded) return const SizedBox.shrink();
+        final wp = state.walkerProfile;
+        if (wp == null) return _buildWalkerNotApplied();
+        switch (wp.status) {
+          case WalkerStatus.pending:
+            return _buildWalkerPending();
+          case WalkerStatus.approved:
+            return _buildWalkerApproved();
+          case WalkerStatus.rejected:
+            return _buildWalkerRejected();
+        }
+      },
+    );
+  }
+
+  Widget _buildWalkerNotApplied() {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => BlocProvider.value(
+            value: context.read<ProfileCubit>(),
+            child: const BecomeWalkerScreen(),
+          ),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE8F8F2),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _green.withValues(alpha: 0.30)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: _green.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.directions_walk, color: _green, size: 22),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Become a Walker',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: _textDark,
+                    ),
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    'Earn money walking dogs in your area.',
+                    style: TextStyle(fontSize: 12, color: _textMid),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: _textMuted),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWalkerPending() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEBF3FB),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _blue.withValues(alpha: 0.30)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: _blue.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.hourglass_top_rounded, color: _blue, size: 22),
+          ),
+          const SizedBox(width: 14),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Verification Pending',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: _textDark,
+                  ),
+                ),
+                SizedBox(height: 3),
+                Text(
+                  'Your application is under review. We\'ll notify you within 24–48 hours.',
+                  style: TextStyle(fontSize: 12, color: _textMid),
+                ),
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWalkerApproved() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8F8F2),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _green.withValues(alpha: 0.40)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: _green.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.verified_rounded, color: _green, size: 22),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Walker Profile Active',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: _textDark,
+                      ),
+                    ),
+                    SizedBox(height: 3),
+                    Text(
+                      'You\'re a verified walker. Pet owners can now book you.',
+                      style: TextStyle(fontSize: 12, color: _textMid),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<ProfileCubit>(),
+                      child: const EditWalkerProfileScreen(),
+                    ),
+                  ),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _green,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: const Text(
+                    'Edit',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const WalkerAvailabilityScreen(),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: _green.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.schedule_rounded, size: 16, color: _green),
+                    SizedBox(width: 8),
+                    Text('Manage Availability', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _green)),
+                    SizedBox(width: 4),
+                    Icon(Icons.chevron_right_rounded, size: 16, color: _green),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const WalkerBookingsScreen(),
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: _green.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.calendar_month_rounded, size: 16, color: _green),
+                    SizedBox(width: 8),
+                    Text('My Bookings', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _green)),
+                    SizedBox(width: 4),
+                    Icon(Icons.chevron_right_rounded, size: 16, color: _green),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWalkerRejected() {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => BlocProvider.value(
+            value: context.read<ProfileCubit>(),
+            child: const BecomeWalkerScreen(isReapply: true),
+          ),
         ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 11, color: _textDark),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFEECE8),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _orange.withValues(alpha: 0.35)),
         ),
-      ],
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: _orange.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.error_outline_rounded, color: _orange, size: 22),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Verification Failed', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: _textDark)),
+                  SizedBox(height: 3),
+                  Text('Your document was not accepted. Tap to upload a new one.', style: TextStyle(fontSize: 12, color: _textMid)),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: _textMuted),
+          ],
+        ),
+      ),
     );
   }
 
@@ -855,18 +1016,8 @@ class _ProfileViewState extends State<_ProfileView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'My Pets',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: _textDark,
-                  ),
-                ),
-                Text(
-                  '${pets.length} registered',
-                  style: const TextStyle(fontSize: 12, color: _textMuted),
-                ),
+                const Text('My Pets', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: _textDark)),
+                Text('${pets.length} registered', style: const TextStyle(fontSize: 12, color: _textMuted)),
               ],
             ),
             const SizedBox(height: 10),
@@ -874,15 +1025,8 @@ class _ProfileViewState extends State<_ProfileView> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Text(
-                  'No pets registered yet',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
-                ),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
+                child: const Text('No pets registered yet', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: Color(0xFF8A93A0))),
               )
             else
               ...pets.map((pet) => Padding(
@@ -904,7 +1048,7 @@ class _ProfileViewState extends State<_ProfileView> {
     final subtitle = [
       if (pet.breed != null) pet.breed!,
       age,
-    ].join(' · ');
+    ].join(' \u00b7 ');
 
     return InkWell(
       onTap: () => Navigator.of(context).push(
@@ -921,11 +1065,7 @@ class _ProfileViewState extends State<_ProfileView> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 2)),
           ],
         ),
         child: Row(
@@ -938,37 +1078,17 @@ class _ProfileViewState extends State<_ProfileView> {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        pet.name,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: _textDark,
-                        ),
-                      ),
+                      Text(pet.name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: _textDark)),
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: _bgGreenTint,
-                          borderRadius: BorderRadius.circular(99),
-                        ),
-                        child: const Text(
-                          'Active',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: _green,
-                          ),
-                        ),
+                        decoration: BoxDecoration(color: _bgGreenTint, borderRadius: BorderRadius.circular(99)),
+                        child: const Text('Active', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: _green)),
                       ),
                     ],
                   ),
                   const SizedBox(height: 3),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 12, color: _textMuted),
-                  ),
+                  Text(subtitle, style: const TextStyle(fontSize: 12, color: _textMuted)),
                 ],
               ),
             ),
@@ -1000,40 +1120,25 @@ class _ProfileViewState extends State<_ProfileView> {
   }
 
   Widget _buildAddPetButton() {
-    return InkWell(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: context.read<ProfileCubit>(),
-              child: const CreatePetScreen(),
-            ),
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: context.read<ProfileCubit>(),
+            child: const CreatePetScreen(),
           ),
-        );
-      },
-      borderRadius: BorderRadius.circular(14),
+        ),
+      ),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 13),
         decoration: BoxDecoration(
-          color: _bgAddPet,
+          color: _bgPurpleTint,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: _addPetBorder,
-            width: 1.5,
-            style: BorderStyle.solid,
-          ),
+          border: Border.all(color: _purple.withValues(alpha: 0.30), width: 1.5, style: BorderStyle.solid),
         ),
         alignment: Alignment.center,
-        child: const Text(
-          '+ Add New Pet',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: _orange,
-          ),
-        ),
+        child: const Text('+ Add New Pet', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _purple)),
       ),
     );
   }
@@ -1041,15 +1146,7 @@ class _ProfileViewState extends State<_ProfileView> {
   Widget _buildSectionTitle(String text) {
     return Padding(
       padding: const EdgeInsets.only(left: 4),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w700,
-          color: _textSection,
-          letterSpacing: 1.0,
-        ),
-      ),
+      child: Text(text, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: _textSection, letterSpacing: 1.0)),
     );
   }
 
@@ -1059,11 +1156,7 @@ class _ProfileViewState extends State<_ProfileView> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 12, offset: const Offset(0, 3)),
         ],
       ),
       child: Column(children: rows),
@@ -1092,34 +1185,13 @@ class _ProfileViewState extends State<_ProfileView> {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Row(
           children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: iconBgColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(icon, size: 18, color: iconColor),
-            ),
+            Container(width: 36, height: 36, decoration: BoxDecoration(color: iconBgColor, borderRadius: BorderRadius.circular(12)), child: Icon(icon, size: 18, color: iconColor)),
             const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: _textDark,
-                ),
-              ),
-            ),
+            Expanded(child: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textDark))),
             if (trailing != null)
               trailing
             else ...[
-              if (trailingValue != null)
-                Text(
-                  trailingValue,
-                  style: const TextStyle(fontSize: 13, color: _textMuted),
-                ),
+              if (trailingValue != null) Text(trailingValue, style: const TextStyle(fontSize: 13, color: _textMuted)),
               const SizedBox(width: 4),
               const Icon(Icons.chevron_right, size: 20, color: _textMuted),
             ],
@@ -1130,20 +1202,7 @@ class _ProfileViewState extends State<_ProfileView> {
   }
 
   Widget _buildPremiumCard() {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 600),
-      curve: Curves.easeOut,
-      builder: (context, value, child) {
-        return Opacity(
-          opacity: value,
-          child: Transform.translate(
-            offset: Offset(0, 30 * (1 - value)),
-            child: child,
-          ),
-        );
-      },
-      child: Container(
+    return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -1151,19 +1210,11 @@ class _ProfileViewState extends State<_ProfileView> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF6D7CFF),
-            Color(0xFF7C6BF5),
-            Color(0xFF5F6BE8),
-          ],
+          colors: [Color(0xFF6D7CFF), Color(0xFF7C6BF5), Color(0xFF5F6BE8)],
           stops: [0.0, 0.52, 1.0],
         ),
         boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF6D7CFF).withValues(alpha: 0.35),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
+          BoxShadow(color: const Color(0xFF6D7CFF).withValues(alpha: 0.35), blurRadius: 18, offset: const Offset(0, 8)),
         ],
       ),
       child: Column(
@@ -1172,29 +1223,11 @@ class _ProfileViewState extends State<_ProfileView> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'CURRENT PLAN',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.0,
-                  color: Colors.white.withValues(alpha: 0.7),
-                ),
-              ),
+              Text('CURRENT PLAN', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 1.0, color: Colors.white.withValues(alpha: 0.7))),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _gold,
-                  borderRadius: BorderRadius.circular(99),
-                ),
-                child: const Text(
-                  '👑 PREMIUM',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: _textDark,
-                  ),
-                ),
+                decoration: BoxDecoration(color: _gold, borderRadius: BorderRadius.circular(99)),
+                child: const Text('👑 PREMIUM', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: _textDark)),
               ),
             ],
           ),
@@ -1203,22 +1236,9 @@ class _ProfileViewState extends State<_ProfileView> {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              const Text(
-                'Balto Premium',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                ),
-              ),
+              const Text('Balto Premium', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white)),
               const SizedBox(width: 6),
-              Text(
-                '· \$19/mo',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.white.withValues(alpha: 0.7),
-                ),
-              ),
+              Text('· \$19/mo', style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.7))),
             ],
           ),
           const SizedBox(height: 16),
@@ -1245,22 +1265,13 @@ class _ProfileViewState extends State<_ProfileView> {
                 foregroundColor: _purple,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(vertical: 13),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text(
-                'Manage Subscription',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              child: const Text('Manage Subscription', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
             ),
           ),
         ],
       ),
-    ),
     );
   }
 
@@ -1270,21 +1281,12 @@ class _ProfileViewState extends State<_ProfileView> {
       child: ElevatedButton.icon(
         onPressed: _onSignOut,
         icon: const Icon(Icons.logout, size: 18, color: _red),
-        label: const Text(
-          'Sign Out',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: _red,
-          ),
-        ),
+        label: const Text('Sign Out', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: _red)),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
       ),
     );
@@ -1292,10 +1294,7 @@ class _ProfileViewState extends State<_ProfileView> {
 
   Widget _buildFooter() {
     return const Center(
-      child: Text(
-        'Balto · v2.4.0',
-        style: TextStyle(fontSize: 11, color: _textSection),
-      ),
+      child: Text('Balto · v2.4.0', style: TextStyle(fontSize: 11, color: _textSection)),
     );
   }
 }
@@ -1311,16 +1310,7 @@ class _PremiumCheck extends StatelessWidget {
       children: [
         const Icon(Icons.check_circle_outline, size: 14, color: Colors.white),
         const SizedBox(width: 6),
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+        Expanded(child: Text(label, style: const TextStyle(fontSize: 12, color: Colors.white, fontWeight: FontWeight.w500))),
       ],
     );
   }

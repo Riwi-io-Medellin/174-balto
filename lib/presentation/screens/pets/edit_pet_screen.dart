@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/di/injection.dart';
+import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../../domain/repositories/upload_repository.dart';
@@ -21,14 +23,18 @@ class EditPetScreen extends StatefulWidget {
 
 class _EditPetScreenState extends State<EditPetScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _nameCtrl;
-  late final TextEditingController _speciesCtrl;
-  late final TextEditingController _breedCtrl;
-  late final TextEditingController _descriptionCtrl;
+  late final _nameCtrl = TextEditingController(text: widget.pet.name);
+  late final _speciesCtrl = TextEditingController(text: widget.pet.species ?? '');
+  late final _breedCtrl = TextEditingController(text: widget.pet.breed ?? '');
+  late final _weightCtrl = TextEditingController(
+    text: widget.pet.weight != null ? widget.pet.weight!.toStringAsFixed(1) : '',
+  );
+  late final _descriptionCtrl = TextEditingController(text: widget.pet.description ?? '');
   final _picker = ImagePicker();
+
   DateTime? _birthDate;
-  XFile? _pickedImage;
   String? _existingPhotoUrl;
+  XFile? _pickedImage;
   bool _saving = false;
 
   static const Color _primary = Color(0xFF3A80C2);
@@ -37,16 +43,27 @@ class _EditPetScreenState extends State<EditPetScreen> {
   static const Color _textDark = Color(0xFF1A1A2E);
   static const Color _textMuted = Color(0xFF6B7280);
 
+  static const _speciesSuggestions = [
+    'Dog', 'Cat', 'Bird', 'Rabbit', 'Fish',
+    'Hamster', 'Turtle', 'Guinea Pig', 'Parrot', 'Snake',
+  ];
+
+  static const _breedSuggestions = <String, List<String>>{
+    'Dog': ['Golden Retriever', 'Labrador', 'Bulldog', 'Poodle', 'German Shepherd', 'Beagle', 'Husky', 'Chihuahua', 'Rottweiler', 'Dachshund'],
+    'Cat': ['Persian', 'Siamese', 'Maine Coon', 'British Shorthair', 'Bengal', 'Ragdoll', 'Abyssinian', 'Sphynx'],
+    'Bird': ['Canary', 'Parakeet', 'Cockatiel', 'African Grey', 'Lovebird', 'Macaw'],
+    'Rabbit': ['Holland Lop', 'Lionhead', 'Mini Rex', 'Dutch', 'Angora'],
+    'Hamster': ['Syrian', 'Dwarf', 'Roborovski'],
+    'Guinea Pig': ['American', 'Peruvian', 'Teddy', 'Silkie'],
+  };
+
   @override
   void initState() {
     super.initState();
-    _nameCtrl = TextEditingController(text: widget.pet.name);
-    _speciesCtrl = TextEditingController(text: widget.pet.species ?? '');
-    _breedCtrl = TextEditingController(text: widget.pet.breed ?? '');
-    _descriptionCtrl =
-        TextEditingController(text: widget.pet.description ?? '');
     _birthDate = widget.pet.birthDate;
     _existingPhotoUrl = widget.pet.photoUrl;
+    _speciesCtrl.addListener(() => setState(() {}));
+    _breedCtrl.addListener(() => setState(() {}));
   }
 
   @override
@@ -54,14 +71,12 @@ class _EditPetScreenState extends State<EditPetScreen> {
     _nameCtrl.dispose();
     _speciesCtrl.dispose();
     _breedCtrl.dispose();
+    _weightCtrl.dispose();
     _descriptionCtrl.dispose();
     super.dispose();
   }
 
-  InputDecoration _decoration({
-    required String hint,
-    required IconData icon,
-  }) {
+  InputDecoration _decoration({required String hint, required IconData icon}) {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(color: _textMuted, fontSize: 14),
@@ -83,9 +98,7 @@ class _EditPetScreenState extends State<EditPetScreen> {
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
     );
-    if (picked != null) {
-      setState(() => _birthDate = picked);
-    }
+    if (picked != null) setState(() => _birthDate = picked);
   }
 
   Future<void> _pickImage() async {
@@ -94,13 +107,12 @@ class _EditPetScreenState extends State<EditPetScreen> {
       maxWidth: 1200,
       maxHeight: 1200,
     );
-    if (image != null) {
-      setState(() => _pickedImage = image);
-    }
+    if (image != null) setState(() => _pickedImage = image);
   }
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+
     setState(() => _saving = true);
     try {
       String? photoUrl = _existingPhotoUrl;
@@ -108,34 +120,28 @@ class _EditPetScreenState extends State<EditPetScreen> {
         photoUrl = await sl<UploadRepository>().uploadImage(_pickedImage!.path);
       }
 
+      final weightText = _weightCtrl.text.trim();
+      final weight = weightText.isNotEmpty ? double.tryParse(weightText) : null;
+
       await sl<PetRepository>().update(
         id: widget.pet.id,
         name: _nameCtrl.text.trim(),
-        species: _speciesCtrl.text.trim().isEmpty
-            ? null
-            : _speciesCtrl.text.trim(),
-        breed:
-            _breedCtrl.text.trim().isEmpty ? null : _breedCtrl.text.trim(),
+        species: _speciesCtrl.text.trim().isEmpty ? null : _speciesCtrl.text.trim(),
+        breed: _breedCtrl.text.trim().isEmpty ? null : _breedCtrl.text.trim(),
         birthDate: _birthDate,
-        description: _descriptionCtrl.text.trim().isEmpty
-            ? null
-            : _descriptionCtrl.text.trim(),
+        description: _descriptionCtrl.text.trim().isEmpty ? null : _descriptionCtrl.text.trim(),
         photoUrl: photoUrl,
+        weight: weight,
       );
 
-      if (!mounted) return;
       await context.read<ProfileCubit>().load();
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pet updated successfully')),
-      );
+      BaltoToast.success(context, 'Pet updated successfully.');
       Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      BaltoToast.error(context, 'Error: ${e.toString()}');
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -146,7 +152,7 @@ class _EditPetScreenState extends State<EditPetScreen> {
     return Scaffold(
       backgroundColor: _bg,
       appBar: AppBar(
-        title: const Text('Edit Pet'),
+        title: Text('Edit ${widget.pet.name}'),
         backgroundColor: Colors.white,
         foregroundColor: _textDark,
         elevation: 0,
@@ -171,17 +177,7 @@ class _EditPetScreenState extends State<EditPetScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Text(
-                    'Edit ${widget.pet.name}',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: _textDark,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 4),
                 _buildPhotoPicker(),
                 const SizedBox(height: 20),
                 _fieldLabel('Name'),
@@ -189,34 +185,37 @@ class _EditPetScreenState extends State<EditPetScreen> {
                 TextFormField(
                   controller: _nameCtrl,
                   style: const TextStyle(fontSize: 14, color: _textDark),
-                  decoration: _decoration(
-                    hint: 'Pet name',
-                    icon: Icons.pets,
-                  ),
-                  validator: (v) =>
-                      v?.trim().isEmpty == true ? 'Required' : null,
+                  decoration: _decoration(hint: 'Pet name', icon: Icons.pets),
+                  validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
                 ),
                 const SizedBox(height: 20),
-                _fieldLabel('Species'),
-                const SizedBox(height: 8),
-                TextFormField(
+                _buildSuggestionField(
+                  label: 'Species',
                   controller: _speciesCtrl,
-                  style: const TextStyle(fontSize: 14, color: _textDark),
-                  decoration: _decoration(
-                    hint: 'e.g. Dog, Cat',
-                    icon: Icons.category_outlined,
-                  ),
+                  hint: 'e.g. Dog, Cat or type your own',
+                  icon: Icons.category_outlined,
+                  suggestions: _speciesSuggestions,
+                  onChipTap: (s) => setState(() {
+                    _speciesCtrl.text = s;
+                    _speciesCtrl.selection = TextSelection.fromPosition(
+                      TextPosition(offset: s.length),
+                    );
+                    _breedCtrl.clear();
+                  }),
                 ),
                 const SizedBox(height: 20),
-                _fieldLabel('Breed'),
-                const SizedBox(height: 8),
-                TextFormField(
+                _buildSuggestionField(
+                  label: 'Breed',
                   controller: _breedCtrl,
-                  style: const TextStyle(fontSize: 14, color: _textDark),
-                  decoration: _decoration(
-                    hint: 'e.g. Golden Retriever',
-                    icon: Icons.style_outlined,
-                  ),
+                  hint: 'e.g. Golden Retriever or type your own',
+                  icon: Icons.style_outlined,
+                  suggestions: _breedSuggestions[_speciesCtrl.text] ?? const [],
+                  onChipTap: (s) => setState(() {
+                    _breedCtrl.text = s;
+                    _breedCtrl.selection = TextSelection.fromPosition(
+                      TextPosition(offset: s.length),
+                    );
+                  }),
                 ),
                 const SizedBox(height: 20),
                 _fieldLabel('Birth Date'),
@@ -238,6 +237,21 @@ class _EditPetScreenState extends State<EditPetScreen> {
                         : null,
                   ),
                   onTap: _pickDate,
+                ),
+                const SizedBox(height: 20),
+                _fieldLabel('Weight (kg)'),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _weightCtrl,
+                  style: const TextStyle(fontSize: 14, color: _textDark),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                  ],
+                  decoration: _decoration(
+                    hint: 'e.g. 12.5',
+                    icon: Icons.monitor_weight_outlined,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 _fieldLabel('Description'),
@@ -271,17 +285,12 @@ class _EditPetScreenState extends State<EditPetScreen> {
                             height: 22,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
                         : const Text(
                             'Save Changes',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                           ),
                   ),
                 ),
@@ -293,101 +302,173 @@ class _EditPetScreenState extends State<EditPetScreen> {
     );
   }
 
+  Widget _buildSuggestionField({
+    required String label,
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    required List<String> suggestions,
+    required void Function(String) onChipTap,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _fieldLabel(label),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          style: const TextStyle(fontSize: 14, color: _textDark),
+          decoration: _decoration(hint: hint, icon: icon),
+        ),
+        if (suggestions.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: suggestions.map((s) {
+              final selected = controller.text == s;
+              return GestureDetector(
+                onTap: () => onChipTap(s),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: selected ? _primary.withValues(alpha: 0.12) : _inputFill,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: selected ? _primary : Colors.transparent,
+                    ),
+                  ),
+                  child: Text(
+                    s,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: selected ? _primary : _textMuted,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ],
+    );
+  }
+
   Widget _buildPhotoPicker() {
     final hasNewImage = _pickedImage != null;
-    final hasExisting =
-        _existingPhotoUrl != null && _existingPhotoUrl!.isNotEmpty;
-    if (hasNewImage) {
-      return Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.file(
-              File(_pickedImage!.path),
-              width: double.infinity,
-              height: 180,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: GestureDetector(
-              onTap: () => setState(() => _pickedImage = null),
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.5),
-                  shape: BoxShape.circle,
+    final hasExistingUrl = _existingPhotoUrl != null && _existingPhotoUrl!.isNotEmpty;
+
+    return Column(
+      children: [
+        if (hasNewImage)
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.file(
+                  File(_pickedImage!.path),
+                  width: double.infinity,
+                  height: 180,
+                  fit: BoxFit.cover,
                 ),
-                child:
-                    const Icon(Icons.close, size: 18, color: Colors.white),
               ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: GestureDetector(
+                  onTap: () => setState(() => _pickedImage = null),
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.close, size: 18, color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          )
+        else if (hasExistingUrl)
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.network(
+                  _existingPhotoUrl!,
+                  width: double.infinity,
+                  height: 180,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => _buildPhotoPlaceholder(),
+                ),
+              ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: _overlayButton(Icons.edit),
+                    ),
+                    const SizedBox(width: 6),
+                    GestureDetector(
+                      onTap: () => setState(() => _existingPhotoUrl = null),
+                      child: _overlayButton(Icons.close),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
+        else
+          GestureDetector(
+            onTap: _pickImage,
+            child: _buildPhotoPlaceholder(),
+          ),
+      ],
+    );
+  }
+
+  Widget _overlayButton(IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.5),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, size: 16, color: Colors.white),
+    );
+  }
+
+  Widget _buildPhotoPlaceholder() {
+    return Container(
+      width: double.infinity,
+      height: 120,
+      decoration: BoxDecoration(
+        color: _inputFill,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _primary.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.camera_alt_outlined, size: 32, color: _primary),
+          const SizedBox(height: 8),
+          Text(
+            'Add Photo',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: _primary,
             ),
           ),
         ],
-      );
-    }
-    if (hasExisting) {
-      return Stack(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.network(
-              _existingPhotoUrl!,
-              width: double.infinity,
-              height: 180,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned(
-            bottom: 8,
-            right: 8,
-            child: GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.5),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.camera_alt,
-                    size: 18, color: Colors.white),
-              ),
-            ),
-          ),
-        ],
-      );
-    }
-    return GestureDetector(
-      onTap: _pickImage,
-      child: Container(
-        width: double.infinity,
-        height: 120,
-        decoration: BoxDecoration(
-          color: _inputFill,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: _primary.withValues(alpha: 0.3),
-            width: 1.5,
-            strokeAlign: BorderSide.strokeAlignInside,
-          ),
-        ),
-        child: const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.camera_alt_outlined, size: 32, color: _primary),
-            SizedBox(height: 8),
-            Text(
-              'Add Photo',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: _primary,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

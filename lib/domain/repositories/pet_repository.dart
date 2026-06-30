@@ -10,6 +10,7 @@ abstract class PetRepository {
     DateTime? birthDate,
     String? description,
     String? photoUrl,
+    double? weight,
   });
   Future<Pet> update({
     required String id,
@@ -19,6 +20,7 @@ abstract class PetRepository {
     DateTime? birthDate,
     String? description,
     String? photoUrl,
+    double? weight,
   });
   Future<void> delete(String id);
 }
