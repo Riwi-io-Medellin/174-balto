@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
+import '../../widgets/skeletons/walker_bookings_skeleton.dart';
 import '../../../domain/entities/walk_booking.dart';
 import '../../bloc/walker_booking/walker_booking_cubit.dart';
 import '../../bloc/walker_booking/walker_booking_state.dart';
@@ -73,9 +74,7 @@ class _WalkerBookingsView extends StatelessWidget {
           },
           builder: (context, state) {
             if (state is WalkerBookingLoading) {
-              return const Center(
-                child: CircularProgressIndicator(color: _green),
-              );
+              return const WalkerBookingsSkeleton();
             }
             if (state is WalkerBookingError) {
               return _ErrorBody(

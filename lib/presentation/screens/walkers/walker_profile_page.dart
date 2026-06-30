@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
+import '../../../domain/entities/availability_slot.dart';
 import '../../../domain/entities/available_slot.dart';
 import '../../../domain/entities/walker.dart';
 import '../../bloc/walker/walker_cubit.dart';
@@ -88,6 +89,15 @@ class _WalkerProfilePageState extends State<WalkerProfilePage> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: _ServiceAreaCard(area: walker.serviceArea),
                       ),
+                      if (walker.weeklyAvailability.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: _WeeklyScheduleSection(
+                            slots: walker.weeklyAvailability,
+                          ),
+                        ),
+                      ],
                       if (walker.availableSlots.isNotEmpty) ...[
                         const SizedBox(height: 20),
                         Padding(
@@ -137,23 +147,6 @@ class _WalkerAppBar extends StatelessWidget {
           color: Color(0xFF1F2937),
         ),
       ),
-      actions: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.ios_share_outlined,
-            color: Color(0xFF1F2937),
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.favorite_border_rounded,
-            color: Color(0xFF1F2937),
-          ),
-        ),
-        const SizedBox(width: 4),
-      ],
     );
   }
 }
@@ -957,6 +950,171 @@ class _ReviewCard extends StatelessWidget {
               height: 1.5,
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Weekly Schedule ─────────────────────────────────────────────────────────
+
+class _WeeklyScheduleSection extends StatelessWidget {
+  const _WeeklyScheduleSection({required this.slots});
+
+  final List<AvailabilitySlot> slots;
+
+  static const _days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  static const _daysFull = [
+    'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+  ];
+
+  Map<int, List<AvailabilitySlot>> _group() {
+    final map = <int, List<AvailabilitySlot>>{};
+    for (final s in slots) {
+      map.putIfAbsent(s.dayOfWeek, () => []).add(s);
+    }
+    return map;
+  }
+
+  String _fmt(String hhmm) {
+    final parts = hhmm.split(':');
+    final h = int.parse(parts[0]);
+    final m = parts[1];
+    final period = h < 12 ? 'AM' : 'PM';
+    final hour = h == 0 ? 12 : (h > 12 ? h - 12 : h);
+    return '$hour:$m $period';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final grouped = _group();
+    final activeDays = List.generate(7, (i) => i)
+        .where((d) => grouped.containsKey(d))
+        .toList();
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: AppColors.navWalkers.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.calendar_month_rounded,
+                  size: 16,
+                  color: AppColors.navWalkers,
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Text(
+                'Weekly Schedule',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Day pills row
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: List.generate(7, (i) {
+              final active = grouped.containsKey(i);
+              return Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: active
+                      ? AppColors.navWalkers
+                      : const Color(0xFFF0F2F5),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  _days[i],
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: active ? Colors.white : const Color(0xFFB0B8C1),
+                  ),
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 16),
+          // Time slots per active day
+          ...activeDays.map((day) {
+            final daySlots = grouped[day]!;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 80,
+                    child: Text(
+                      _daysFull[day],
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF1F2937),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: daySlots.map((s) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.navWalkers.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: AppColors.navWalkers.withValues(alpha: 0.25),
+                            ),
+                          ),
+                          child: Text(
+                            '${_fmt(s.startTime)} – ${_fmt(s.endTime)}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.navWalkers,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
         ],
       ),
     );

@@ -16,11 +16,12 @@ import '../walkers/become_walker_screen.dart';
 import '../walkers/edit_walker_profile_screen.dart';
 import '../walkers/walker_availability_screen.dart';
 import '../walkers/walker_bookings_screen.dart';
+import '../../widgets/skeletons/profile_skeleton.dart';
 import 'edit_profile_screen.dart';
-import 'privacy_settings_screen.dart';
-import 'profile_settings_screen.dart';
 import 'faq_screen.dart';
 import 'help_center_screen.dart';
+import 'privacy_settings_screen.dart';
+import 'profile_settings_screen.dart';
 import 'support_screen.dart';
 import '../notifications/notifications_screen.dart';
 
@@ -65,6 +66,25 @@ class _ProfileViewState extends State<_ProfileView> {
 
   @override
   Widget build(BuildContext context) {
+    if (context.watch<ProfileCubit>().state is ProfileLoading) {
+      return Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFFE7EAFF),
+                Color(0xFFEDF0FB),
+                Color(0xFFF4F6FA),
+              ],
+            ),
+          ),
+          child: const SafeArea(child: ProfileSkeleton()),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(

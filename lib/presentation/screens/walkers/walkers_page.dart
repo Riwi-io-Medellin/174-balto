@@ -9,6 +9,7 @@ import '../../bloc/walker/walker_cubit.dart';
 import '../../bloc/walker/walker_state.dart';
 import '../walkers/walker_profile_page.dart';
 import 'become_walker_screen.dart';
+import '../../widgets/skeletons/walkers_skeleton.dart';
 import 'widgets/walker_card.dart';
 import 'widgets/walker_filter_chip.dart';
 import 'widgets/walkers_search_bar.dart';
@@ -132,7 +133,7 @@ class _WalkersPageState extends State<WalkersPage> {
     return BlocBuilder<WalkerCubit, WalkerState>(
       builder: (context, state) {
         if (state is WalkerLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WalkersSkeleton();
         }
         if (state is WalkerError) {
           return Center(

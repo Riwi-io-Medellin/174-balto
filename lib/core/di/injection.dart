@@ -2,6 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../data/datasources/auth_remote_datasource.dart';
+import '../../data/datasources/coach_remote_datasource.dart';
 import '../../data/datasources/feedback_remote_datasource.dart';
 import '../../data/datasources/me_remote_datasource.dart';
 import '../../data/datasources/notification_remote_datasource.dart';
@@ -14,6 +15,7 @@ import '../../data/datasources/walker_profile_remote_datasource.dart';
 import '../../data/datasources/walker_remote_datasource.dart';
 import '../../data/datasources/walking_history_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
+import '../../data/repositories/coach_repository_impl.dart';
 import '../../data/repositories/feedback_repository_impl.dart';
 import '../../data/repositories/me_repository_impl.dart';
 import '../../data/repositories/notification_repository_impl.dart';
@@ -26,6 +28,7 @@ import '../../data/repositories/walker_profile_repository_impl.dart';
 import '../../data/repositories/walker_repository_impl.dart';
 import '../../data/repositories/walking_history_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../domain/repositories/coach_repository.dart';
 import '../../domain/repositories/feedback_repository.dart';
 import '../../domain/repositories/me_repository.dart';
 import '../../domain/repositories/notification_repository.dart';
@@ -38,6 +41,7 @@ import '../../domain/repositories/walker_profile_repository.dart';
 import '../../domain/repositories/walker_repository.dart';
 import '../../domain/repositories/walking_history_repository.dart';
 import '../../presentation/bloc/auth/auth_cubit.dart';
+import '../../presentation/bloc/coach/coach_cubit.dart';
 import '../../presentation/bloc/my_walks/my_walks_cubit.dart';
 import '../../presentation/bloc/profile/profile_cubit.dart';
 import '../../presentation/bloc/walk_booking/walk_booking_cubit.dart';
@@ -181,5 +185,16 @@ void setupDependencies() {
   );
   sl.registerFactory<MyWalksCubit>(
     () => MyWalksCubit(sl<WalkBookingRepository>()),
+  );
+
+  // Coach
+  sl.registerLazySingleton<CoachRemoteDataSource>(
+    () => CoachRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<CoachRepository>(
+    () => CoachRepositoryImpl(sl<CoachRemoteDataSource>()),
+  );
+  sl.registerFactory<CoachCubit>(
+    () => CoachCubit(sl<CoachRepository>(), sl<FlutterSecureStorage>()),
   );
 }

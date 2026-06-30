@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
+import '../../widgets/skeletons/walks_skeleton.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/walk_booking.dart';
 import '../../bloc/my_walks/my_walks_cubit.dart';
@@ -45,11 +46,7 @@ class _WalksView extends StatelessWidget {
             return CustomScrollView(
               slivers: [
                 const _WalksAppBar(),
-                const SliverFillRemaining(
-                  child: Center(
-                    child: CircularProgressIndicator(color: AppColors.navWalks),
-                  ),
-                ),
+                const SliverToBoxAdapter(child: WalksSkeleton()),
               ],
             );
           }
