@@ -43,7 +43,6 @@ class _WalkerLiveWalkViewState extends State<_WalkerLiveWalkView> {
 
   @override
   void dispose() {
-    _mapController?.dispose();
     super.dispose();
   }
 

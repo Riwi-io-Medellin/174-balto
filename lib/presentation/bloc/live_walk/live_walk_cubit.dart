@@ -104,7 +104,7 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
 
     emit(LiveWalkActive(
       walkerName: walker.name,
-      walkerAvatarUrl: walker.avatarUrl ?? walker.imageUrl,
+      walkerAvatarUrl: walker.avatarUrl ?? walker.imageUrl ?? '',
       walkerRating: walker.rating,
       petName: pet.name,
     ));

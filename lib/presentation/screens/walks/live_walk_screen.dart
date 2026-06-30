@@ -52,7 +52,6 @@ class _LiveWalkViewState extends State<_LiveWalkView> {
 
   @override
   void dispose() {
-    _mapController?.dispose();
     super.dispose();
   }
 
