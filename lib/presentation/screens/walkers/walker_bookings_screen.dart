@@ -178,8 +178,37 @@ class _BookingList extends StatelessWidget {
   final _TabType tabType;
   final List<WalkBooking> acceptedBookings;
 
+  Set<String> _computeBlockedIds() {
+    if (tabType != _TabType.pending) return const {};
+    final blocked = <String>{};
+    for (final accepted in acceptedBookings) {
+      if (accepted.durationMinutes != 90) continue;
+      if (accepted.ownerLatitude == null || accepted.ownerLongitude == null) continue;
+      final acceptedEnd =
+          accepted.slotStart.add(Duration(minutes: accepted.durationMinutes));
+      final nextPending = bookings
+          .where((p) =>
+              p.slotStart.isAfter(acceptedEnd) &&
+              p.ownerLatitude != null &&
+              p.ownerLongitude != null)
+          .toList()
+        ..sort((a, b) => a.slotStart.compareTo(b.slotStart));
+      for (final pending in nextPending.take(2)) {
+        final dist = _haversineKm(
+          pending.ownerLatitude!,
+          pending.ownerLongitude!,
+          accepted.ownerLatitude!,
+          accepted.ownerLongitude!,
+        );
+        if (dist > 3.0) blocked.add(pending.id);
+      }
+    }
+    return blocked;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final blockedIds = _computeBlockedIds();
     return RefreshIndicator(
       color: const Color(0xFF1BAA71),
       onRefresh: () => context.read<WalkerBookingCubit>().refresh(),
@@ -205,6 +234,7 @@ class _BookingList extends StatelessWidget {
                 isPerformingAction: isPerformingAction,
                 tabType: tabType,
                 acceptedBookings: acceptedBookings,
+                isBlocked: blockedIds.contains(bookings[index].id),
               ),
             ),
     );
@@ -226,12 +256,14 @@ class _BookingCard extends StatelessWidget {
     required this.isPerformingAction,
     required this.tabType,
     this.acceptedBookings = const [],
+    this.isBlocked = false,
   });
 
   final WalkBooking booking;
   final bool isPerformingAction;
   final _TabType tabType;
   final List<WalkBooking> acceptedBookings;
+  final bool isBlocked;
 
   static const _green = Color(0xFF1BAA71);
   static const _orange = Color(0xFFD05A24);
@@ -274,7 +306,7 @@ class _BookingCard extends StatelessWidget {
             : null;
 
     final distKm = tabType == _TabType.pending ? _minDistanceKmToAccepted() : null;
-    final isFarAway = distKm != null && distKm > 3.0;
+    final isFarAway = !isBlocked && distKm != null && distKm > 3.0;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -282,8 +314,12 @@ class _BookingCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isFarAway ? const Color(0xFFFFD97A) : Colors.grey.shade200,
-          width: isFarAway ? 1.5 : 1,
+          color: isBlocked
+              ? const Color(0xFFD05A24)
+              : isFarAway
+                  ? const Color(0xFFFFD97A)
+                  : Colors.grey.shade200,
+          width: (isBlocked || isFarAway) ? 1.5 : 1,
         ),
         boxShadow: [
           BoxShadow(
@@ -368,7 +404,33 @@ class _BookingCard extends StatelessWidget {
                 ],
               ),
             ],
-            if (isFarAway) ...[
+            if (isBlocked) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF0EC),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFD05A24)),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.block_rounded, size: 15, color: Color(0xFFD05A24)),
+                    SizedBox(width: 7),
+                    Expanded(
+                      child: Text(
+                        'Too far from a 3-slot walk — must be within 3 km to accept.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFFD05A24),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ] else if (isFarAway) ...[
               const SizedBox(height: 10),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
@@ -425,7 +487,7 @@ class _BookingCard extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: isPerformingAction
+                      onPressed: isPerformingAction || isBlocked
                           ? null
                           : () =>
                               _confirmAction(context, 'Accept this booking?',

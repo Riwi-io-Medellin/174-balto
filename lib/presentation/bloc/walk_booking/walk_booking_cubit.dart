@@ -142,10 +142,11 @@ class WalkBookingCubit extends Cubit<WalkBookingState> {
         date: _formatDate(form.selectedDate!),
         durationMinutes: form.selectedDuration,
       );
+      final filteredSlots = _filterPastSlots(slots, form.selectedDate);
       final current = _form;
       if (current != null) {
         emit(current.copyWith(
-          availableSlots: slots,
+          availableSlots: filteredSlots,
           isLoadingSlots: false,
           clearSlotsError: true,
         ));
@@ -214,8 +215,9 @@ class WalkBookingCubit extends Cubit<WalkBookingState> {
         date: _formatDate(saved.selectedDate!),
         durationMinutes: saved.selectedDuration,
       );
+      final filteredSlots = _filterPastSlots(slots, saved.selectedDate);
       emit(recovering.copyWith(
-        availableSlots: slots,
+        availableSlots: filteredSlots,
         isLoadingSlots: false,
         hadConflict: true,
       ));
@@ -229,6 +231,18 @@ class WalkBookingCubit extends Cubit<WalkBookingState> {
 
   WalkBookingForm? get _form =>
       state is WalkBookingForm ? state as WalkBookingForm : null;
+
+  List<AvailableSlot> _filterPastSlots(
+      List<AvailableSlot> slots, DateTime? selectedDate) {
+    if (selectedDate == null) return slots;
+    final now = DateTime.now();
+    final isToday = selectedDate.year == now.year &&
+        selectedDate.month == now.month &&
+        selectedDate.day == now.day;
+    if (!isToday) return slots;
+    final cutoff = now.add(const Duration(minutes: 30));
+    return slots.where((s) => !s.start.toLocal().isBefore(cutoff)).toList();
+  }
 
   String _formatDate(DateTime d) {
     return '${d.year}-${_pad(d.month)}-${_pad(d.day)}';
