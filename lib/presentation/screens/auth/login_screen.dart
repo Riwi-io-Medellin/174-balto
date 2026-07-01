@@ -429,6 +429,7 @@ class _LoginViewState extends State<_LoginView> {
               width: 20,
               height: 20,
             ),
+            onPressed: () => _showComingSoon(context, 'Google'),
           ),
         ),
         const SizedBox(width: 16),
@@ -436,9 +437,20 @@ class _LoginViewState extends State<_LoginView> {
           child: _SocialButton(
             label: 'Apple',
             icon: const Icon(Icons.apple, size: 22, color: _textDark),
+            onPressed: () => _showComingSoon(context, 'Apple'),
           ),
         ),
       ],
+    );
+  }
+
+  void _showComingSoon(BuildContext context, String provider) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$provider login coming soon'),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
     );
   }
 
@@ -509,15 +521,16 @@ class _LoginViewState extends State<_LoginView> {
 }
 
 class _SocialButton extends StatelessWidget {
-  const _SocialButton({required this.label, required this.icon});
+  const _SocialButton({required this.label, required this.icon, this.onPressed});
 
   final String label;
   final Widget icon;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: () {},
+      onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
         shape: RoundedRectangleBorder(
