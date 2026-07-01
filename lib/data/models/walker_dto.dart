@@ -179,6 +179,8 @@ class WalkerListDto {
     this.experience,
     this.description,
     required this.createdAt,
+    this.averageRating = 0,
+    this.totalReviews = 0,
   });
 
   factory WalkerListDto.fromJson(Map<String, dynamic> json) {
@@ -195,6 +197,8 @@ class WalkerListDto {
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
           : DateTime.now(),
+      averageRating: (json['averageRating'] as num?)?.toDouble() ?? 0,
+      totalReviews: json['totalReviews'] as int? ?? 0,
     );
   }
 
@@ -208,12 +212,14 @@ class WalkerListDto {
   final String? experience;
   final String? description;
   final DateTime createdAt;
+  final double averageRating;
+  final int totalReviews;
 
   Walker toEntity() => Walker(
         id: id,
         name: fullName.isNotEmpty ? fullName : 'Walker',
-        rating: 0,
-        reviews: 0,
+        rating: averageRating,
+        reviews: totalReviews,
         description: description ?? '',
         distance: 0,
         imageUrl: profilePhoto ?? '',
