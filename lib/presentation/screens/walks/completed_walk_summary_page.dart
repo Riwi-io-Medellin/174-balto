@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../domain/entities/walk.dart';
+import '../../widgets/review_sheet.dart';
 
 class CompletedWalkSummaryPage extends StatelessWidget {
   const CompletedWalkSummaryPage({super.key, required this.walk});
@@ -28,7 +29,10 @@ class CompletedWalkSummaryPage extends StatelessWidget {
                   const SizedBox(height: 16),
                   _WalkerCard(walk: walk),
                   const SizedBox(height: 16),
-                  if (walk.userRating != null) _RatingCard(walk: walk),
+                  if (walk.userRating != null)
+                    _RatingCard(walk: walk)
+                  else
+                    _RateWalkButton(walk: walk),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -647,4 +651,95 @@ class _RatingCard extends StatelessWidget {
         2 => 'Below expectations',
         _ => 'Needs improvement',
       };
+}
+
+class _RateWalkButton extends StatelessWidget {
+  const _RateWalkButton({required this.walk});
+
+  final Walk walk;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.star_outline_rounded,
+                  color: Color(0xFFE8A84C), size: 18),
+              SizedBox(width: 8),
+              Text(
+                'Rate this walk',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  color: Color(0xFF1A1A2E),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'How was your walk with',
+            style: TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+          ),
+          Text(
+            walk.walkerName,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1A1A2E),
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => _showRateSheet(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.navWalkers,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Write a Review',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRateSheet(BuildContext context) {
+    showReviewSheet(
+      context: context,
+      targetId: walk.id,
+      targetType: 'walker',
+      targetName: walk.walkerName,
+      title: 'Rate your walk',
+      subtitle: 'How was your walk with ${walk.walkerName}?',
+    );
+  }
 }

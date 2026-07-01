@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/repositories/walk_session_repository.dart';
+import '../../widgets/review_sheet.dart';
 
 class WalkRouteSummaryScreen extends StatefulWidget {
   const WalkRouteSummaryScreen({
@@ -11,11 +12,15 @@ class WalkRouteSummaryScreen extends StatefulWidget {
     required this.sessionId,
     required this.distanceKm,
     required this.elapsedSeconds,
+    this.walkerId,
+    this.walkerName,
   });
 
   final String sessionId;
   final double distanceKm;
   final int elapsedSeconds;
+  final String? walkerId;
+  final String? walkerName;
 
   @override
   State<WalkRouteSummaryScreen> createState() => _WalkRouteSummaryScreenState();
@@ -299,6 +304,34 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                       ),
                     ),
                   ),
+                  if (widget.walkerId != null) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: OutlinedButton.icon(
+                        onPressed: () => showReviewSheet(
+                          context: context,
+                          targetId: widget.walkerId!,
+                          targetType: 'walker',
+                          targetName: widget.walkerName ?? 'your walker',
+                          title: 'Rate your walk',
+                          subtitle: widget.walkerName != null
+                              ? 'How was your walk with ${widget.walkerName}?'
+                              : 'How was your walk?',
+                        ),
+                        icon: const Icon(Icons.star_outline_rounded, size: 18),
+                        label: const Text('Write a Review'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.navWalkers,
+                          side: const BorderSide(color: AppColors.navWalkers),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 20),
                 ],
               ),

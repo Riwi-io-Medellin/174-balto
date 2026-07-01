@@ -19,6 +19,8 @@ class BookingResponseDto {
     this.ownerLatitude,
     this.ownerLongitude,
     this.ownerAddress,
+    this.walkerName,
+    this.walkerAvatarUrl,
   });
 
   factory BookingResponseDto.fromJson(Map<String, dynamic> json) {
@@ -40,6 +42,8 @@ class BookingResponseDto {
       ownerLatitude: (json['ownerLatitude'] as num?)?.toDouble(),
       ownerLongitude: (json['ownerLongitude'] as num?)?.toDouble(),
       ownerAddress: json['ownerAddress'] as String?,
+      walkerName: json['walkerName'] as String?,
+      walkerAvatarUrl: json['walkerPhotoUrl'] as String?,
     );
   }
 
@@ -84,6 +88,8 @@ class BookingResponseDto {
   final double? ownerLatitude;
   final double? ownerLongitude;
   final String? ownerAddress;
+  final String? walkerName;
+  final String? walkerAvatarUrl;
 
   WalkBooking toEntity() => WalkBooking(
         id: id,
@@ -103,5 +109,7 @@ class BookingResponseDto {
         ownerLatitude: ownerLatitude,
         ownerLongitude: ownerLongitude,
         ownerAddress: ownerAddress,
+        walkerName: walkerName,
+        walkerAvatarUrl: walkerAvatarUrl,
       );
 }

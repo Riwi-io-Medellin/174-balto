@@ -6,8 +6,13 @@ import '../../../core/di/injection.dart';
 import '../../../domain/entities/availability_slot.dart';
 import '../../../domain/entities/available_slot.dart';
 import '../../../domain/entities/walker.dart';
+import '../../bloc/feedback/feedback_cubit.dart';
+import '../../bloc/feedback/feedback_state.dart';
 import '../../bloc/walker/walker_cubit.dart';
 import '../../bloc/walker/walker_state.dart';
+import '../../widgets/rating_summary.dart';
+import '../../widgets/review_card.dart';
+import '../../widgets/review_sheet.dart';
 import 'booking_screen.dart';
 
 class WalkerProfilePage extends StatefulWidget {
@@ -21,26 +26,33 @@ class WalkerProfilePage extends StatefulWidget {
 
 class _WalkerProfilePageState extends State<WalkerProfilePage> {
   late final WalkerCubit _cubit;
+  late final FeedbackCubit _feedbackCubit;
 
   @override
   void initState() {
     super.initState();
     _cubit = sl<WalkerCubit>();
+    _feedbackCubit = sl<FeedbackCubit>();
     if (widget.walker.id.isNotEmpty) {
       _cubit.loadWalkerDetail(widget.walker.id);
+      _feedbackCubit.loadWalkerReviews(widget.walker.id);
     }
   }
 
   @override
   void dispose() {
     _cubit.close();
+    _feedbackCubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _cubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _cubit),
+        BlocProvider.value(value: _feedbackCubit),
+      ],
       child: BlocBuilder<WalkerCubit, WalkerState>(
         builder: (context, state) {
           final walker =
@@ -110,7 +122,10 @@ class _WalkerProfilePageState extends State<WalkerProfilePage> {
                       const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: _RatingsReviewsSection(walker: walker),
+                        child: _WalkerReviewsSection(
+                          walkerId: walker.id,
+                          walkerName: walker.name,
+                        ),
                       ),
                       const SizedBox(height: 24),
                     ],
@@ -695,263 +710,96 @@ class _MapGridPainter extends CustomPainter {
 
 // ─── Ratings & Reviews ────────────────────────────────────────────────────────
 
-class _RatingsReviewsSection extends StatelessWidget {
-  const _RatingsReviewsSection({required this.walker});
-
-  final Walker walker;
-
-  List<double> get _distribution {
-    final r = walker.rating;
-    if (r >= 4.8) return [0.86, 0.08, 0.04, 0.01, 0.01];
-    if (r >= 4.5) return [0.70, 0.18, 0.07, 0.03, 0.02];
-    if (r >= 4.0) return [0.55, 0.28, 0.10, 0.05, 0.02];
-    return [0.40, 0.30, 0.15, 0.10, 0.05];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Ratings & Reviews',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF1F2937),
-          ),
-        ),
-        const SizedBox(height: 16),
-        _RatingSummary(walker: walker, distribution: _distribution),
-        const SizedBox(height: 16),
-        const _ReviewCard(
-          name: 'Emily R.',
-          timeAgo: '2 days ago',
-          rating: 5.0,
-          text:
-              'She is absolutely wonderful! Took great care of my dog Max and sent plenty of photos. Highly recommend her services for anyone in the area.',
-          avatarSeed: 'reviewer_emily',
-        ),
-        const SizedBox(height: 12),
-        const _ReviewCard(
-          name: 'James K.',
-          timeAgo: '1 week ago',
-          rating: 5.0,
-          text:
-              'Super professional and caring. My dog Luna always comes back happy and tired. Love the GPS updates during the walk!',
-          avatarSeed: 'reviewer_james',
-        ),
-      ],
-    );
-  }
-}
-
-class _RatingSummary extends StatelessWidget {
-  const _RatingSummary({
-    required this.walker,
-    required this.distribution,
+class _WalkerReviewsSection extends StatelessWidget {
+  const _WalkerReviewsSection({
+    required this.walkerId,
+    required this.walkerName,
   });
 
-  final Walker walker;
-  final List<double> distribution;
+  final String walkerId;
+  final String walkerName;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Column(
-            children: [
-              Text(
-                '${walker.rating}',
-                style: const TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF1F2937),
-                  height: 1,
-                ),
+    return BlocBuilder<FeedbackCubit, FeedbackState>(
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Ratings & Reviews',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF1F2937),
               ),
-              const SizedBox(height: 6),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: List.generate(
-                  5,
-                  (i) => Icon(
-                    Icons.star_rounded,
-                    size: 14,
-                    color: i < walker.rating.floor()
-                        ? const Color(0xFFF6C86A)
-                        : const Color(0xFFE0E4EC),
+            ),
+            const SizedBox(height: 16),
+            if (state is FeedbackLoading)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: CircularProgressIndicator(color: AppColors.navWalkers),
+                ),
+              )
+            else if (state is FeedbackError)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Text(
+                    state.message,
+                    style: const TextStyle(color: Color(0xFF8A93A0)),
                   ),
                 ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                '${walker.reviews} REVIEWS',
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF8A93A0),
-                  letterSpacing: 0.5,
+              )
+            else if (state is FeedbackLoaded) ...[
+              RatingSummary(summary: state.summary),
+              if (state.summary.reviews.isNotEmpty) ...[
+                const SizedBox(height: 16),
+                ...state.summary.reviews.map(
+                  (r) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: ReviewCard(review: r),
+                  ),
+                ),
+              ] else ...[
+                const SizedBox(height: 16),
+                const Center(
+                  child: Text(
+                    'No reviews yet.',
+                    style: TextStyle(color: Color(0xFF8A93A0)),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => showReviewSheet(
+                    context: context,
+                    targetId: walkerId,
+                    targetType: 'walker',
+                    targetName: walkerName,
+                    title: 'Rate this walker',
+                    subtitle: 'How was your experience with $walkerName?',
+                  ),
+                  icon: const Icon(Icons.star_outline_rounded, size: 18),
+                  label: const Text('Write a Review'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.navWalkers,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
               ),
             ],
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              children: List.generate(5, (i) {
-                final star = 5 - i;
-                final fraction = distribution[i];
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 3),
-                  child: Row(
-                    children: [
-                      Text(
-                        '$star',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          color: Color(0xFF8A93A0),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
-                            value: fraction,
-                            minHeight: 7,
-                            backgroundColor: const Color(0xFFF0F2F5),
-                            color: const Color(0xFF1F2937),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ReviewCard extends StatelessWidget {
-  const _ReviewCard({
-    required this.name,
-    required this.timeAgo,
-    required this.rating,
-    required this.text,
-    required this.avatarSeed,
-  });
-
-  final String name;
-  final String timeAgo;
-  final double rating;
-  final String text;
-  final String avatarSeed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              ClipOval(
-                child: Image.network(
-                  'https://picsum.photos/seed/$avatarSeed/80/80',
-                  width: 38,
-                  height: 38,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Container(
-                    width: 38,
-                    height: 38,
-                    color: const Color(0xFFE8F5EE),
-                    child: const Icon(
-                      Icons.person_rounded,
-                      size: 20,
-                      color: Color(0xFFB0B8C1),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1F2937),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Row(
-                      children: List.generate(
-                        5,
-                        (i) => Icon(
-                          Icons.star_rounded,
-                          size: 12,
-                          color: i < rating.floor()
-                              ? const Color(0xFFF6C86A)
-                              : const Color(0xFFE0E4EC),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                timeAgo,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: Color(0xFF8A93A0),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            text,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Color(0xFF5A6473),
-              height: 1.5,
-            ),
-          ),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
 }

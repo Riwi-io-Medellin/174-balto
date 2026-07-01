@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../core/constants/app_colors.dart';
+import '../../../core/di/injection.dart';
 import '../../../domain/entities/business.dart';
+import '../../bloc/feedback/feedback_cubit.dart';
+import '../../bloc/feedback/feedback_state.dart';
+import '../../widgets/rating_summary.dart';
+import '../../widgets/review_card.dart';
+import '../../widgets/review_sheet.dart';
 import 'widgets/business_overview_tab.dart';
 import 'widgets/business_profile_header.dart';
 
@@ -15,6 +23,7 @@ class BusinessProfilePage extends StatefulWidget {
 
 class _BusinessProfilePageState extends State<BusinessProfilePage> {
   int _tab = 0;
+  late final FeedbackCubit _feedbackCubit;
 
   Business get _b => widget.business;
 
@@ -26,16 +35,34 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
       ];
 
   @override
+  void initState() {
+    super.initState();
+    _feedbackCubit = sl<FeedbackCubit>();
+    if (widget.business.id.isNotEmpty) {
+      _feedbackCubit.loadBusinessReviews(widget.business.id);
+    }
+  }
+
+  @override
+  void dispose() {
+    _feedbackCubit.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(),
-          SliverToBoxAdapter(child: BusinessProfileHeader(business: _b)),
-          SliverToBoxAdapter(child: _buildTabBar()),
-          SliverToBoxAdapter(child: _buildTabContent()),
-        ],
+    return BlocProvider.value(
+      value: _feedbackCubit,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: CustomScrollView(
+          slivers: [
+            _buildSliverAppBar(),
+            SliverToBoxAdapter(child: BusinessProfileHeader(business: _b)),
+            SliverToBoxAdapter(child: _buildTabBar()),
+            SliverToBoxAdapter(child: _buildTabContent()),
+          ],
+        ),
       ),
     );
   }
@@ -251,11 +278,76 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
   }
 
   Widget _buildReviewsTab() {
-    return const Padding(
-      padding: EdgeInsets.all(40),
-      child: Center(
-        child: Text('Reviews coming soon.', style: TextStyle(color: Color(0xFF8A93A0), fontSize: 14)),
-      ),
+    return BlocBuilder<FeedbackCubit, FeedbackState>(
+      builder: (context, state) {
+        if (state is FeedbackLoading) {
+          return const Padding(
+            padding: EdgeInsets.all(60),
+            child: Center(child: CircularProgressIndicator(color: AppColors.navWalkers)),
+          );
+        }
+        if (state is FeedbackError) {
+          return Padding(
+            padding: const EdgeInsets.all(40),
+            child: Center(
+              child: Text(state.message, style: const TextStyle(color: Color(0xFF8A93A0), fontSize: 14)),
+            ),
+          );
+        }
+        if (state is FeedbackLoaded) {
+          final summary = state.summary;
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                RatingSummary(summary: summary),
+                const SizedBox(height: 24),
+                if (summary.reviews.isEmpty)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32),
+                      child: Text('No reviews yet.', style: TextStyle(color: Color(0xFF8A93A0))),
+                    ),
+                  )
+                else
+                  ...summary.reviews.map(
+                    (r) => Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: ReviewCard(review: r),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => showReviewSheet(
+                      context: context,
+                      targetId: _b.id,
+                      targetType: 'business',
+                      targetName: _b.name,
+                      title: 'Rate this business',
+                      subtitle: 'How was your experience with ${_b.name}?',
+                    ),
+                    icon: const Icon(Icons.star_outline_rounded, size: 18),
+                    label: const Text('Write a Review'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.navWalkers,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 }

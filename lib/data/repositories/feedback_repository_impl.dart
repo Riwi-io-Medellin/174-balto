@@ -23,4 +23,63 @@ class FeedbackRepositoryImpl implements FeedbackRepository {
       );
     }
   }
+
+  @override
+  Future<FeedbackSummary?> getByBusiness(String businessId) async {
+    try {
+      final dto = await _remote.getByBusiness(businessId);
+      return dto?.toEntity();
+    } on FeedbackFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw FeedbackFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
+
+  @override
+  Future<void> createWalkerReview({
+    required String walkerId,
+    required int rating,
+    String? comment,
+  }) async {
+    try {
+      await _remote.createWalkerReview(
+        walkerId: walkerId,
+        rating: rating,
+        comment: comment,
+      );
+    } on FeedbackFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw FeedbackFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
+
+  @override
+  Future<void> createBusinessReview({
+    required String businessId,
+    required int rating,
+    String? comment,
+  }) async {
+    try {
+      await _remote.createBusinessReview(
+        businessId: businessId,
+        rating: rating,
+        comment: comment,
+      );
+    } on FeedbackFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw FeedbackFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
 }

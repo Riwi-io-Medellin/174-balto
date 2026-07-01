@@ -358,6 +358,8 @@ class _BookingCard extends StatelessWidget {
                                 (booking.actualDistanceMeters ?? 0) / 1000,
                             elapsedSeconds: booking.actualDurationSeconds ??
                                 booking.durationMinutes * 60,
+                            walkerId: booking.walkerId,
+                            walkerName: booking.walkerName,
                           ),
                         ),
                       )

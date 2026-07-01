@@ -2,6 +2,17 @@ import '../entities/feedback_summary.dart';
 
 abstract class FeedbackRepository {
   Future<FeedbackSummary?> getByWalker(String walkerId);
+  Future<FeedbackSummary?> getByBusiness(String businessId);
+  Future<void> createWalkerReview({
+    required String walkerId,
+    required int rating,
+    String? comment,
+  });
+  Future<void> createBusinessReview({
+    required String businessId,
+    required int rating,
+    String? comment,
+  });
 }
 
 class FeedbackFailure implements Exception {

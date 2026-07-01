@@ -29,6 +29,8 @@ class WalkBooking extends Equatable {
     this.ownerLatitude,
     this.ownerLongitude,
     this.ownerAddress,
+    this.walkerName,
+    this.walkerAvatarUrl,
   });
 
   final String id;
@@ -48,6 +50,8 @@ class WalkBooking extends Equatable {
   final double? ownerLatitude;
   final double? ownerLongitude;
   final String? ownerAddress;
+  final String? walkerName;
+  final String? walkerAvatarUrl;
 
   @override
   List<Object?> get props => [
@@ -68,5 +72,7 @@ class WalkBooking extends Equatable {
         ownerLatitude,
         ownerLongitude,
         ownerAddress,
+        walkerName,
+        walkerAvatarUrl,
       ];
 }

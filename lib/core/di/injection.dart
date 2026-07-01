@@ -45,6 +45,7 @@ import '../../domain/repositories/walker_repository.dart';
 import '../../domain/repositories/walking_history_repository.dart';
 import '../../presentation/bloc/auth/auth_cubit.dart';
 import '../../presentation/bloc/coach/coach_cubit.dart';
+import '../../presentation/bloc/feedback/feedback_cubit.dart';
 import '../../presentation/bloc/my_walks/my_walks_cubit.dart';
 import '../../presentation/bloc/profile/profile_cubit.dart';
 import '../../presentation/bloc/walk_booking/walk_booking_cubit.dart';
@@ -209,5 +210,10 @@ void setupDependencies() {
   );
   sl.registerFactory<CoachCubit>(
     () => CoachCubit(sl<CoachRepository>(), sl<FlutterSecureStorage>()),
+  );
+
+  // Feedback
+  sl.registerFactory<FeedbackCubit>(
+    () => FeedbackCubit(sl<FeedbackRepository>()),
   );
 }
