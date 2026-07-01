@@ -5,9 +5,12 @@ class UploadRemoteDataSource {
 
   final Dio _dio;
 
-  Future<String> uploadImage(String filePath) async {
+  Future<String> uploadImage(String filePath) =>
+      uploadFile(filePath, 'photo.jpg');
+
+  Future<String> uploadFile(String filePath, String filename) async {
     final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(filePath, filename: 'pet_photo.jpg'),
+      'file': await MultipartFile.fromFile(filePath, filename: filename),
     });
 
     final response = await _dio.post<dynamic>('/upload', data: formData);

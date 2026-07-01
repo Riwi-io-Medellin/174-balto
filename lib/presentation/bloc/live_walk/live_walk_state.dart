@@ -30,6 +30,7 @@ class LiveWalkActive extends LiveWalkState {
     required this.walkerAvatarUrl,
     required this.walkerRating,
     required this.petName,
+    this.sessionId,
     this.currentPosition,
     this.routePoints = const [],
     this.elapsedSeconds = 0,
@@ -41,6 +42,7 @@ class LiveWalkActive extends LiveWalkState {
   final String walkerAvatarUrl;
   final double walkerRating;
   final String petName;
+  final String? sessionId;
   final LatLng? currentPosition;
   final List<LatLng> routePoints;
   final int elapsedSeconds;
@@ -59,6 +61,7 @@ class LiveWalkActive extends LiveWalkState {
         walkerAvatarUrl: walkerAvatarUrl,
         walkerRating: walkerRating,
         petName: petName,
+        sessionId: sessionId,
         currentPosition: currentPosition ?? this.currentPosition,
         routePoints: routePoints ?? this.routePoints,
         elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
@@ -72,6 +75,7 @@ class LiveWalkActive extends LiveWalkState {
         walkerAvatarUrl,
         walkerRating,
         petName,
+        sessionId,
         currentPosition,
         routePoints,
         elapsedSeconds,

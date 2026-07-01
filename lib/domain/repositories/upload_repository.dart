@@ -1,5 +1,6 @@
 abstract class UploadRepository {
   Future<String> uploadImage(String filePath);
+  Future<String> uploadFile(String filePath, String filename);
 }
 
 class UploadFailure implements Exception {

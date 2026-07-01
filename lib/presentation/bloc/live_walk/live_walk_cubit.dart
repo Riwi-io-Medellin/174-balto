@@ -107,6 +107,7 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
       walkerAvatarUrl: walker.avatarUrl ?? walker.imageUrl ?? '',
       walkerRating: walker.rating,
       petName: pet.name,
+      sessionId: sessionId,
     ));
 
     final token = await _tokenStorage.readAccessToken() ?? '';

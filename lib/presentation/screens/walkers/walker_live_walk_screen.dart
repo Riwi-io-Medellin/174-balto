@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/services/walker_live_walk_service.dart';
 import '../../../domain/entities/walk_booking.dart';
+import '../../../domain/entities/walk_media.dart';
+import '../../../domain/repositories/upload_repository.dart';
 import '../../../domain/repositories/walk_session_repository.dart';
 import '../../bloc/walker_live_walk/walker_live_walk_cubit.dart';
 import '../../bloc/walker_live_walk/walker_live_walk_state.dart';
@@ -23,6 +28,7 @@ class WalkerLiveWalkScreen extends StatelessWidget {
         booking: booking,
         walkSessionRepository: sl<WalkSessionRepository>(),
         liveWalkService: WalkerLiveWalkService(),
+        uploadRepository: sl<UploadRepository>(),
       )..start(),
       child: const _WalkerLiveWalkView(),
     );
@@ -318,7 +324,7 @@ class _BottomPanel extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
             // Stats row
             Row(
@@ -344,7 +350,51 @@ class _BottomPanel extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
+
+            // Media capture buttons
+            Row(
+              children: [
+                Expanded(
+                  child: _MediaBtn(
+                    icon: Icons.photo_camera_rounded,
+                    label: 'Photo',
+                    color: const Color(0xFF3A80C2),
+                    isLoading: active?.isUploadingMedia ?? false,
+                    enabled: active != null && !isEnding,
+                    onTap: () => _showMediaSourceSheet(context, isVideo: false),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _MediaBtn(
+                    icon: Icons.videocam_rounded,
+                    label: 'Video',
+                    color: const Color(0xFF7C3AED),
+                    isLoading: false,
+                    enabled: active != null && !isEnding && !(active.isUploadingMedia),
+                    onTap: () => _showMediaSourceSheet(context, isVideo: true),
+                  ),
+                ),
+              ],
+            ),
+
+            // Thumbnail strip
+            if (active != null && active.mediaItems.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 64,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: active.mediaItems.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 8),
+                  itemBuilder: (_, i) =>
+                      _MediaThumb(media: active.mediaItems[i]),
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 14),
 
             // End Walk button
             SizedBox(
@@ -397,6 +447,55 @@ class _BottomPanel extends StatelessWidget {
     );
   }
 
+  void _showMediaSourceSheet(BuildContext context, {required bool isVideo}) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE0E0E0),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.camera_alt_rounded),
+              title: Text(isVideo ? 'Record video' : 'Take a photo'),
+              onTap: () {
+                Navigator.pop(ctx);
+                context.read<WalkerLiveWalkCubit>().captureAndUploadMedia(
+                      source: ImageSource.camera,
+                      isVideo: isVideo,
+                    );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_rounded),
+              title: Text(isVideo ? 'Choose video from gallery' : 'Choose from gallery'),
+              onTap: () {
+                Navigator.pop(ctx);
+                context.read<WalkerLiveWalkCubit>().captureAndUploadMedia(
+                      source: ImageSource.gallery,
+                      isVideo: isVideo,
+                    );
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _confirmEnd(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -431,6 +530,107 @@ class _BottomPanel extends StatelessWidget {
     if (m < 60) return '$m min';
     final h = m ~/ 60;
     return '${h}h ${(m % 60).toString().padLeft(2, '0')}m';
+  }
+}
+
+// ── Media UI helpers ───────────────────────────────────────────────────────────
+
+class _MediaBtn extends StatelessWidget {
+  const _MediaBtn({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.isLoading,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final bool isLoading;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: enabled ? color.withValues(alpha: 0.09) : const Color(0xFFF0F0F0),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: (enabled && !isLoading) ? onTap : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (isLoading)
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: color,
+                  ),
+                )
+              else
+                Icon(icon, size: 18, color: enabled ? color : Colors.grey),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: enabled ? color : Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MediaThumb extends StatelessWidget {
+  const _MediaThumb({required this.media});
+
+  final WalkMedia media;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => launchUrl(Uri.parse(media.url)),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Stack(
+          children: [
+            media.isVideo
+                ? Container(
+                    width: 64,
+                    height: 64,
+                    color: const Color(0xFF1A1A2E),
+                    child: const Icon(Icons.play_circle_fill_rounded,
+                        color: Colors.white, size: 28),
+                  )
+                : Image.network(
+                    media.url,
+                    width: 64,
+                    height: 64,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => Container(
+                      width: 64,
+                      height: 64,
+                      color: const Color(0xFFE0E4EC),
+                      child: const Icon(Icons.broken_image_rounded,
+                          color: Colors.grey),
+                    ),
+                  ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

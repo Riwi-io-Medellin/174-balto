@@ -4,9 +4,12 @@ import 'dart:math' as math;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../core/services/walker_live_walk_service.dart';
 import '../../../domain/entities/walk_booking.dart';
+import '../../../domain/entities/walk_media.dart';
+import '../../../domain/repositories/upload_repository.dart';
 import '../../../domain/repositories/walk_session_repository.dart';
 import 'walker_live_walk_state.dart';
 
@@ -15,13 +18,17 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
     required this.booking,
     required WalkSessionRepository walkSessionRepository,
     required WalkerLiveWalkService liveWalkService,
+    required UploadRepository uploadRepository,
   })  : _sessionRepository = walkSessionRepository,
         _liveWalkService = liveWalkService,
+        _uploadRepository = uploadRepository,
         super(const WalkerLiveWalkInitial());
 
   final WalkBooking booking;
   final WalkSessionRepository _sessionRepository;
   final WalkerLiveWalkService _liveWalkService;
+  final UploadRepository _uploadRepository;
+  final ImagePicker _picker = ImagePicker();
 
   String? _sessionId;
   LatLng? _lastPosition;
@@ -112,6 +119,46 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
             math.sin(dLng / 2) *
             math.sin(dLng / 2);
     return r * 2 * math.atan2(math.sqrt(h), math.sqrt(1 - h));
+  }
+
+  Future<void> captureAndUploadMedia({
+    required ImageSource source,
+    required bool isVideo,
+  }) async {
+    final s = state;
+    if (s is! WalkerLiveWalkActive || _sessionId == null) return;
+    emit(s.copyWith(isUploadingMedia: true));
+    try {
+      final XFile? file = isVideo
+          ? await _picker.pickVideo(source: source)
+          : await _picker.pickImage(source: source, imageQuality: 80);
+      if (file == null) {
+        emit(s.copyWith(isUploadingMedia: false));
+        return;
+      }
+      final filename = isVideo ? 'walk_video_${file.name}' : 'walk_photo_${file.name}';
+      final url = await _uploadRepository.uploadFile(file.path, filename);
+      final type = isVideo ? 'video' : 'photo';
+      await _sessionRepository.addMedia(_sessionId!, url, type);
+      final current = state;
+      if (current is WalkerLiveWalkActive) {
+        final newItem = WalkMedia(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          url: url,
+          type: type,
+          uploadedAt: DateTime.now(),
+        );
+        emit(current.copyWith(
+          mediaItems: [...current.mediaItems, newItem],
+          isUploadingMedia: false,
+        ));
+      }
+    } catch (_) {
+      final current = state;
+      if (current is WalkerLiveWalkActive) {
+        emit(current.copyWith(isUploadingMedia: false));
+      }
+    }
   }
 
   Future<void> endWalk() async {

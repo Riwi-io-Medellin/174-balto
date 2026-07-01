@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../domain/entities/walk_media.dart';
 import '../../domain/repositories/walk_session_repository.dart';
 
 class WalkSessionRemoteDataSource {
@@ -60,6 +61,34 @@ class WalkSessionRemoteDataSource {
                 (p['longitude'] as num).toDouble(),
               ))
           .toList();
+    }
+    _throwFailure(status, data);
+  }
+
+  Future<void> addMedia(String sessionId, String url, String type) async {
+    final response = await _dio.post<dynamic>(
+      '/walk-sessions/$sessionId/media',
+      data: {'url': url, 'type': type},
+    );
+    final status = response.statusCode ?? 0;
+    if (status == 200 || status == 201) return;
+    _throwFailure(status, response.data);
+  }
+
+  Future<List<WalkMedia>> getSessionMedia(String sessionId) async {
+    final response =
+        await _dio.get<dynamic>('/walk-sessions/$sessionId/media');
+    final status = response.statusCode ?? 0;
+    final data = response.data;
+    if (status == 200 && data is List) {
+      return data.cast<Map<String, dynamic>>().map((m) {
+        return WalkMedia(
+          id: m['id'] as String,
+          url: m['url'] as String,
+          type: m['type'] as String,
+          uploadedAt: DateTime.parse(m['uploadedAt'] as String),
+        );
+      }).toList();
     }
     _throwFailure(status, data);
   }

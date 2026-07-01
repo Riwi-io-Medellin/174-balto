@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../domain/entities/walk_media.dart';
+
 abstract class WalkerLiveWalkState extends Equatable {
   const WalkerLiveWalkState();
 }
@@ -24,6 +26,8 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
     this.elapsedSeconds = 0,
     this.routePoints = const [],
     this.distanceKm = 0.0,
+    this.mediaItems = const [],
+    this.isUploadingMedia = false,
   });
 
   final LatLng? currentPosition;
@@ -31,6 +35,8 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
   final int elapsedSeconds;
   final List<LatLng> routePoints;
   final double distanceKm;
+  final List<WalkMedia> mediaItems;
+  final bool isUploadingMedia;
 
   WalkerLiveWalkActive copyWith({
     LatLng? currentPosition,
@@ -38,6 +44,8 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
     int? elapsedSeconds,
     List<LatLng>? routePoints,
     double? distanceKm,
+    List<WalkMedia>? mediaItems,
+    bool? isUploadingMedia,
   }) =>
       WalkerLiveWalkActive(
         currentPosition: currentPosition ?? this.currentPosition,
@@ -45,10 +53,20 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
         elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
         routePoints: routePoints ?? this.routePoints,
         distanceKm: distanceKm ?? this.distanceKm,
+        mediaItems: mediaItems ?? this.mediaItems,
+        isUploadingMedia: isUploadingMedia ?? this.isUploadingMedia,
       );
 
   @override
-  List<Object?> get props => [currentPosition, accuracyMeters, elapsedSeconds, routePoints, distanceKm];
+  List<Object?> get props => [
+        currentPosition,
+        accuracyMeters,
+        elapsedSeconds,
+        routePoints,
+        distanceKm,
+        mediaItems,
+        isUploadingMedia,
+      ];
 }
 
 class WalkerLiveWalkEnding extends WalkerLiveWalkState {

@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
@@ -8,6 +11,7 @@ import '../../../core/services/walk_tracking_service.dart';
 import '../../../core/storage/token_storage.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/walk_booking.dart';
+import '../../../domain/entities/walk_media.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../../domain/repositories/walk_booking_repository.dart';
 import '../../../domain/repositories/walk_session_repository.dart';
@@ -500,6 +504,10 @@ class _StatusPanel extends StatelessWidget {
                   _ActionButtons(walkerName: active.walkerName),
                   const SizedBox(height: 20),
                   const _WellnessCard(),
+                  if (active.sessionId != null) ...[
+                    const SizedBox(height: 20),
+                    _WalkMediaSection(sessionId: active.sessionId!),
+                  ],
                   const SizedBox(height: 20),
                 ],
               ),
@@ -865,4 +873,106 @@ class _HeartbeatPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_) => false;
+}
+
+// ── Walk Media Section (owner live view) ──────────────────────────────────────
+
+class _WalkMediaSection extends StatefulWidget {
+  const _WalkMediaSection({required this.sessionId});
+
+  final String sessionId;
+
+  @override
+  State<_WalkMediaSection> createState() => _WalkMediaSectionState();
+}
+
+class _WalkMediaSectionState extends State<_WalkMediaSection> {
+  List<WalkMedia> _items = [];
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetch();
+    _timer = Timer.periodic(const Duration(seconds: 20), (_) => _fetch());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _fetch() async {
+    try {
+      final items =
+          await sl<WalkSessionRepository>().getSessionMedia(widget.sessionId);
+      if (mounted) setState(() => _items = items);
+    } catch (_) {}
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_items.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Walk Photos & Videos',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF1A1A2E),
+          ),
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 80,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _items.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
+            itemBuilder: (_, i) => _OwnerMediaThumb(media: _items[i]),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _OwnerMediaThumb extends StatelessWidget {
+  const _OwnerMediaThumb({required this.media});
+
+  final WalkMedia media;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => launchUrl(Uri.parse(media.url)),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: media.isVideo
+            ? Container(
+                width: 80,
+                height: 80,
+                color: const Color(0xFF1A1A2E),
+                child: const Icon(Icons.play_circle_fill_rounded,
+                    color: Colors.white, size: 32),
+              )
+            : Image.network(
+                media.url,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => Container(
+                  width: 80,
+                  height: 80,
+                  color: const Color(0xFFE0E4EC),
+                  child: const Icon(Icons.broken_image_rounded,
+                      color: Colors.grey),
+                ),
+              ),
+      ),
+    );
+  }
 }

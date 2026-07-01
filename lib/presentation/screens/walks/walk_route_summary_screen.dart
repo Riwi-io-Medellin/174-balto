@@ -2,9 +2,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
+import '../../../domain/entities/walk_media.dart';
 import '../../../domain/repositories/walk_session_repository.dart';
 import '../../widgets/review_sheet.dart';
 
@@ -31,6 +33,7 @@ class WalkRouteSummaryScreen extends StatefulWidget {
 class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
   GoogleMapController? _mapController;
   List<LatLng>? _routePoints;
+  List<WalkMedia> _mediaItems = [];
   bool _loading = true;
   String? _error;
   late double _distanceKm;
@@ -40,6 +43,16 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
     super.initState();
     _distanceKm = widget.distanceKm;
     _loadRoute();
+    _loadMedia();
+  }
+
+  Future<void> _loadMedia() async {
+    if (widget.sessionId.isEmpty) return;
+    try {
+      final items =
+          await sl<WalkSessionRepository>().getSessionMedia(widget.sessionId);
+      if (mounted) setState(() => _mediaItems = items);
+    } catch (_) {}
   }
 
   Future<void> _loadRoute() async {
@@ -312,6 +325,32 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                       ),
                     ],
                   ),
+                  if (_mediaItems.isNotEmpty) ...[
+                    const SizedBox(height: 20),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Walk Photos & Videos',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1A1A2E),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 90,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _mediaItems.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 8),
+                        itemBuilder: (_, i) =>
+                            _SummaryMediaThumb(media: _mediaItems[i]),
+                      ),
+                    ),
+                  ],
+
                   const SizedBox(height: 20),
 
                   SizedBox(
@@ -465,6 +504,53 @@ class _StatTile extends StatelessWidget {
             style: const TextStyle(fontSize: 12, color: Color(0xFF9AA0B2)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SummaryMediaThumb extends StatelessWidget {
+  const _SummaryMediaThumb({required this.media});
+
+  final WalkMedia media;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => launchUrl(Uri.parse(media.url)),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: media.isVideo
+            ? Container(
+                width: 90,
+                height: 90,
+                color: const Color(0xFF1A1A2E),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.play_circle_fill_rounded,
+                        color: Colors.white, size: 32),
+                    SizedBox(height: 4),
+                    Text(
+                      'Video',
+                      style: TextStyle(color: Colors.white70, fontSize: 11),
+                    ),
+                  ],
+                ),
+              )
+            : Image.network(
+                media.url,
+                width: 90,
+                height: 90,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => Container(
+                  width: 90,
+                  height: 90,
+                  color: const Color(0xFFE0E4EC),
+                  child: const Icon(Icons.broken_image_rounded,
+                      color: Colors.grey),
+                ),
+              ),
       ),
     );
   }
