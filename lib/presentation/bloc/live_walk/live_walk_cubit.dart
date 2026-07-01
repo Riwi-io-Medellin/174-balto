@@ -154,8 +154,20 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
     if (state is! LiveWalkActive) return;
     try {
       final bookings = await _bookingRepository.getMyBookings(status: 'completed');
-      final finished = bookings.any((b) => b.id == booking.id);
-      if (finished) _onWalkCompleted(null);
+      final finished = bookings.cast<WalkBooking?>().firstWhere(
+        (b) => b?.id == booking.id,
+        orElse: () => null,
+      );
+      if (finished != null) {
+        final Map<String, dynamic> payload = {};
+        if (finished.actualDistanceMeters != null) {
+          payload['distanceMeters'] = finished.actualDistanceMeters;
+        }
+        if (finished.actualDurationSeconds != null) {
+          payload['durationSeconds'] = finished.actualDurationSeconds;
+        }
+        _onWalkCompleted(payload.isEmpty ? null : payload);
+      }
     } catch (_) {}
   }
 

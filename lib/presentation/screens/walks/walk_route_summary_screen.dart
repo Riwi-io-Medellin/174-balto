@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -31,10 +33,12 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
   List<LatLng>? _routePoints;
   bool _loading = true;
   String? _error;
+  late double _distanceKm;
 
   @override
   void initState() {
     super.initState();
+    _distanceKm = widget.distanceKm;
     _loadRoute();
   }
 
@@ -45,10 +49,38 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
     }
     try {
       final points = await sl<WalkSessionRepository>().getRoute(widget.sessionId);
-      if (mounted) setState(() { _routePoints = points; _loading = false; });
+      if (mounted) {
+        setState(() {
+          _routePoints = points;
+          _loading = false;
+          if (points.length >= 2) {
+            _distanceKm = _calcDistanceKm(points);
+          }
+        });
+      }
     } catch (_) {
       if (mounted) setState(() { _error = 'Could not load route'; _loading = false; });
     }
+  }
+
+  static double _calcDistanceKm(List<LatLng> points) {
+    double total = 0;
+    for (var i = 0; i < points.length - 1; i++) {
+      total += _haversineMeters(points[i], points[i + 1]);
+    }
+    return total / 1000;
+  }
+
+  static double _haversineMeters(LatLng a, LatLng b) {
+    const r = 6371000.0;
+    final dLat = (b.latitude - a.latitude) * pi / 180;
+    final dLng = (b.longitude - a.longitude) * pi / 180;
+    final h = sin(dLat / 2) * sin(dLat / 2) +
+        cos(a.latitude * pi / 180) *
+            cos(b.latitude * pi / 180) *
+            sin(dLng / 2) *
+            sin(dLng / 2);
+    return r * 2 * atan2(sqrt(h), sqrt(1 - h));
   }
 
   LatLng get _center {
@@ -262,8 +294,8 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                       Expanded(
                         child: _StatTile(
                           icon: Icons.route_outlined,
-                          value: widget.distanceKm > 0
-                              ? '${widget.distanceKm.toStringAsFixed(2)} km'
+                          value: _distanceKm > 0
+                              ? '${_distanceKm.toStringAsFixed(2)} km'
                               : '—',
                           label: 'Distance',
                           color: AppColors.navWalks,
