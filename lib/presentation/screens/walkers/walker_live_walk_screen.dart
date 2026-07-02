@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/services/walker_live_walk_service.dart';
+import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/walk_booking.dart';
 import '../../../domain/entities/walk_media.dart';
 import '../../../domain/repositories/upload_repository.dart';
@@ -56,10 +57,16 @@ class _WalkerLiveWalkViewState extends State<_WalkerLiveWalkView> {
   Widget build(BuildContext context) {
     return BlocListener<WalkerLiveWalkCubit, WalkerLiveWalkState>(
       listener: (context, state) {
-        if (state is WalkerLiveWalkActive && state.currentPosition != null) {
-          _mapController?.animateCamera(
-            CameraUpdate.newLatLng(state.currentPosition!),
-          );
+        if (state is WalkerLiveWalkActive) {
+          if (state.currentPosition != null) {
+            _mapController?.animateCamera(
+              CameraUpdate.newLatLng(state.currentPosition!),
+            );
+          }
+          if (state.mediaUploadError != null) {
+            BaltoToast.error(context, state.mediaUploadError!);
+            context.read<WalkerLiveWalkCubit>().clearMediaUploadError();
+          }
         }
         if (state is WalkerLiveWalkCompleted) {
           Navigator.pushReplacement(
@@ -593,6 +600,58 @@ class _MediaBtn extends StatelessWidget {
   }
 }
 
+void _openWalkerMedia(BuildContext context, WalkMedia media) {
+  if (media.isVideo) {
+    launchUrl(Uri.parse(media.url), mode: LaunchMode.externalApplication);
+    return;
+  }
+  showDialog<void>(
+    context: context,
+    builder: (_) => Dialog(
+      backgroundColor: Colors.black,
+      insetPadding: EdgeInsets.zero,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          InteractiveViewer(
+            child: Center(
+              child: Image.network(
+                media.url,
+                fit: BoxFit.contain,
+                loadingBuilder: (_, child, progress) => progress == null
+                    ? child
+                    : const Center(
+                        child: CircularProgressIndicator(color: Colors.white),
+                      ),
+                errorBuilder: (_, _, _) => const Icon(
+                  Icons.broken_image_rounded,
+                  color: Colors.white54,
+                  size: 64,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 48,
+            right: 16,
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(Icons.close, color: Colors.white, size: 24),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 class _MediaThumb extends StatelessWidget {
   const _MediaThumb({required this.media});
 
@@ -601,7 +660,7 @@ class _MediaThumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => launchUrl(Uri.parse(media.url)),
+      onTap: () => _openWalkerMedia(context, media),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: Stack(

@@ -28,6 +28,7 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
     this.distanceKm = 0.0,
     this.mediaItems = const [],
     this.isUploadingMedia = false,
+    this.mediaUploadError,
   });
 
   final LatLng? currentPosition;
@@ -37,6 +38,7 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
   final double distanceKm;
   final List<WalkMedia> mediaItems;
   final bool isUploadingMedia;
+  final String? mediaUploadError;
 
   WalkerLiveWalkActive copyWith({
     LatLng? currentPosition,
@@ -46,6 +48,8 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
     double? distanceKm,
     List<WalkMedia>? mediaItems,
     bool? isUploadingMedia,
+    bool clearMediaError = false,
+    String? mediaUploadError,
   }) =>
       WalkerLiveWalkActive(
         currentPosition: currentPosition ?? this.currentPosition,
@@ -55,6 +59,9 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
         distanceKm: distanceKm ?? this.distanceKm,
         mediaItems: mediaItems ?? this.mediaItems,
         isUploadingMedia: isUploadingMedia ?? this.isUploadingMedia,
+        mediaUploadError: clearMediaError
+            ? null
+            : (mediaUploadError ?? this.mediaUploadError),
       );
 
   @override
@@ -66,6 +73,7 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
         distanceKm,
         mediaItems,
         isUploadingMedia,
+        mediaUploadError,
       ];
 }
 

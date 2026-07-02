@@ -520,6 +520,58 @@ class _StatTile extends StatelessWidget {
   }
 }
 
+void _openSummaryMedia(BuildContext context, WalkMedia media) {
+  if (media.isVideo) {
+    launchUrl(Uri.parse(media.url), mode: LaunchMode.externalApplication);
+    return;
+  }
+  showDialog<void>(
+    context: context,
+    builder: (_) => Dialog(
+      backgroundColor: Colors.black,
+      insetPadding: EdgeInsets.zero,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          InteractiveViewer(
+            child: Center(
+              child: Image.network(
+                media.url,
+                fit: BoxFit.contain,
+                loadingBuilder: (_, child, progress) => progress == null
+                    ? child
+                    : const Center(
+                        child: CircularProgressIndicator(color: Colors.white),
+                      ),
+                errorBuilder: (_, _, _) => const Icon(
+                  Icons.broken_image_rounded,
+                  color: Colors.white54,
+                  size: 64,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 48,
+            right: 16,
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(Icons.close, color: Colors.white, size: 24),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 class _SummaryMediaThumb extends StatelessWidget {
   const _SummaryMediaThumb({required this.media});
 
@@ -528,7 +580,7 @@ class _SummaryMediaThumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => launchUrl(Uri.parse(media.url)),
+      onTap: () => _openSummaryMedia(context, media),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: media.isVideo

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -121,21 +122,43 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
     return r * 2 * math.atan2(math.sqrt(h), math.sqrt(1 - h));
   }
 
+  static const int _maxVideoBytes = 50 * 1024 * 1024; // 50 MB
+
   Future<void> captureAndUploadMedia({
     required ImageSource source,
     required bool isVideo,
   }) async {
     final s = state;
     if (s is! WalkerLiveWalkActive || _sessionId == null) return;
-    emit(s.copyWith(isUploadingMedia: true));
+    emit(s.copyWith(isUploadingMedia: true, clearMediaError: true));
     try {
       final XFile? file = isVideo
-          ? await _picker.pickVideo(source: source)
+          ? await _picker.pickVideo(
+              source: source,
+              maxDuration: const Duration(seconds: 60),
+            )
           : await _picker.pickImage(source: source, imageQuality: 80);
+
       if (file == null) {
-        emit(s.copyWith(isUploadingMedia: false));
+        final cur = state;
+        if (cur is WalkerLiveWalkActive) emit(cur.copyWith(isUploadingMedia: false));
         return;
       }
+
+      if (isVideo) {
+        final size = await File(file.path).length();
+        if (size > _maxVideoBytes) {
+          final cur = state;
+          if (cur is WalkerLiveWalkActive) {
+            emit(cur.copyWith(
+              isUploadingMedia: false,
+              mediaUploadError: 'Video is too large (max 50 MB). Please record a shorter clip.',
+            ));
+          }
+          return;
+        }
+      }
+
       final filename = isVideo ? 'walk_video_${file.name}' : 'walk_photo_${file.name}';
       final url = await _uploadRepository.uploadFile(file.path, filename);
       final type = isVideo ? 'video' : 'photo';
@@ -153,12 +176,22 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
           isUploadingMedia: false,
         ));
       }
-    } catch (_) {
+    } catch (e) {
+      // ignore: avoid_print
+      print('[WalkerLive] media upload error: $e');
       final current = state;
       if (current is WalkerLiveWalkActive) {
-        emit(current.copyWith(isUploadingMedia: false));
+        emit(current.copyWith(
+          isUploadingMedia: false,
+          mediaUploadError: 'Upload failed. Please try again.',
+        ));
       }
     }
+  }
+
+  void clearMediaUploadError() {
+    final s = state;
+    if (s is WalkerLiveWalkActive) emit(s.copyWith(clearMediaError: true));
   }
 
   Future<void> endWalk() async {
