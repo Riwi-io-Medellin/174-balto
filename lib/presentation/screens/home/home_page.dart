@@ -12,6 +12,7 @@ import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
 import '../pets/manage_pets_screen.dart';
 import '../walks/live_walk_screen.dart';
+import '../../widgets/alerts/lost_pet_alert_banner.dart';
 import '../../widgets/skeletons/home_skeleton.dart';
 import 'widgets/daily_tip_card.dart';
 import 'widgets/greeting_header.dart';
@@ -113,6 +114,7 @@ class _HomeViewState extends State<_HomeView>
                     padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
+                        const LostPetAlertBanner(),
                         GreetingHeader(
                           firstName: firstName,
                           photoUrl: photoUrl,

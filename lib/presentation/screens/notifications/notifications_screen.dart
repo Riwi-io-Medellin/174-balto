@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/entities/notification.dart';
 import '../../../domain/repositories/notification_repository.dart';
+import '../../widgets/alerts/lost_pet_alert_banner.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -118,6 +119,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return Icons.store_rounded;
       case 'business_rejected':
         return Icons.storefront_rounded;
+      case 'lost_pet':
+        return Icons.pets;
+      case 'system':
+        return Icons.info_outline;
       default:
         return Icons.notifications_outlined;
     }
@@ -137,6 +142,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       case 'walker_rejected':
       case 'business_rejected':
         return const Color(0xFFD05A24);
+      case 'lost_pet':
+        return const Color(0xFFE53935);
+      case 'system':
+        return const Color(0xFF3A80C2);
       default:
         return const Color(0xFF5A6473);
     }
@@ -244,10 +253,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       onRefresh: _load,
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
-        itemCount: _notifications.length,
+        itemCount: _notifications.length + 1,
         separatorBuilder: (_, __) => const SizedBox(height: 8),
         itemBuilder: (context, index) {
-          final notification = _notifications[index];
+          if (index == 0) return const LostPetAlertBanner();
+          final notification = _notifications[index - 1];
           return _buildNotificationCard(notification);
         },
       ),

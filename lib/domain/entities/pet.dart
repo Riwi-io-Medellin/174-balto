@@ -12,6 +12,10 @@ class Pet extends Equatable {
     this.photoUrl,
     this.weight,
     required this.createdAt,
+    this.isLost = false,
+    this.lostLatitude,
+    this.lostLongitude,
+    this.lostAt,
   });
 
   final String id;
@@ -24,6 +28,34 @@ class Pet extends Equatable {
   final String? photoUrl;
   final double? weight;
   final DateTime createdAt;
+  final bool isLost;
+  final double? lostLatitude;
+  final double? lostLongitude;
+  final DateTime? lostAt;
+
+  Pet copyWith({
+    bool? isLost,
+    double? lostLatitude,
+    double? lostLongitude,
+    DateTime? lostAt,
+  }) {
+    return Pet(
+      id: id,
+      userId: userId,
+      name: name,
+      species: species,
+      breed: breed,
+      birthDate: birthDate,
+      description: description,
+      photoUrl: photoUrl,
+      weight: weight,
+      createdAt: createdAt,
+      isLost: isLost ?? this.isLost,
+      lostLatitude: lostLatitude ?? this.lostLatitude,
+      lostLongitude: lostLongitude ?? this.lostLongitude,
+      lostAt: lostAt ?? this.lostAt,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -37,5 +69,9 @@ class Pet extends Equatable {
         photoUrl,
         weight,
         createdAt,
+        isLost,
+        lostLatitude,
+        lostLongitude,
+        lostAt,
       ];
 }

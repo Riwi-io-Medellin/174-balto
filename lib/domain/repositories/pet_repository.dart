@@ -23,6 +23,12 @@ abstract class PetRepository {
     double? weight,
   });
   Future<void> delete(String id);
+  Future<Pet> reportLost({
+    required String id,
+    required double lostLatitude,
+    required double lostLongitude,
+  });
+  Future<Pet> markFound(String id);
 }
 
 class PetFailure implements Exception {

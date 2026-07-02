@@ -107,4 +107,47 @@ class PetRemoteDataSource {
 
     throw PetFailure('PET_DELETE_FAILED', 'Unexpected response ($status).');
   }
+
+  Future<PetDto> reportLost(
+    String id, {
+    required double lostLatitude,
+    required double lostLongitude,
+  }) async {
+    final response = await _dio.post<dynamic>(
+      '/pets/$id/report-lost',
+      data: {'lostLatitude': lostLatitude, 'lostLongitude': lostLongitude},
+    );
+    final status = response.statusCode ?? 0;
+    final data = response.data;
+
+    if (status == 200 && data is Map<String, dynamic>) {
+      return PetDto.fromJson(data);
+    }
+
+    if (data is Map<String, dynamic> &&
+        data['code'] is String &&
+        data['error'] is String) {
+      throw PetFailure(data['code'] as String, data['error'] as String);
+    }
+
+    throw PetFailure('PET_REPORT_LOST_FAILED', 'Unexpected response ($status).');
+  }
+
+  Future<PetDto> markFound(String id) async {
+    final response = await _dio.post<dynamic>('/pets/$id/mark-found');
+    final status = response.statusCode ?? 0;
+    final data = response.data;
+
+    if (status == 200 && data is Map<String, dynamic>) {
+      return PetDto.fromJson(data);
+    }
+
+    if (data is Map<String, dynamic> &&
+        data['code'] is String &&
+        data['error'] is String) {
+      throw PetFailure(data['code'] as String, data['error'] as String);
+    }
+
+    throw PetFailure('PET_MARK_FOUND_FAILED', 'Unexpected response ($status).');
+  }
 }

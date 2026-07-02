@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
@@ -9,16 +10,25 @@ import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
 import 'edit_pet_screen.dart';
 
-class PetDetailScreen extends StatelessWidget {
+class PetDetailScreen extends StatefulWidget {
   const PetDetailScreen({super.key, required this.petId});
 
   final String petId;
 
+  @override
+  State<PetDetailScreen> createState() => _PetDetailScreenState();
+}
+
+class _PetDetailScreenState extends State<PetDetailScreen> {
   static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _textDark = Color(0xFF1A1A2E);
   static const Color _textMuted = Color(0xFF6B7280);
   static const Color _red = Color(0xFFE53935);
+  static const Color _orange = Color(0xFFE58A00);
+
+  String get petId => widget.petId;
+  bool _lostActionLoading = false;
 
   Pet? _findPet(BuildContext context) {
     final state = context.read<ProfileCubit>().state;
@@ -64,6 +74,122 @@ class PetDetailScreen extends StatelessWidget {
       if (!context.mounted) return;
       BaltoToast.error(context, 'Error: ${e.toString()}');
     }
+  }
+
+  Future<void> _reportLost(BuildContext context, Pet pet) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Report as lost'),
+        content: Text(
+          'This will use your current location and alert nearby Balto users so they can help find ${pet.name}.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: _orange),
+            child: const Text('Report lost'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    setState(() => _lostActionLoading = true);
+    try {
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          BaltoToast.error(context, 'Location permission is required to report a lost pet.');
+        }
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+      );
+
+      await context.read<ProfileCubit>().reportLost(
+            petId: pet.id,
+            lostLatitude: position.latitude,
+            lostLongitude: position.longitude,
+          );
+
+      if (!context.mounted) return;
+      BaltoToast.success(context, '${pet.name} was reported lost. Nearby users have been alerted.');
+    } catch (e) {
+      if (!context.mounted) return;
+      BaltoToast.error(context, 'Could not report ${pet.name} as lost. ${e.toString()}');
+    } finally {
+      if (mounted) setState(() => _lostActionLoading = false);
+    }
+  }
+
+  Future<void> _markFound(BuildContext context, Pet pet) async {
+    setState(() => _lostActionLoading = true);
+    try {
+      await context.read<ProfileCubit>().markFound(pet.id);
+      if (!context.mounted) return;
+      BaltoToast.success(context, '${pet.name} is marked as found.');
+    } catch (e) {
+      if (!context.mounted) return;
+      BaltoToast.error(context, 'Could not update ${pet.name}. ${e.toString()}');
+    } finally {
+      if (mounted) setState(() => _lostActionLoading = false);
+    }
+  }
+
+  Widget _lostStatusButton(Pet pet) {
+    if (pet.isLost) {
+      return SizedBox(
+        width: double.infinity,
+        child: OutlinedButton.icon(
+          onPressed: _lostActionLoading ? null : () => _markFound(context, pet),
+          icon: _lostActionLoading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.check_circle_outline),
+          label: const Text('Mark as found'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: const Color(0xFF1BAA71),
+            side: const BorderSide(color: Color(0xFF1BAA71)),
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          ),
+        ),
+      );
+    }
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: _lostActionLoading ? null : () => _reportLost(context, pet),
+        icon: _lostActionLoading
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : const Icon(Icons.report_outlined),
+        label: const Text('Report pet as lost'),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: _orange,
+          side: const BorderSide(color: _orange),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+      ),
+    );
   }
 
   @override
@@ -166,6 +292,35 @@ class PetDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 16),
+            if (pet.isLost) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: _orange.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.warning_amber_rounded, color: _orange, size: 18),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '${pet.name} is currently marked as lost.',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: _orange,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            _lostStatusButton(pet),
           ],
         ),
       ),
