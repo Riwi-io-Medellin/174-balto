@@ -51,8 +51,13 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
     try {
       final items =
           await sl<WalkSessionRepository>().getSessionMedia(widget.sessionId);
+      // ignore: avoid_print
+      print('[SummaryMedia] fetched ${items.length} items for session ${widget.sessionId}');
       if (mounted) setState(() => _mediaItems = items);
-    } catch (_) {}
+    } catch (e) {
+      // ignore: avoid_print
+      print('[SummaryMedia] getSessionMedia error: $e');
+    }
   }
 
   Future<void> _loadRoute() async {
@@ -262,149 +267,155 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
           ),
 
           // Stats panel
-          Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x14000000),
-                  blurRadius: 20,
-                  offset: Offset(0, -4),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-            child: SafeArea(
-              top: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE0E0E0),
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
+          Expanded(
+            flex: 6,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x14000000),
+                    blurRadius: 20,
+                    offset: Offset(0, -4),
                   ),
-                  const SizedBox(height: 20),
-
-                  const Text(
-                    'Walk Summary',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF1A1A2E),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  Row(
+                ],
+              ),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                child: SafeArea(
+                  top: false,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(
-                        child: _StatTile(
-                          icon: Icons.route_outlined,
-                          value: _distanceKm > 0
-                              ? '${_distanceKm.toStringAsFixed(2)} km'
-                              : '—',
-                          label: 'Distance',
-                          color: AppColors.navWalks,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _StatTile(
-                          icon: Icons.timer_outlined,
-                          value: _formatTime(widget.elapsedSeconds),
-                          label: 'Duration',
-                          color: AppColors.navWalkers,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (_mediaItems.isNotEmpty) ...[
-                    const SizedBox(height: 20),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Walk Photos & Videos',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF1A1A2E),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: 90,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _mediaItems.length,
-                        separatorBuilder: (_, _) => const SizedBox(width: 8),
-                        itemBuilder: (_, i) =>
-                            _SummaryMediaThumb(media: _mediaItems[i]),
-                      ),
-                    ),
-                  ],
-
-                  const SizedBox(height: 20),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.navWalkers,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        'Done',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (widget.walkerId != null) ...[
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: OutlinedButton.icon(
-                        onPressed: () => showReviewSheet(
-                          context: context,
-                          targetId: widget.walkerId!,
-                          targetType: 'walker',
-                          targetName: widget.walkerName ?? 'your walker',
-                          title: 'Rate your walk',
-                          subtitle: widget.walkerName != null
-                              ? 'How was your walk with ${widget.walkerName}?'
-                              : 'How was your walk?',
-                        ),
-                        icon: const Icon(Icons.star_outline_rounded, size: 18),
-                        label: const Text('Write a Review'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.navWalkers,
-                          side: const BorderSide(color: AppColors.navWalkers),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE0E0E0),
+                            borderRadius: BorderRadius.circular(2),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                  const SizedBox(height: 20),
-                ],
+                      const SizedBox(height: 20),
+
+                      const Text(
+                        'Walk Summary',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1A1A2E),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _StatTile(
+                              icon: Icons.route_outlined,
+                              value: _distanceKm > 0
+                                  ? '${_distanceKm.toStringAsFixed(2)} km'
+                                  : '—',
+                              label: 'Distance',
+                              color: AppColors.navWalks,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _StatTile(
+                              icon: Icons.timer_outlined,
+                              value: _formatTime(widget.elapsedSeconds),
+                              label: 'Duration',
+                              color: AppColors.navWalkers,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_mediaItems.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Walk Photos & Videos',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF1A1A2E),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          height: 90,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            physics: const ClampingScrollPhysics(),
+                            itemCount: _mediaItems.length,
+                            separatorBuilder: (_, _) => const SizedBox(width: 8),
+                            itemBuilder: (_, i) =>
+                                _SummaryMediaThumb(media: _mediaItems[i]),
+                          ),
+                        ),
+                      ],
+
+                      const SizedBox(height: 20),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.navWalkers,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: const Text(
+                            'Done',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (widget.walkerId != null) ...[
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: OutlinedButton.icon(
+                            onPressed: () => showReviewSheet(
+                              context: context,
+                              targetId: widget.walkerId!,
+                              targetType: 'walker',
+                              targetName: widget.walkerName ?? 'your walker',
+                              title: 'Rate your walk',
+                              subtitle: widget.walkerName != null
+                                  ? 'How was your walk with ${widget.walkerName}?'
+                                  : 'How was your walk?',
+                            ),
+                            icon: const Icon(Icons.star_outline_rounded, size: 18),
+                            label: const Text('Write a Review'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.navWalkers,
+                              side: const BorderSide(color: AppColors.navWalkers),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),

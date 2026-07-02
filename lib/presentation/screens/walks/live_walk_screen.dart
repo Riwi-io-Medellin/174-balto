@@ -894,7 +894,7 @@ class _WalkMediaSectionState extends State<_WalkMediaSection> {
   void initState() {
     super.initState();
     _fetch();
-    _timer = Timer.periodic(const Duration(seconds: 20), (_) => _fetch());
+    _timer = Timer.periodic(const Duration(seconds: 10), (_) => _fetch());
   }
 
   @override
@@ -907,8 +907,13 @@ class _WalkMediaSectionState extends State<_WalkMediaSection> {
     try {
       final items =
           await sl<WalkSessionRepository>().getSessionMedia(widget.sessionId);
+      // ignore: avoid_print
+      print('[MediaSection] fetched ${items.length} items for session ${widget.sessionId}');
       if (mounted) setState(() => _items = items);
-    } catch (_) {}
+    } catch (e) {
+      // ignore: avoid_print
+      print('[MediaSection] getSessionMedia error: $e');
+    }
   }
 
   @override
@@ -930,6 +935,7 @@ class _WalkMediaSectionState extends State<_WalkMediaSection> {
           height: 80,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
+            physics: const ClampingScrollPhysics(),
             itemCount: _items.length,
             separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (_, i) => _OwnerMediaThumb(media: _items[i]),

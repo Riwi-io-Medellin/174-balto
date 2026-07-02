@@ -80,13 +80,31 @@ class WalkSessionRemoteDataSource {
         await _dio.get<dynamic>('/walk-sessions/$sessionId/media');
     final status = response.statusCode ?? 0;
     final data = response.data;
-    if (status == 200 && data is List) {
-      return data.cast<Map<String, dynamic>>().map((m) {
+    // ignore: avoid_print
+    print('[WalkSession] getSessionMedia($sessionId) HTTP $status body: $data');
+
+    // Accept bare list or common wrapper shapes: { data: [...] }, { items: [...] }
+    List<dynamic>? list;
+    if (data is List) {
+      list = data;
+    } else if (data is Map<String, dynamic>) {
+      final inner = data['data'] ?? data['items'] ?? data['media'];
+      if (inner is List) list = inner;
+    }
+
+    if (status == 200 && list != null) {
+      return list.map((raw) {
+        final m = raw as Map<String, dynamic>;
+        // ignore: avoid_print
+        print('[WalkSession] media item: $m');
+        final dateStr = (m['uploadedAt'] ?? m['createdAt'] ?? m['created_at'] ?? '') as String;
         return WalkMedia(
-          id: m['id'] as String,
-          url: m['url'] as String,
-          type: m['type'] as String,
-          uploadedAt: DateTime.parse(m['uploadedAt'] as String),
+          id: (m['id'] ?? '').toString(),
+          url: (m['url'] ?? m['mediaUrl'] ?? '') as String,
+          type: (m['type'] ?? m['mediaType'] ?? 'photo') as String,
+          uploadedAt: dateStr.isNotEmpty
+              ? DateTime.tryParse(dateStr) ?? DateTime.now()
+              : DateTime.now(),
         );
       }).toList();
     }
