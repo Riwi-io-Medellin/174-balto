@@ -5,9 +5,15 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
 import '../../../data/services_mock.dart';
 import '../../../domain/entities/business.dart';
+import '../../../domain/entities/home_service_provider.dart';
 import '../../../domain/entities/walker.dart';
+import '../../bloc/home_service/home_service_cubit.dart';
+import '../../bloc/home_service/home_service_state.dart';
 import '../../bloc/walker/walker_cubit.dart';
 import '../../bloc/walker/walker_state.dart';
+import '../../screens/home_services/home_service_provider_profile_page.dart';
+import '../../screens/home_services/my_home_service_bookings_screen.dart';
+import '../../screens/home_services/widgets/compact_home_service_provider_card.dart';
 import '../../screens/walkers/walker_profile_page.dart';
 import 'business_profile_page.dart';
 import '../../widgets/skeletons/services_skeleton.dart';
@@ -27,12 +33,14 @@ class ServicesPage extends StatefulWidget {
 class _ServicesPageState extends State<ServicesPage> {
   late int _selectedFilter;
   late final WalkerCubit _walkerCubit;
+  late final HomeServiceCubit _homeServiceCubit;
 
   static const List<String> _filters = [
     'All',
     'Walkers',
     'Veterinaries',
     'Stores',
+    'Home Services',
   ];
 
   @override
@@ -41,11 +49,14 @@ class _ServicesPageState extends State<ServicesPage> {
     _selectedFilter = widget.initialFilter;
     _walkerCubit = sl<WalkerCubit>();
     _walkerCubit.loadWalkers();
+    _homeServiceCubit = sl<HomeServiceCubit>();
+    _homeServiceCubit.loadProviders();
   }
 
   @override
   void dispose() {
     _walkerCubit.close();
+    _homeServiceCubit.close();
     super.dispose();
   }
 
@@ -55,8 +66,15 @@ class _ServicesPageState extends State<ServicesPage> {
     return [];
   }
 
-  List<Object> _buildItems(WalkerState walkerState) {
+  List<HomeServiceProvider> _getHomeServiceProviders(HomeServiceState state) {
+    if (state is HomeServiceListLoaded) return state.providers;
+    if (state is HomeServiceLoadingMore) return state.providers;
+    return [];
+  }
+
+  List<Object> _buildItems(WalkerState walkerState, HomeServiceState homeServiceState) {
     final walkers = _getWalkers(walkerState);
+    final providers = _getHomeServiceProviders(homeServiceState);
     switch (_selectedFilter) {
       case 1:
         return List<Object>.from(walkers);
@@ -64,8 +82,10 @@ class _ServicesPageState extends State<ServicesPage> {
         return kMockBusinesses.where((b) => b.isVeterinary).toList();
       case 3:
         return kMockBusinesses.where((b) => b.isStore).toList();
+      case 4:
+        return List<Object>.from(providers);
       default:
-        return [...walkers, ...kMockBusinesses];
+        return [...walkers, ...kMockBusinesses, ...providers];
     }
   }
 
@@ -85,10 +105,21 @@ class _ServicesPageState extends State<ServicesPage> {
     );
   }
 
+  void _openHomeServiceProviderProfile(HomeServiceProvider provider) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => HomeServiceProviderProfilePage(provider: provider),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _walkerCubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _walkerCubit),
+        BlocProvider.value(value: _homeServiceCubit),
+      ],
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F6FA),
         body: SafeArea(
@@ -110,72 +141,83 @@ class _ServicesPageState extends State<ServicesPage> {
               Expanded(
                 child: BlocBuilder<WalkerCubit, WalkerState>(
                   builder: (context, walkerState) {
-                    if (walkerState is WalkerLoading) {
-                      return const ServicesSkeleton();
-                    }
+                    return BlocBuilder<HomeServiceCubit, HomeServiceState>(
+                      builder: (context, homeServiceState) {
+                        if (walkerState is WalkerLoading ||
+                            homeServiceState is HomeServiceLoading) {
+                          return const ServicesSkeleton();
+                        }
 
-                    if (walkerState is WalkerError) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.error_outline,
-                                  size: 48, color: Colors.grey),
-                              const SizedBox(height: 12),
-                              Text(walkerState.message,
-                                  textAlign: TextAlign.center,
-                                  style:
-                                      const TextStyle(color: Colors.grey)),
-                              const SizedBox(height: 16),
-                              ElevatedButton(
-                                onPressed: () =>
-                                    context.read<WalkerCubit>().loadWalkers(),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.navWalkers,
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: const Text('Retry'),
+                        if (walkerState is WalkerError) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.error_outline,
+                                      size: 48, color: Colors.grey),
+                                  const SizedBox(height: 12),
+                                  Text(walkerState.message,
+                                      textAlign: TextAlign.center,
+                                      style:
+                                          const TextStyle(color: Colors.grey)),
+                                  const SizedBox(height: 16),
+                                  ElevatedButton(
+                                    onPressed: () =>
+                                        context.read<WalkerCubit>().loadWalkers(),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.navWalkers,
+                                      foregroundColor: Colors.white,
+                                    ),
+                                    child: const Text('Retry'),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-
-                    final items = _buildItems(walkerState);
-
-                    if (items.isEmpty) {
-                      return const Center(
-                        child: Text(
-                          'No results found.',
-                          style: TextStyle(color: Color(0xFF8A93A0)),
-                        ),
-                      );
-                    }
-
-                    return ListView.separated(
-                      padding:
-                          const EdgeInsets.fromLTRB(20, 0, 20, 100),
-                      itemCount: items.length,
-                      separatorBuilder: (_, _) =>
-                          const SizedBox(height: 16),
-                      itemBuilder: (_, i) {
-                        final item = items[i];
-                        if (item is Business) {
-                          return BusinessCard(
-                            business: item,
-                            onTap: () => _openProfile(item),
+                            ),
                           );
                         }
-                        if (item is Walker) {
-                          return CompactWalkerCard(
-                            walker: item,
-                            onTap: () => _openWalkerProfile(item),
+
+                        final items = _buildItems(walkerState, homeServiceState);
+
+                        if (items.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              'No results found.',
+                              style: TextStyle(color: Color(0xFF8A93A0)),
+                            ),
                           );
                         }
-                        return const SizedBox.shrink();
+
+                        return ListView.separated(
+                          padding:
+                              const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                          itemCount: items.length,
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 16),
+                          itemBuilder: (_, i) {
+                            final item = items[i];
+                            if (item is Business) {
+                              return BusinessCard(
+                                business: item,
+                                onTap: () => _openProfile(item),
+                              );
+                            }
+                            if (item is Walker) {
+                              return CompactWalkerCard(
+                                walker: item,
+                                onTap: () => _openWalkerProfile(item),
+                              );
+                            }
+                            if (item is HomeServiceProvider) {
+                              return CompactHomeServiceProviderCard(
+                                provider: item,
+                                onTap: () => _openHomeServiceProviderProfile(item),
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        );
                       },
                     );
                   },
@@ -214,6 +256,16 @@ class _ServicesPageState extends State<ServicesPage> {
               color: Color(0xFF1F2937),
             ),
           ),
+        ),
+        IconButton(
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const MyHomeServiceBookingsScreen(),
+            ),
+          ),
+          icon: const Icon(Icons.event_note_rounded, color: AppColors.homeServices),
+          tooltip: 'My Home Service Bookings',
+          visualDensity: VisualDensity.compact,
         ),
         IconButton(
           onPressed: () {},

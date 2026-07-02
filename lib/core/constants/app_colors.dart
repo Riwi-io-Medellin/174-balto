@@ -8,6 +8,7 @@ class AppColors {
   static const Color dashboard = Color(0xFF3A80C2);
   static const Color petProfile = Color(0xFF1BAA71);
   static const Color alert = Color(0xFFD05A24);
+  static const Color homeServices = Color(0xFFD6558C);
 
   static const Color navHome = Color(0xFF607F7F);
   static const Color navWalks = Color(0xFF3A80C2);

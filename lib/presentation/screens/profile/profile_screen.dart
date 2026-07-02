@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/di/injection.dart';
+import '../../../domain/entities/home_service_provider_profile.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/entities/walker_profile.dart';
 import '../../../domain/repositories/auth_repository.dart';
@@ -13,6 +14,13 @@ import '../../screens/pets/manage_pets_screen.dart';
 import '../../screens/pets/pet_detail_screen.dart';
 import '../auth/change_password_screen.dart';
 import '../auth/login_screen.dart';
+import '../home_services/become_home_service_provider_screen.dart';
+import '../home_services/edit_home_service_provider_profile_screen.dart';
+import '../home_services/home_provider_availability_screen.dart';
+import '../home_services/home_provider_bookings_screen.dart';
+import '../home_services/home_provider_gallery_documents_screen.dart';
+import '../home_services/home_provider_service_areas_screen.dart';
+import '../home_services/manage_home_provider_services_screen.dart';
 import '../walkers/become_walker_screen.dart';
 import '../walkers/edit_walker_profile_screen.dart';
 import '../walkers/walker_availability_screen.dart';
@@ -62,6 +70,9 @@ class _ProfileViewState extends State<_ProfileView> {
   static const Color _bgGreenTint = Color(0xFFE8F5EE);
   static const Color _bgPurpleTint = Color(0xFFEEF0FF);
   static const Color _bgOrangeTint = Color(0xFFFFF1E6);
+
+  static const Color _rose = Color(0xFFD6558C);
+  static const Color _bgRoseTint = Color(0xFFFBEAF1);
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +124,8 @@ class _ProfileViewState extends State<_ProfileView> {
                   _buildQuickActions(),
                   const SizedBox(height: 22),
                   _buildWalkerSection(),
+                  const SizedBox(height: 18),
+                  _buildHomeServiceProviderSection(),
                   const SizedBox(height: 18),
                   _buildMyPets(),
                   const SizedBox(height: 18),
@@ -872,6 +885,322 @@ class _ProfileViewState extends State<_ProfileView> {
           builder: (_) => BlocProvider.value(
             value: context.read<ProfileCubit>(),
             child: const BecomeWalkerScreen(isReapply: true),
+          ),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFEECE8),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _orange.withValues(alpha: 0.35)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: _orange.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.error_outline_rounded, color: _orange, size: 22),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Verification Failed', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: _textDark)),
+                  SizedBox(height: 3),
+                  Text('Your document was not accepted. Tap to upload a new one.', style: TextStyle(fontSize: 12, color: _textMid)),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: _textMuted),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHomeServiceProviderSection() {
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        if (state is! ProfileLoaded) return const SizedBox.shrink();
+        final hp = state.homeServiceProviderProfile;
+        if (hp == null) return _buildHomeServiceNotApplied();
+        switch (hp.status) {
+          case HomeServiceProviderStatus.pending:
+            return _buildHomeServicePending();
+          case HomeServiceProviderStatus.approved:
+            return _buildHomeServiceApproved();
+          case HomeServiceProviderStatus.rejected:
+          case HomeServiceProviderStatus.suspended:
+            return _buildHomeServiceRejected();
+        }
+      },
+    );
+  }
+
+  Widget _buildHomeServiceNotApplied() {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => BlocProvider.value(
+            value: context.read<ProfileCubit>(),
+            child: const BecomeHomeServiceProviderScreen(),
+          ),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: _bgRoseTint,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _rose.withValues(alpha: 0.30)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: _rose.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.home_repair_service_rounded, color: _rose, size: 22),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Become a Home Service Provider',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: _textDark,
+                    ),
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    'Offer vet, grooming, sitting and more at clients\' homes.',
+                    style: TextStyle(fontSize: 12, color: _textMid),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: _textMuted),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHomeServicePending() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEBF3FB),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _blue.withValues(alpha: 0.30)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: _blue.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.hourglass_top_rounded, color: _blue, size: 22),
+          ),
+          const SizedBox(width: 14),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Verification Pending',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: _textDark,
+                  ),
+                ),
+                SizedBox(height: 3),
+                Text(
+                  'Your home service application is under review. We\'ll notify you within 24–48 hours.',
+                  style: TextStyle(fontSize: 12, color: _textMid),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHomeServiceApproved() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _bgRoseTint,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: _rose.withValues(alpha: 0.40)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: _rose.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.verified_rounded, color: _rose, size: 22),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Provider Profile Active',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: _textDark,
+                      ),
+                    ),
+                    SizedBox(height: 3),
+                    Text(
+                      'You\'re a verified provider. Pet owners can now book you.',
+                      style: TextStyle(fontSize: 12, color: _textMid),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<ProfileCubit>(),
+                      child: const EditHomeServiceProviderProfileScreen(),
+                    ),
+                  ),
+                ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _rose,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: const Text(
+                    'Edit',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          _homeServiceQuickLink(
+            icon: Icons.design_services_rounded,
+            label: 'Manage Services',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const ManageHomeProviderServicesScreen(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          _homeServiceQuickLink(
+            icon: Icons.schedule_rounded,
+            label: 'Manage Availability',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const HomeProviderAvailabilityScreen(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          _homeServiceQuickLink(
+            icon: Icons.map_rounded,
+            label: 'Service Areas',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const HomeProviderServiceAreasScreen(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          _homeServiceQuickLink(
+            icon: Icons.photo_library_rounded,
+            label: 'Gallery & Documents',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const HomeProviderGalleryDocumentsScreen(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          _homeServiceQuickLink(
+            icon: Icons.calendar_month_rounded,
+            label: 'My Bookings',
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const HomeProviderBookingsScreen(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _homeServiceQuickLink({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: _rose.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 16, color: _rose),
+              const SizedBox(width: 8),
+              Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: _rose)),
+              const SizedBox(width: 4),
+              const Icon(Icons.chevron_right_rounded, size: 16, color: _rose),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHomeServiceRejected() {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => BlocProvider.value(
+            value: context.read<ProfileCubit>(),
+            child: const BecomeHomeServiceProviderScreen(isReapply: true),
           ),
         ),
       ),

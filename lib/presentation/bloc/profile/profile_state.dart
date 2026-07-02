@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../domain/entities/home_service_provider_profile.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/entities/user.dart';
 import '../../../domain/entities/walker_profile.dart';
@@ -25,6 +26,7 @@ class ProfileLoaded extends ProfileState {
     this.pets = const [],
     this.walkCount = 0,
     this.walkerProfile,
+    this.homeServiceProviderProfile,
     this.unreadNotificationCount = 0,
   });
 
@@ -35,6 +37,10 @@ class ProfileLoaded extends ProfileState {
   /// null  => user has never applied to become a walker
   /// non-null => user has an application; check [walkerProfile.status]
   final WalkerProfile? walkerProfile;
+
+  /// null  => user has never applied to become a home service provider
+  /// non-null => user has an application; check [homeServiceProviderProfile.status]
+  final HomeServiceProviderProfile? homeServiceProviderProfile;
   final int unreadNotificationCount;
 
   int get petCount => pets.length;
@@ -45,6 +51,7 @@ class ProfileLoaded extends ProfileState {
         pets,
         walkCount,
         walkerProfile,
+        homeServiceProviderProfile,
         unreadNotificationCount,
       ];
 }

@@ -40,6 +40,21 @@ class FeedbackRepositoryImpl implements FeedbackRepository {
   }
 
   @override
+  Future<FeedbackSummary?> getByHomeServiceProvider(String providerId) async {
+    try {
+      final dto = await _remote.getByHomeServiceProvider(providerId);
+      return dto?.toEntity();
+    } on FeedbackFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw FeedbackFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
+
+  @override
   Future<void> createWalkerReview({
     required String walkerId,
     required int rating,
@@ -70,6 +85,28 @@ class FeedbackRepositoryImpl implements FeedbackRepository {
     try {
       await _remote.createBusinessReview(
         businessId: businessId,
+        rating: rating,
+        comment: comment,
+      );
+    } on FeedbackFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw FeedbackFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
+
+  @override
+  Future<void> createHomeServiceProviderReview({
+    required String providerId,
+    required int rating,
+    String? comment,
+  }) async {
+    try {
+      await _remote.createHomeServiceProviderReview(
+        providerId: providerId,
         rating: rating,
         comment: comment,
       );

@@ -18,6 +18,12 @@ class FeedbackRemoteDataSource {
     return _handleSummaryResponse(response);
   }
 
+  Future<FeedbackSummaryDto?> getByHomeServiceProvider(String providerId) async {
+    final response =
+        await _dio.get<dynamic>('/feedback/home-service-providers/$providerId');
+    return _handleSummaryResponse(response);
+  }
+
   Future<void> createWalkerReview({
     required String walkerId,
     required int rating,
@@ -43,6 +49,21 @@ class FeedbackRemoteDataSource {
       if (comment != null && comment.isNotEmpty) 'comment': comment,
     };
     final response = await _dio.post<dynamic>('/feedback/businesses', data: body);
+    _ensureSuccess(response, 'FEEDBACK_CREATE_FAILED');
+  }
+
+  Future<void> createHomeServiceProviderReview({
+    required String providerId,
+    required int rating,
+    String? comment,
+  }) async {
+    final body = <String, dynamic>{
+      'providerId': providerId,
+      'rating': rating,
+      if (comment != null && comment.isNotEmpty) 'comment': comment,
+    };
+    final response =
+        await _dio.post<dynamic>('/feedback/home-service-providers', data: body);
     _ensureSuccess(response, 'FEEDBACK_CREATE_FAILED');
   }
 

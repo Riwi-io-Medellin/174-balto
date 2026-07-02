@@ -4,6 +4,15 @@ import 'package:get_it/get_it.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/datasources/coach_remote_datasource.dart';
 import '../../data/datasources/feedback_remote_datasource.dart';
+import '../../data/datasources/home_favorite_provider_remote_datasource.dart';
+import '../../data/datasources/home_provider_assets_remote_datasource.dart';
+import '../../data/datasources/home_provider_service_area_remote_datasource.dart';
+import '../../data/datasources/home_provider_services_remote_datasource.dart';
+import '../../data/datasources/home_service_availability_remote_datasource.dart';
+import '../../data/datasources/home_service_booking_remote_datasource.dart';
+import '../../data/datasources/home_service_profile_remote_datasource.dart';
+import '../../data/datasources/home_service_remote_datasource.dart';
+import '../../data/datasources/home_service_type_remote_datasource.dart';
 import '../../data/datasources/me_remote_datasource.dart';
 import '../../data/datasources/notification_remote_datasource.dart';
 import '../../data/datasources/pet_remote_datasource.dart';
@@ -18,6 +27,15 @@ import '../../data/datasources/walking_history_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../data/repositories/coach_repository_impl.dart';
 import '../../data/repositories/feedback_repository_impl.dart';
+import '../../data/repositories/home_favorite_provider_repository_impl.dart';
+import '../../data/repositories/home_provider_assets_repository_impl.dart';
+import '../../data/repositories/home_provider_service_area_repository_impl.dart';
+import '../../data/repositories/home_provider_services_repository_impl.dart';
+import '../../data/repositories/home_service_availability_repository_impl.dart';
+import '../../data/repositories/home_service_booking_repository_impl.dart';
+import '../../data/repositories/home_service_profile_repository_impl.dart';
+import '../../data/repositories/home_service_provider_repository_impl.dart';
+import '../../data/repositories/home_service_type_repository_impl.dart';
 import '../../data/repositories/me_repository_impl.dart';
 import '../../data/repositories/notification_repository_impl.dart';
 import '../../data/repositories/pet_repository_impl.dart';
@@ -32,6 +50,15 @@ import '../../data/repositories/walking_history_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/repositories/coach_repository.dart';
 import '../../domain/repositories/feedback_repository.dart';
+import '../../domain/repositories/home_favorite_provider_repository.dart';
+import '../../domain/repositories/home_provider_assets_repository.dart';
+import '../../domain/repositories/home_provider_service_area_repository.dart';
+import '../../domain/repositories/home_provider_services_repository.dart';
+import '../../domain/repositories/home_service_availability_repository.dart';
+import '../../domain/repositories/home_service_booking_repository.dart';
+import '../../domain/repositories/home_service_profile_repository.dart';
+import '../../domain/repositories/home_service_provider_repository.dart';
+import '../../domain/repositories/home_service_type_repository.dart';
 import '../../domain/repositories/me_repository.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../../domain/repositories/pet_repository.dart';
@@ -46,6 +73,12 @@ import '../../domain/repositories/walking_history_repository.dart';
 import '../../presentation/bloc/auth/auth_cubit.dart';
 import '../../presentation/bloc/coach/coach_cubit.dart';
 import '../../presentation/bloc/feedback/feedback_cubit.dart';
+import '../../presentation/bloc/home_provider_booking/home_provider_booking_cubit.dart';
+import '../../presentation/bloc/home_provider_services/home_provider_services_cubit.dart';
+import '../../presentation/bloc/home_service/home_service_cubit.dart';
+import '../../presentation/bloc/home_service_availability/home_service_availability_cubit.dart';
+import '../../presentation/bloc/home_service_booking/home_service_booking_cubit.dart';
+import '../../presentation/bloc/my_home_service_bookings/my_home_service_bookings_cubit.dart';
 import '../../presentation/bloc/my_walks/my_walks_cubit.dart';
 import '../../presentation/bloc/profile/profile_cubit.dart';
 import '../../presentation/bloc/walk_booking/walk_booking_cubit.dart';
@@ -169,6 +202,92 @@ void setupDependencies() {
     () => WalkSessionRepositoryImpl(sl<WalkSessionRemoteDataSource>()),
   );
 
+  // Home service listing (search, detail)
+  sl.registerLazySingleton<HomeServiceRemoteDataSource>(
+    () => HomeServiceRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<HomeServiceProviderRepository>(
+    () => HomeServiceProviderRepositoryImpl(sl<HomeServiceRemoteDataSource>()),
+  );
+
+  // Home service profile (become/apply/update)
+  sl.registerLazySingleton<HomeServiceProfileRemoteDataSource>(
+    () => HomeServiceProfileRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<HomeServiceProfileRepository>(
+    () => HomeServiceProfileRepositoryImpl(
+      sl<HomeServiceProfileRemoteDataSource>(),
+    ),
+  );
+
+  // Home service type catalog
+  sl.registerLazySingleton<HomeServiceTypeRemoteDataSource>(
+    () => HomeServiceTypeRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<HomeServiceTypeRepository>(
+    () => HomeServiceTypeRepositoryImpl(sl<HomeServiceTypeRemoteDataSource>()),
+  );
+
+  // Home provider offered services
+  sl.registerLazySingleton<HomeProviderServicesRemoteDataSource>(
+    () => HomeProviderServicesRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<HomeProviderServicesRepository>(
+    () => HomeProviderServicesRepositoryImpl(
+      sl<HomeProviderServicesRemoteDataSource>(),
+    ),
+  );
+
+  // Home provider assets (gallery, documents, certifications, specialties)
+  sl.registerLazySingleton<HomeProviderAssetsRemoteDataSource>(
+    () => HomeProviderAssetsRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<HomeProviderAssetsRepository>(
+    () => HomeProviderAssetsRepositoryImpl(
+      sl<HomeProviderAssetsRemoteDataSource>(),
+    ),
+  );
+
+  // Home provider service areas
+  sl.registerLazySingleton<HomeProviderServiceAreaRemoteDataSource>(
+    () => HomeProviderServiceAreaRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<HomeProviderServiceAreaRepository>(
+    () => HomeProviderServiceAreaRepositoryImpl(
+      sl<HomeProviderServiceAreaRemoteDataSource>(),
+    ),
+  );
+
+  // Home service availability
+  sl.registerLazySingleton<HomeServiceAvailabilityRemoteDataSource>(
+    () => HomeServiceAvailabilityRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<HomeServiceAvailabilityRepository>(
+    () => HomeServiceAvailabilityRepositoryImpl(
+      sl<HomeServiceAvailabilityRemoteDataSource>(),
+    ),
+  );
+
+  // Home service booking
+  sl.registerLazySingleton<HomeServiceBookingRemoteDataSource>(
+    () => HomeServiceBookingRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<HomeServiceBookingRepository>(
+    () => HomeServiceBookingRepositoryImpl(
+      sl<HomeServiceBookingRemoteDataSource>(),
+    ),
+  );
+
+  // Home service favorites
+  sl.registerLazySingleton<HomeFavoriteProviderRemoteDataSource>(
+    () => HomeFavoriteProviderRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<HomeFavoriteProviderRepository>(
+    () => HomeFavoriteProviderRepositoryImpl(
+      sl<HomeFavoriteProviderRemoteDataSource>(),
+    ),
+  );
+
   // Cubits
   sl.registerFactory<AuthCubit>(() => AuthCubit(sl()));
   sl.registerFactory<ProfileCubit>(
@@ -179,6 +298,7 @@ void setupDependencies() {
       walkBookingRepository: sl<WalkBookingRepository>(),
       walkerProfileRepository: sl<WalkerProfileRepository>(),
       notificationRepository: sl<NotificationRepository>(),
+      homeServiceProfileRepository: sl<HomeServiceProfileRepository>(),
     ),
   );
   sl.registerFactory<WalkerCubit>(() => WalkerCubit(sl<WalkerRepository>()));
@@ -199,6 +319,31 @@ void setupDependencies() {
   );
   sl.registerFactory<MyWalksCubit>(
     () => MyWalksCubit(sl<WalkBookingRepository>()),
+  );
+  sl.registerFactory<HomeServiceAvailabilityCubit>(
+    () => HomeServiceAvailabilityCubit(sl<HomeServiceAvailabilityRepository>()),
+  );
+  sl.registerFactory<HomeProviderServicesCubit>(
+    () => HomeProviderServicesCubit(
+      sl<HomeProviderServicesRepository>(),
+      sl<HomeServiceTypeRepository>(),
+    ),
+  );
+  sl.registerFactory<HomeProviderBookingCubit>(
+    () => HomeProviderBookingCubit(sl<HomeServiceBookingRepository>()),
+  );
+  sl.registerFactory<HomeServiceCubit>(
+    () => HomeServiceCubit(sl<HomeServiceProviderRepository>()),
+  );
+  sl.registerFactory<HomeServiceBookingCubit>(
+    () => HomeServiceBookingCubit(
+      sl<HomeServiceBookingRepository>(),
+      sl<HomeServiceProviderRepository>(),
+      sl<PetRepository>(),
+    ),
+  );
+  sl.registerFactory<MyHomeServiceBookingsCubit>(
+    () => MyHomeServiceBookingsCubit(sl<HomeServiceBookingRepository>()),
   );
 
   // Coach

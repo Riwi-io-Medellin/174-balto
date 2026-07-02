@@ -47,6 +47,44 @@ class FeedbackCubit extends Cubit<FeedbackState> {
     }
   }
 
+  Future<void> loadHomeServiceProviderReviews(String providerId) async {
+    emit(const FeedbackLoading());
+    try {
+      final summary = await _repository.getByHomeServiceProvider(providerId);
+      emit(FeedbackLoaded(
+        summary ?? FeedbackSummary(
+          targetId: providerId,
+          targetType: 'home_service_provider',
+          averageRating: 0,
+          totalReviews: 0,
+        ),
+      ));
+    } on FeedbackFailure catch (e) {
+      emit(FeedbackError(e.message));
+    } catch (e) {
+      emit(FeedbackError(e.toString()));
+    }
+  }
+
+  Future<void> createHomeServiceProviderReview({
+    required String providerId,
+    required int rating,
+    String? comment,
+  }) async {
+    try {
+      await _repository.createHomeServiceProviderReview(
+        providerId: providerId,
+        rating: rating,
+        comment: comment,
+      );
+      await loadHomeServiceProviderReviews(providerId);
+    } on FeedbackFailure catch (e) {
+      emit(FeedbackError(e.message));
+    } catch (e) {
+      emit(FeedbackError(e.toString()));
+    }
+  }
+
   Future<void> createWalkerReview({
     required String walkerId,
     required int rating,

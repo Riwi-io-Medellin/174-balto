@@ -40,22 +40,28 @@ class _ReviewSheetState extends State<ReviewSheet> {
     setState(() => _isSubmitting = true);
     try {
       final repo = sl<FeedbackRepository>();
-      if (widget.targetType == 'walker') {
-        await repo.createWalkerReview(
-          walkerId: widget.targetId,
-          rating: _rating,
-          comment: _commentController.text.trim().isEmpty
-              ? null
-              : _commentController.text.trim(),
-        );
-      } else {
-        await repo.createBusinessReview(
-          businessId: widget.targetId,
-          rating: _rating,
-          comment: _commentController.text.trim().isEmpty
-              ? null
-              : _commentController.text.trim(),
-        );
+      final comment = _commentController.text.trim().isEmpty
+          ? null
+          : _commentController.text.trim();
+      switch (widget.targetType) {
+        case 'walker':
+          await repo.createWalkerReview(
+            walkerId: widget.targetId,
+            rating: _rating,
+            comment: comment,
+          );
+        case 'home_service_provider':
+          await repo.createHomeServiceProviderReview(
+            providerId: widget.targetId,
+            rating: _rating,
+            comment: comment,
+          );
+        default:
+          await repo.createBusinessReview(
+            businessId: widget.targetId,
+            rating: _rating,
+            comment: comment,
+          );
       }
       if (!context.mounted) return;
       Navigator.of(context).pop();
