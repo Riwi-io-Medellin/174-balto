@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/entities/business.dart';
+import '../../bloc/business/business_cubit.dart';
+import '../../bloc/business/business_state.dart';
 import '../../bloc/feedback/feedback_cubit.dart';
 import '../../bloc/feedback/feedback_state.dart';
 import '../../widgets/rating_summary.dart';
@@ -23,51 +25,77 @@ class BusinessProfilePage extends StatefulWidget {
 
 class _BusinessProfilePageState extends State<BusinessProfilePage> {
   int _tab = 0;
+  late final BusinessCubit _businessCubit;
   late final FeedbackCubit _feedbackCubit;
-
-  Business get _b => widget.business;
-
-  List<String> get _tabs => [
-        'Overview',
-        if (_b.isVeterinary) 'Veterinary',
-        if (_b.isStore) 'Store',
-        'Reviews',
-      ];
 
   @override
   void initState() {
     super.initState();
+    _businessCubit = sl<BusinessCubit>();
     _feedbackCubit = sl<FeedbackCubit>();
     if (widget.business.id.isNotEmpty) {
+      _businessCubit.loadBusinessDetail(widget.business.id);
       _feedbackCubit.loadBusinessReviews(widget.business.id);
     }
   }
 
   @override
   void dispose() {
+    _businessCubit.close();
     _feedbackCubit.close();
     super.dispose();
   }
 
+  List<String> _tabsFor(Business b) => [
+        'Overview',
+        if (b.isVeterinary || b.isStore) 'Services',
+        'Reviews',
+      ];
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _feedbackCubit,
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: CustomScrollView(
-          slivers: [
-            _buildSliverAppBar(),
-            SliverToBoxAdapter(child: BusinessProfileHeader(business: _b)),
-            SliverToBoxAdapter(child: _buildTabBar()),
-            SliverToBoxAdapter(child: _buildTabContent()),
-          ],
-        ),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _businessCubit),
+        BlocProvider.value(value: _feedbackCubit),
+      ],
+      child: BlocBuilder<BusinessCubit, BusinessState>(
+        builder: (context, state) {
+          final b = state is BusinessDetailLoaded
+              ? state.business
+              : widget.business;
+          final isLoadingDetail = state is BusinessLoading;
+          final tabs = _tabsFor(b);
+          if (_tab >= tabs.length) _tab = 0;
+
+          return Scaffold(
+            backgroundColor: Colors.white,
+            body: CustomScrollView(
+              slivers: [
+                _buildSliverAppBar(b),
+                SliverToBoxAdapter(child: BusinessProfileHeader(business: b)),
+                if (isLoadingDetail)
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 24),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.navWalkers,
+                        ),
+                      ),
+                    ),
+                  ),
+                SliverToBoxAdapter(child: _buildTabBar(tabs)),
+                SliverToBoxAdapter(child: _buildTabContent(b, tabs)),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildSliverAppBar() {
+  Widget _buildSliverAppBar(Business b) {
     return SliverAppBar(
       expandedHeight: 220,
       pinned: true,
@@ -81,17 +109,13 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
           onPressed: () {},
           icon: const Icon(Icons.favorite_border_rounded, color: Colors.white),
         ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
-        ),
       ],
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
           fit: StackFit.expand,
           children: [
             Image.network(
-              _b.coverImage,
+              b.photoUrl ?? '',
               fit: BoxFit.cover,
               errorBuilder: (_, _, _) => Container(
                 color: const Color(0xFF3A80C2),
@@ -116,7 +140,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
               left: 16,
               right: 80,
               child: Text(
-                _b.name,
+                b.name,
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.w800,
@@ -131,7 +155,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
     );
   }
 
-  Widget _buildTabBar() {
+  Widget _buildTabBar(List<String> tabs) {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -140,7 +164,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: List.generate(_tabs.length, (i) {
+          children: List.generate(tabs.length, (i) {
             final active = i == _tab;
             return GestureDetector(
               onTap: () => setState(() => _tab = i),
@@ -155,7 +179,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                   ),
                 ),
                 child: Text(
-                  _tabs[i],
+                  tabs[i],
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: active ? FontWeight.w700 : FontWeight.w500,
@@ -170,22 +194,20 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
     );
   }
 
-  Widget _buildTabContent() {
-    final label = _tabs[_tab];
+  Widget _buildTabContent(Business b, List<String> tabs) {
+    final label = tabs[_tab];
     switch (label) {
-      case 'Veterinary':
-        return _buildVetTab();
-      case 'Store':
-        return _buildStoreTab();
+      case 'Services':
+        return _buildServicesTab(b);
       case 'Reviews':
-        return _buildReviewsTab();
+        return _buildReviewsTab(b);
       default:
-        return BusinessOverviewTab(business: _b);
+        return BusinessOverviewTab(business: b);
     }
   }
 
-  Widget _buildVetTab() {
-    if (_b.services.isEmpty) {
+  Widget _buildServicesTab(Business b) {
+    if (b.services.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(40),
         child: Center(child: Text('No services listed yet.', style: TextStyle(color: Color(0xFF8A93A0)))),
@@ -195,48 +217,10 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(20),
-      itemCount: _b.services.length,
+      itemCount: b.services.length,
       separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (_, i) {
-        final s = _b.services[i];
-        return Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8F9FB),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(s.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1F2937))),
-              const SizedBox(height: 4),
-              Text(s.description, style: const TextStyle(fontSize: 13, color: Color(0xFF5A6473))),
-              if (s.price != null) ...[
-                const SizedBox(height: 8),
-                Text('\$${s.price!.toStringAsFixed(2)}', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.navWalkers)),
-              ],
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildStoreTab() {
-    if (_b.products.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(40),
-        child: Center(child: Text('No products listed yet.', style: TextStyle(color: Color(0xFF8A93A0)))),
-      );
-    }
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(20),
-      itemCount: _b.products.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 12),
-      itemBuilder: (_, i) {
-        final p = _b.products[i];
+        final s = b.services[i];
         return Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -249,26 +233,15 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(p.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1F2937))),
-                    if (p.description != null) ...[
-                      const SizedBox(height: 3),
-                      Text(p.description!, style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0))),
+                    Text(s.serviceType, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1F2937))),
+                    if (s.description != null) ...[
+                      const SizedBox(height: 4),
+                      Text(s.description!, style: const TextStyle(fontSize: 13, color: Color(0xFF5A6473))),
                     ],
-                    const SizedBox(height: 6),
-                    Text('\$${p.price.toStringAsFixed(2)}', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.navWalkers)),
+                    const SizedBox(height: 8),
+                    Text('\$${s.price.toStringAsFixed(2)}', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.navWalkers)),
                   ],
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.navWalkers,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                child: const Text('Add to Cart', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
               ),
             ],
           ),
@@ -277,7 +250,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
     );
   }
 
-  Widget _buildReviewsTab() {
+  Widget _buildReviewsTab(Business b) {
     return BlocBuilder<FeedbackCubit, FeedbackState>(
       builder: (context, state) {
         if (state is FeedbackLoading) {
@@ -323,11 +296,11 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                   child: ElevatedButton.icon(
                     onPressed: () => showReviewSheet(
                       context: context,
-                      targetId: _b.id,
+                      targetId: b.id,
                       targetType: 'business',
-                      targetName: _b.name,
+                      targetName: b.name,
                       title: 'Rate this business',
-                      subtitle: 'How was your experience with ${_b.name}?',
+                      subtitle: 'How was your experience with ${b.name}?',
                     ),
                     icon: const Icon(Icons.star_outline_rounded, size: 18),
                     label: const Text('Write a Review'),

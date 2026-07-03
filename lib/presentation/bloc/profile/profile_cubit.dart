@@ -2,10 +2,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/storage/token_storage.dart';
 import '../../../core/utils/jwt_decoder.dart';
+import '../../../domain/entities/business.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/entities/user.dart';
 import '../../../domain/entities/walk_booking.dart';
 import '../../../domain/entities/walker_profile.dart';
+import '../../../domain/repositories/business_repository.dart';
 import '../../../domain/repositories/notification_repository.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../../domain/repositories/user_repository.dart';
@@ -20,12 +22,14 @@ class ProfileCubit extends Cubit<ProfileState> {
     required PetRepository petRepository,
     required WalkBookingRepository walkBookingRepository,
     required WalkerProfileRepository walkerProfileRepository,
+    required BusinessRepository businessRepository,
     required NotificationRepository notificationRepository,
   })  : _userRepository = userRepository,
         _tokenStorage = tokenStorage,
         _petRepository = petRepository,
         _walkBookingRepository = walkBookingRepository,
         _walkerProfileRepository = walkerProfileRepository,
+        _businessRepository = businessRepository,
         _notificationRepository = notificationRepository,
         super(const ProfileInitial());
 
@@ -34,6 +38,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   final PetRepository _petRepository;
   final WalkBookingRepository _walkBookingRepository;
   final WalkerProfileRepository _walkerProfileRepository;
+  final BusinessRepository _businessRepository;
   final NotificationRepository _notificationRepository;
 
   Future<void> load() async {
@@ -54,6 +59,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       final petsFuture = _petRepository.getMyPets();
       final bookingsFuture = _walkBookingRepository.getMyBookings(status: 'completed');
       final walkerProfileFuture = _walkerProfileRepository.getMyProfile();
+      final businessProfileFuture = _businessRepository.getMyBusiness();
       final unreadCountFuture = _notificationRepository.getUnreadCount();
 
       final User user = await userFuture;
@@ -69,6 +75,10 @@ class ProfileCubit extends Cubit<ProfileState> {
         walkerProfileFuture,
         onError: (_) => null,
       );
+      final businessProfile = await _safeAwait<Business?>(
+        businessProfileFuture,
+        onError: (_) => null,
+      );
       final unreadCount = await _safeAwait<int>(
         unreadCountFuture,
         onError: (_) => 0,
@@ -79,6 +89,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         pets: savedPets,
         walkCount: completedBookings.length,
         walkerProfile: walkerProfile,
+        businessProfile: businessProfile,
         unreadNotificationCount: unreadCount,
       ));
     } on UserFailure catch (e) {
@@ -99,40 +110,5 @@ class ProfileCubit extends Cubit<ProfileState> {
     } catch (e) {
       return onError(e);
     }
-  }
-
-  Future<void> reportLost({
-    required String petId,
-    required double lostLatitude,
-    required double lostLongitude,
-  }) async {
-    final current = state;
-    if (current is! ProfileLoaded) return;
-    final updated = await _petRepository.reportLost(
-      id: petId,
-      lostLatitude: lostLatitude,
-      lostLongitude: lostLongitude,
-    );
-    _patchPet(current, updated);
-  }
-
-  Future<void> markFound(String petId) async {
-    final current = state;
-    if (current is! ProfileLoaded) return;
-    final updated = await _petRepository.markFound(petId);
-    _patchPet(current, updated);
-  }
-
-  void _patchPet(ProfileLoaded current, Pet updated) {
-    final pets = current.pets
-        .map((p) => p.id == updated.id ? updated : p)
-        .toList();
-    emit(ProfileLoaded(
-      user: current.user,
-      pets: pets,
-      walkCount: current.walkCount,
-      walkerProfile: current.walkerProfile,
-      unreadNotificationCount: current.unreadNotificationCount,
-    ));
   }
 }

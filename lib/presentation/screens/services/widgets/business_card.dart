@@ -40,53 +40,20 @@ class BusinessCard extends StatelessWidget {
                   _InfoRow(business: business),
                   const SizedBox(height: 6),
                   _MetaRow(business: business),
-                  const SizedBox(height: 8),
-                  Text(
-                    business.description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF5A6473),
-                      height: 1.45,
+                  if (business.description != null &&
+                      business.description!.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      business.description!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF5A6473),
+                        height: 1.45,
+                      ),
                     ),
-                  ),
-                  if (business.features.isNotEmpty) ...[
-                    const SizedBox(height: 10),
-                    _FeatureChips(features: business.features),
                   ],
-                  const SizedBox(height: 14),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: onTap,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.navWalkers,
-                        side: const BorderSide(
-                          color: AppColors.navWalkers,
-                          width: 1.5,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 11),
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'View Profile',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Icon(Icons.arrow_forward_rounded, size: 16),
-                        ],
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -107,70 +74,67 @@ class _CoverImage extends StatelessWidget {
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       child: SizedBox(
-        height: 160,
+        height: 140,
         width: double.infinity,
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
-              business.coverImage,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => Container(
-                color: const Color(0xFFE8F5EE),
-                child: const Icon(
-                  Icons.storefront_rounded,
-                  size: 56,
-                  color: Color(0xFFB0B8C1),
-                ),
-              ),
-              loadingBuilder: (_, child, progress) {
-                if (progress == null) return child;
-                return const ColoredBox(
-                  color: Color(0xFFF0F2F5),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.navWalkers,
-                    ),
-                  ),
-                );
-              },
-            ),
+            business.photoUrl != null && business.photoUrl!.isNotEmpty
+                ? Image.network(
+                    business.photoUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => _placeholder(),
+                  )
+                : _placeholder(),
             Positioned(
-              top: 12,
-              left: 12,
+              top: 10,
+              left: 10,
               child: Row(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (business.isVeterinary) const _CategoryBadge('Veterinary', AppColors.navWalkers),
+                  if (business.isVeterinary)
+                    const _CategoryBadge('Veterinary', AppColors.navWalkers),
                   if (business.isVeterinary && business.isStore)
                     const SizedBox(width: 6),
-                  if (business.isStore) const _CategoryBadge('Store', AppColors.navCoach),
+                  if (business.isStore)
+                    const _CategoryBadge('Store', AppColors.navCoach),
                 ],
               ),
             ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.favorite_border_rounded,
-                  size: 18,
-                  color: Color(0xFF1F2937),
+            if (business.isVerified)
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.verified_rounded,
+                          size: 14, color: AppColors.navWalkers),
+                      SizedBox(width: 4),
+                      Text('Verified',
+                          style: TextStyle(
+                              fontSize: 11, fontWeight: FontWeight.w700)),
+                    ],
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
     );
   }
+
+  Widget _placeholder() => Container(
+        color: const Color(0xFFE9ECF1),
+        child: const Icon(Icons.storefront_rounded,
+            size: 40, color: Color(0xFFB6BEC9)),
+      );
 }
 
 class _CategoryBadge extends StatelessWidget {
@@ -182,19 +146,13 @@ class _CategoryBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(99),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration:
+          BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
       child: Text(
         label,
         style: const TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-          letterSpacing: 0.3,
-        ),
+            fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white),
       ),
     );
   }
@@ -207,35 +165,15 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: Image.network(
-            business.logoImage,
-            width: 44,
-            height: 44,
-            fit: BoxFit.cover,
-            errorBuilder: (_, _, _) => Container(
-              width: 44,
-              height: 44,
-              color: const Color(0xFFE8F5EE),
-              child: const Icon(Icons.pets, size: 22, color: AppColors.navWalkers),
-            ),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            business.name,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF1F2937),
-            ),
-          ),
-        ),
-      ],
+    return Text(
+      business.name,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w800,
+        color: Color(0xFF1F2937),
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }
@@ -249,24 +187,22 @@ class _MetaRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Icon(Icons.star_rounded, size: 15, color: Color(0xFFF6C86A)),
-        const SizedBox(width: 3),
+        const Icon(Icons.star_rounded, size: 15, color: Color(0xFFFFB800)),
+        const SizedBox(width: 2),
         Text(
-          '${business.rating}',
+          business.rating.toStringAsFixed(1),
           style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF1F2937),
-          ),
+              fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF1F2937)),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 4),
+        Text('(${business.reviewCount})',
+            style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0))),
+        const SizedBox(width: 10),
         Container(
           width: 6,
           height: 6,
           decoration: BoxDecoration(
-            color: business.isOpen
-                ? AppColors.navWalkers
-                : const Color(0xFFD05A24),
+            color: business.isOpen ? const Color(0xFF34C759) : const Color(0xFFFF3B30),
             shape: BoxShape.circle,
           ),
         ),
@@ -276,52 +212,17 @@ class _MetaRow extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: business.isOpen
-                ? AppColors.navWalkers
-                : const Color(0xFFD05A24),
+            color: business.isOpen ? const Color(0xFF34C759) : const Color(0xFFFF3B30),
           ),
         ),
-        const Spacer(),
-        const Icon(Icons.location_on_rounded, size: 13, color: Color(0xFF8A93A0)),
-        Text(
-          '${business.distance.toStringAsFixed(1)}km',
-          style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0)),
-        ),
+        if (business.distanceKm != null) ...[
+          const SizedBox(width: 10),
+          const Icon(Icons.location_on_rounded, size: 13, color: Color(0xFF8A93A0)),
+          const SizedBox(width: 2),
+          Text('${business.distanceKm!.toStringAsFixed(1)}km',
+              style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0))),
+        ],
       ],
-    );
-  }
-}
-
-class _FeatureChips extends StatelessWidget {
-  const _FeatureChips({required this.features});
-
-  final List<String> features;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 6,
-      runSpacing: 6,
-      children: features
-          .take(3)
-          .map(
-            (f) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF0F2F5),
-                borderRadius: BorderRadius.circular(99),
-              ),
-              child: Text(
-                f,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF5A6473),
-                ),
-              ),
-            ),
-          )
-          .toList(),
     );
   }
 }

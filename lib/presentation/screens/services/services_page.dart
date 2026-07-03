@@ -3,17 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
-import '../../../data/services_mock.dart';
 import '../../../domain/entities/business.dart';
-import '../../../domain/entities/home_service_provider.dart';
 import '../../../domain/entities/walker.dart';
-import '../../bloc/home_service/home_service_cubit.dart';
-import '../../bloc/home_service/home_service_state.dart';
+import '../../bloc/business/business_cubit.dart';
+import '../../bloc/business/business_state.dart';
 import '../../bloc/walker/walker_cubit.dart';
 import '../../bloc/walker/walker_state.dart';
-import '../../screens/home_services/home_service_provider_profile_page.dart';
-import '../../screens/home_services/my_home_service_bookings_screen.dart';
-import '../../screens/home_services/widgets/compact_home_service_provider_card.dart';
 import '../../screens/walkers/walker_profile_page.dart';
 import 'business_profile_page.dart';
 import '../../widgets/skeletons/services_skeleton.dart';
@@ -33,14 +28,13 @@ class ServicesPage extends StatefulWidget {
 class _ServicesPageState extends State<ServicesPage> {
   late int _selectedFilter;
   late final WalkerCubit _walkerCubit;
-  late final HomeServiceCubit _homeServiceCubit;
+  late final BusinessCubit _businessCubit;
 
   static const List<String> _filters = [
     'All',
     'Walkers',
     'Veterinaries',
     'Stores',
-    'Home Services',
   ];
 
   @override
@@ -48,15 +42,15 @@ class _ServicesPageState extends State<ServicesPage> {
     super.initState();
     _selectedFilter = widget.initialFilter;
     _walkerCubit = sl<WalkerCubit>();
+    _businessCubit = sl<BusinessCubit>();
     _walkerCubit.loadWalkers();
-    _homeServiceCubit = sl<HomeServiceCubit>();
-    _homeServiceCubit.loadProviders();
+    _businessCubit.loadUserLocation().then((_) => _businessCubit.loadBusinesses());
   }
 
   @override
   void dispose() {
     _walkerCubit.close();
-    _homeServiceCubit.close();
+    _businessCubit.close();
     super.dispose();
   }
 
@@ -66,26 +60,23 @@ class _ServicesPageState extends State<ServicesPage> {
     return [];
   }
 
-  List<HomeServiceProvider> _getHomeServiceProviders(HomeServiceState state) {
-    if (state is HomeServiceListLoaded) return state.providers;
-    if (state is HomeServiceLoadingMore) return state.providers;
+  List<Business> _getBusinesses(BusinessState state) {
+    if (state is BusinessListLoaded) return state.businesses;
     return [];
   }
 
-  List<Object> _buildItems(WalkerState walkerState, HomeServiceState homeServiceState) {
+  List<Object> _buildItems(WalkerState walkerState, BusinessState businessState) {
     final walkers = _getWalkers(walkerState);
-    final providers = _getHomeServiceProviders(homeServiceState);
+    final businesses = _getBusinesses(businessState);
     switch (_selectedFilter) {
       case 1:
         return List<Object>.from(walkers);
       case 2:
-        return kMockBusinesses.where((b) => b.isVeterinary).toList();
+        return businesses.where((b) => b.isVeterinary).toList();
       case 3:
-        return kMockBusinesses.where((b) => b.isStore).toList();
-      case 4:
-        return List<Object>.from(providers);
+        return businesses.where((b) => b.isStore).toList();
       default:
-        return [...walkers, ...kMockBusinesses, ...providers];
+        return [...walkers, ...businesses];
     }
   }
 
@@ -105,20 +96,12 @@ class _ServicesPageState extends State<ServicesPage> {
     );
   }
 
-  void _openHomeServiceProviderProfile(HomeServiceProvider provider) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => HomeServiceProviderProfilePage(provider: provider),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _walkerCubit),
-        BlocProvider.value(value: _homeServiceCubit),
+        BlocProvider.value(value: _businessCubit),
       ],
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F6FA),
@@ -141,14 +124,23 @@ class _ServicesPageState extends State<ServicesPage> {
               Expanded(
                 child: BlocBuilder<WalkerCubit, WalkerState>(
                   builder: (context, walkerState) {
-                    return BlocBuilder<HomeServiceCubit, HomeServiceState>(
-                      builder: (context, homeServiceState) {
-                        if (walkerState is WalkerLoading ||
-                            homeServiceState is HomeServiceLoading) {
+                    return BlocBuilder<BusinessCubit, BusinessState>(
+                      builder: (context, businessState) {
+                        final isLoading = walkerState is WalkerLoading ||
+                            businessState is BusinessLoading;
+                        if (isLoading) {
                           return const ServicesSkeleton();
                         }
 
-                        if (walkerState is WalkerError) {
+                        final errorState = walkerState is WalkerError
+                            ? walkerState
+                            : (businessState is BusinessError
+                                ? businessState
+                                : null);
+                        if (errorState != null) {
+                          final message = errorState is WalkerError
+                              ? errorState.message
+                              : (errorState as BusinessError).message;
                           return Center(
                             child: Padding(
                               padding: const EdgeInsets.all(24),
@@ -158,14 +150,18 @@ class _ServicesPageState extends State<ServicesPage> {
                                   const Icon(Icons.error_outline,
                                       size: 48, color: Colors.grey),
                                   const SizedBox(height: 12),
-                                  Text(walkerState.message,
+                                  Text(message,
                                       textAlign: TextAlign.center,
                                       style:
                                           const TextStyle(color: Colors.grey)),
                                   const SizedBox(height: 16),
                                   ElevatedButton(
-                                    onPressed: () =>
-                                        context.read<WalkerCubit>().loadWalkers(),
+                                    onPressed: () {
+                                      context.read<WalkerCubit>().loadWalkers();
+                                      context
+                                          .read<BusinessCubit>()
+                                          .loadBusinesses();
+                                    },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: AppColors.navWalkers,
                                       foregroundColor: Colors.white,
@@ -178,7 +174,7 @@ class _ServicesPageState extends State<ServicesPage> {
                           );
                         }
 
-                        final items = _buildItems(walkerState, homeServiceState);
+                        final items = _buildItems(walkerState, businessState);
 
                         if (items.isEmpty) {
                           return const Center(
@@ -207,12 +203,6 @@ class _ServicesPageState extends State<ServicesPage> {
                               return CompactWalkerCard(
                                 walker: item,
                                 onTap: () => _openWalkerProfile(item),
-                              );
-                            }
-                            if (item is HomeServiceProvider) {
-                              return CompactHomeServiceProviderCard(
-                                provider: item,
-                                onTap: () => _openHomeServiceProviderProfile(item),
                               );
                             }
                             return const SizedBox.shrink();
@@ -256,16 +246,6 @@ class _ServicesPageState extends State<ServicesPage> {
               color: Color(0xFF1F2937),
             ),
           ),
-        ),
-        IconButton(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => const MyHomeServiceBookingsScreen(),
-            ),
-          ),
-          icon: const Icon(Icons.event_note_rounded, color: AppColors.homeServices),
-          tooltip: 'My Home Service Bookings',
-          visualDensity: VisualDensity.compact,
         ),
         IconButton(
           onPressed: () {},
