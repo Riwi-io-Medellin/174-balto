@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../domain/entities/chat_message.dart';
 import '../../domain/entities/walk_media.dart';
 import '../../domain/repositories/walk_session_repository.dart';
 
@@ -91,6 +92,39 @@ class WalkSessionRemoteDataSource {
       }).toList();
     }
     _throwFailure(status, data);
+  }
+
+  Future<ChatMessage> sendChatMessage(String sessionId, String text) async {
+    final response = await _dio.post<dynamic>(
+      '/walk-sessions/$sessionId/chat',
+      data: {'text': text},
+    );
+    final status = response.statusCode ?? 0;
+    final data = response.data;
+    if ((status == 200 || status == 201) && data is Map<String, dynamic>) {
+      return _parseChatMessage(data);
+    }
+    _throwFailure(status, data);
+  }
+
+  Future<List<ChatMessage>> getChatMessages(String sessionId) async {
+    final response = await _dio.get<dynamic>('/walk-sessions/$sessionId/chat');
+    final status = response.statusCode ?? 0;
+    final data = response.data;
+    if (status == 200 && data is List) {
+      return data.cast<Map<String, dynamic>>().map(_parseChatMessage).toList();
+    }
+    _throwFailure(status, data);
+  }
+
+  ChatMessage _parseChatMessage(Map<String, dynamic> m) {
+    return ChatMessage(
+      id: m['id'] as String,
+      walkSessionId: m['walkSessionId'] as String,
+      senderUserId: m['senderUserId'] as String,
+      text: m['text'] as String,
+      createdAt: DateTime.parse(m['createdAt'] as String),
+    );
   }
 
   Never _throwFailure(int status, dynamic data) {

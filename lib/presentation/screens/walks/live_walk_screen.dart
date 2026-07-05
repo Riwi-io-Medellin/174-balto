@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
+import '../../../core/services/walk_chat_service.dart';
 import '../../../core/services/walk_tracking_service.dart';
 import '../../../core/storage/token_storage.dart';
 import '../../../core/widgets/balto_toast.dart';
@@ -18,7 +19,29 @@ import '../../../domain/repositories/walk_session_repository.dart';
 import '../../../domain/repositories/walker_repository.dart';
 import '../../bloc/live_walk/live_walk_cubit.dart';
 import '../../bloc/live_walk/live_walk_state.dart';
+import '../../bloc/walk_chat/walk_chat_cubit.dart';
 import 'walk_route_summary_screen.dart';
+import 'widgets/walk_chat_sheet.dart';
+
+void _openChat(BuildContext context, String sessionId) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (_) => BlocProvider<WalkChatCubit>(
+      create: (_) => WalkChatCubit(
+        sessionId: sessionId,
+        sessionRepository: sl<WalkSessionRepository>(),
+        chatService: WalkChatService(),
+        tokenStorage: sl<TokenStorage>(),
+      )..start(),
+      child: const WalkChatSheet(),
+    ),
+  );
+}
 
 class LiveWalkScreen extends StatelessWidget {
   const LiveWalkScreen({super.key, required this.booking});
@@ -501,7 +524,10 @@ class _StatusPanel extends StatelessWidget {
                     distanceKm: active.distanceKm,
                   ),
                   const SizedBox(height: 20),
-                  _ActionButtons(walkerName: active.walkerName),
+                  _ActionButtons(
+                    walkerName: active.walkerName,
+                    sessionId: active.sessionId,
+                  ),
                   const SizedBox(height: 20),
                   const _WellnessCard(),
                   if (active.sessionId != null) ...[
@@ -687,9 +713,10 @@ class _StatTile extends StatelessWidget {
 }
 
 class _ActionButtons extends StatelessWidget {
-  const _ActionButtons({required this.walkerName});
+  const _ActionButtons({required this.walkerName, this.sessionId});
 
   final String walkerName;
+  final String? sessionId;
 
   @override
   Widget build(BuildContext context) {
@@ -712,7 +739,9 @@ class _ActionButtons extends StatelessWidget {
             icon: Icons.chat_bubble_outline_rounded,
             bg: const Color(0xFFEEF3FB),
             fg: AppColors.navWalks,
-            onTap: () => BaltoToast.info(context, 'Chat not connected yet.'),
+            onTap: sessionId != null
+                ? () => _openChat(context, sessionId!)
+                : () => BaltoToast.info(context, 'Chat is not available yet.'),
           ),
         ),
         const SizedBox(width: 10),

@@ -7,14 +7,39 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
+import '../../../core/services/walk_chat_service.dart';
 import '../../../core/services/walker_live_walk_service.dart';
+import '../../../core/storage/token_storage.dart';
+import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/walk_booking.dart';
 import '../../../domain/entities/walk_media.dart';
 import '../../../domain/repositories/upload_repository.dart';
 import '../../../domain/repositories/walk_session_repository.dart';
+import '../../bloc/walk_chat/walk_chat_cubit.dart';
 import '../../bloc/walker_live_walk/walker_live_walk_cubit.dart';
 import '../../bloc/walker_live_walk/walker_live_walk_state.dart';
 import '../walks/walk_route_summary_screen.dart';
+import '../walks/widgets/walk_chat_sheet.dart';
+
+void _openChat(BuildContext context, String sessionId) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.white,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (_) => BlocProvider<WalkChatCubit>(
+      create: (_) => WalkChatCubit(
+        sessionId: sessionId,
+        sessionRepository: sl<WalkSessionRepository>(),
+        chatService: WalkChatService(),
+        tokenStorage: sl<TokenStorage>(),
+      )..start(),
+      child: const WalkChatSheet(),
+    ),
+  );
+}
 
 class WalkerLiveWalkScreen extends StatelessWidget {
   const WalkerLiveWalkScreen({super.key, required this.booking});
@@ -60,6 +85,9 @@ class _WalkerLiveWalkViewState extends State<_WalkerLiveWalkView> {
           _mapController?.animateCamera(
             CameraUpdate.newLatLng(state.currentPosition!),
           );
+        }
+        if (state is WalkerLiveWalkActive && state.mediaError != null) {
+          BaltoToast.error(context, state.mediaError!);
         }
         if (state is WalkerLiveWalkCompleted) {
           Navigator.pushReplacement(
@@ -374,6 +402,17 @@ class _BottomPanel extends StatelessWidget {
                     isLoading: false,
                     enabled: active != null && !isEnding && !(active.isUploadingMedia),
                     onTap: () => _showMediaSourceSheet(context, isVideo: true),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _MediaBtn(
+                    icon: Icons.chat_bubble_outline_rounded,
+                    label: 'Chat',
+                    color: AppColors.navWalks,
+                    isLoading: false,
+                    enabled: active?.sessionId != null && !isEnding,
+                    onTap: () => _openChat(context, active!.sessionId!),
                   ),
                 ),
               ],

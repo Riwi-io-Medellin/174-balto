@@ -21,6 +21,7 @@ class WalkerLiveWalkStarting extends WalkerLiveWalkState {
 
 class WalkerLiveWalkActive extends WalkerLiveWalkState {
   const WalkerLiveWalkActive({
+    this.sessionId,
     this.currentPosition,
     this.accuracyMeters,
     this.elapsedSeconds = 0,
@@ -28,8 +29,10 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
     this.distanceKm = 0.0,
     this.mediaItems = const [],
     this.isUploadingMedia = false,
+    this.mediaError,
   });
 
+  final String? sessionId;
   final LatLng? currentPosition;
   final double? accuracyMeters;
   final int elapsedSeconds;
@@ -37,8 +40,12 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
   final double distanceKm;
   final List<WalkMedia> mediaItems;
   final bool isUploadingMedia;
+  // Transient: set when a photo/video upload fails, shown once then cleared
+  // by the next copyWith call (not carried forward like the other fields).
+  final String? mediaError;
 
   WalkerLiveWalkActive copyWith({
+    String? sessionId,
     LatLng? currentPosition,
     double? accuracyMeters,
     int? elapsedSeconds,
@@ -46,8 +53,10 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
     double? distanceKm,
     List<WalkMedia>? mediaItems,
     bool? isUploadingMedia,
+    String? mediaError,
   }) =>
       WalkerLiveWalkActive(
+        sessionId: sessionId ?? this.sessionId,
         currentPosition: currentPosition ?? this.currentPosition,
         accuracyMeters: accuracyMeters ?? this.accuracyMeters,
         elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
@@ -55,10 +64,12 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
         distanceKm: distanceKm ?? this.distanceKm,
         mediaItems: mediaItems ?? this.mediaItems,
         isUploadingMedia: isUploadingMedia ?? this.isUploadingMedia,
+        mediaError: mediaError,
       );
 
   @override
   List<Object?> get props => [
+        sessionId,
         currentPosition,
         accuracyMeters,
         elapsedSeconds,
@@ -66,6 +77,7 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
         distanceKm,
         mediaItems,
         isUploadingMedia,
+        mediaError,
       ];
 }
 
