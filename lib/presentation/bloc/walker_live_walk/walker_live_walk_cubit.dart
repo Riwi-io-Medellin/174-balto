@@ -8,6 +8,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/services/walker_live_walk_service.dart';
+import '../../../data/datasources/upload_remote_datasource.dart';
 import '../../../domain/entities/walk_booking.dart';
 import '../../../domain/entities/walk_media.dart';
 import '../../../domain/repositories/upload_repository.dart';
@@ -65,7 +66,7 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
 
       await _liveWalkService.start();
 
-      emit(const WalkerLiveWalkActive());
+      emit(WalkerLiveWalkActive(sessionId: _sessionId));
 
       _positionSub = _liveWalkService.positionStream.listen(_onPosition);
 
@@ -175,6 +176,16 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
           mediaItems: [...current.mediaItems, newItem],
           isUploadingMedia: false,
         ));
+      }
+    } on UploadFailure catch (e) {
+      final current = state;
+      if (current is WalkerLiveWalkActive) {
+        emit(current.copyWith(isUploadingMedia: false, mediaUploadError: e.message));
+      }
+    } on UploadRemoteFailure catch (e) {
+      final current = state;
+      if (current is WalkerLiveWalkActive) {
+        emit(current.copyWith(isUploadingMedia: false, mediaUploadError: e.message));
       }
     } catch (e) {
       // ignore: avoid_print
