@@ -20,9 +20,14 @@ class VetDocumentAnalysisRepositoryImpl implements VetDocumentAnalysisRepository
     } on VetDocumentAnalysisFailure {
       rethrow;
     } on DioException catch (e) {
+      final isTimeout = e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.sendTimeout ||
+          e.type == DioExceptionType.receiveTimeout;
       throw VetDocumentAnalysisFailure(
-        'NETWORK_ERROR',
-        e.message ?? 'Could not reach the server.',
+        isTimeout ? 'TIMEOUT' : 'NETWORK_ERROR',
+        isTimeout
+            ? 'The analysis is taking longer than expected. Please try again.'
+            : e.message ?? 'Could not reach the server.',
       );
     }
   }

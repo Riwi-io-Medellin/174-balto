@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class PetHealthContext extends Equatable {
   const PetHealthContext({
+    required this.petId,
     required this.name,
     required this.species,
     this.breed,
@@ -12,6 +13,7 @@ class PetHealthContext extends Equatable {
     this.documentType,
   });
 
+  final String petId;
   final String name;
   final String species;
   final String? breed;
@@ -22,6 +24,7 @@ class PetHealthContext extends Equatable {
   final String? documentType;
 
   Map<String, dynamic> toJson() => {
+        'petId': petId,
         'petContext': {
           'name': name,
           'species': species,
@@ -36,5 +39,5 @@ class PetHealthContext extends Equatable {
 
   @override
   List<Object?> get props =>
-      [name, species, breed, age, sex, weightKg, symptoms, documentType];
+      [petId, name, species, breed, age, sex, weightKg, symptoms, documentType];
 }

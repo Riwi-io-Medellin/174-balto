@@ -17,11 +17,12 @@ void main() {
   late _MockDio dio;
   late VetDocumentAnalysisRemoteDataSource datasource;
 
-  const context = PetHealthContext(name: 'Rocky', species: 'Dog', breed: 'Labrador');
+  const context = PetHealthContext(petId: 'pet-1', name: 'Rocky', species: 'Dog', breed: 'Labrador');
   const fileUrls = ['https://cdn.example.com/report.jpg'];
 
   setUpAll(() {
     registerFallbackValue(<String, dynamic>{});
+    registerFallbackValue(Options());
   });
 
   setUp(() {
@@ -30,7 +31,7 @@ void main() {
   });
 
   test('sends petContext and fileUrls in the request body', () async {
-    when(() => dio.post<dynamic>(any(), data: any(named: 'data'))).thenAnswer(
+    when(() => dio.post<dynamic>(any(), data: any(named: 'data'), options: any(named: 'options'))).thenAnswer(
       (_) async => _response(200, {
         'summary': 's',
         'keyFindings': <String>[],
@@ -45,18 +46,19 @@ void main() {
 
     await datasource.analyze(context: context, fileUrls: fileUrls);
 
-    final captured = verify(() => dio.post<dynamic>('/vet-document-analysis', data: captureAny(named: 'data')))
+    final captured = verify(() => dio.post<dynamic>('/vet-document-analysis', data: captureAny(named: 'data'), options: any(named: 'options')))
         .captured
         .single as Map<String, dynamic>;
 
     expect(captured['fileUrls'], fileUrls);
+    expect(captured['petId'], 'pet-1');
     expect(captured['petContext']['name'], 'Rocky');
     expect(captured['petContext']['species'], 'Dog');
     expect(captured['petContext']['breed'], 'Labrador');
   });
 
   test('parses a successful response into a VetDocumentAnalysisResult', () async {
-    when(() => dio.post<dynamic>(any(), data: any(named: 'data'))).thenAnswer(
+    when(() => dio.post<dynamic>(any(), data: any(named: 'data'), options: any(named: 'options'))).thenAnswer(
       (_) async => _response(200, {
         'summary': 'All good.',
         'keyFindings': ['Finding A'],
@@ -81,7 +83,7 @@ void main() {
   });
 
   test('maps a 400 error body to a VetDocumentAnalysisFailure with the server code', () async {
-    when(() => dio.post<dynamic>(any(), data: any(named: 'data'))).thenAnswer(
+    when(() => dio.post<dynamic>(any(), data: any(named: 'data'), options: any(named: 'options'))).thenAnswer(
       (_) async => _response(400, {'error': 'Pet name is required.', 'code': 'VALIDATION_FAILED'}),
     );
 
@@ -92,7 +94,7 @@ void main() {
   });
 
   test('maps a 503 with no structured body to AI_UNAVAILABLE', () async {
-    when(() => dio.post<dynamic>(any(), data: any(named: 'data'))).thenAnswer(
+    when(() => dio.post<dynamic>(any(), data: any(named: 'data'), options: any(named: 'options'))).thenAnswer(
       (_) async => _response(503, null),
     );
 
@@ -103,7 +105,7 @@ void main() {
   });
 
   test('maps a 502 with no structured body to AI_PARSE_ERROR', () async {
-    when(() => dio.post<dynamic>(any(), data: any(named: 'data'))).thenAnswer(
+    when(() => dio.post<dynamic>(any(), data: any(named: 'data'), options: any(named: 'options'))).thenAnswer(
       (_) async => _response(502, null),
     );
 

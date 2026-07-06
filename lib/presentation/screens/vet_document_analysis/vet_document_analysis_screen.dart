@@ -173,9 +173,15 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
 
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
+    final pet = widget.pet;
+    if (pet == null) {
+      BaltoToast.error(context, 'No pet selected for this analysis.');
+      return;
+    }
     final ageText = _ageCtrl.text.trim();
     final weightText = _weightCtrl.text.trim();
     final context0 = PetHealthContext(
+      petId: pet.id,
       name: _nameCtrl.text.trim(),
       species: _selectedSpecies ?? '',
       breed: _breedCtrl.text.trim().isEmpty ? null : _breedCtrl.text.trim(),

@@ -13,7 +13,7 @@ void main() {
   late _MockRemoteDataSource remote;
   late VetDocumentAnalysisRepositoryImpl repository;
 
-  const context = PetHealthContext(name: 'Rocky', species: 'Dog');
+  const context = PetHealthContext(petId: 'pet-1', name: 'Rocky', species: 'Dog');
   const fileUrls = ['https://cdn.example.com/report.jpg'];
 
   setUpAll(() {

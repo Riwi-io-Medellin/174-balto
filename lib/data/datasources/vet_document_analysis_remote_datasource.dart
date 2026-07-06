@@ -18,6 +18,10 @@ class VetDocumentAnalysisRemoteDataSource {
     final response = await _dio.post<dynamic>(
       '/vet-document-analysis',
       data: body,
+      options: Options(
+        sendTimeout: const Duration(seconds: 60),
+        receiveTimeout: const Duration(seconds: 60),
+      ),
     );
     final status = response.statusCode ?? 0;
     final data = response.data;

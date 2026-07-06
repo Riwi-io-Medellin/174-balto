@@ -17,7 +17,7 @@ void main() {
   late _MockVetDocumentAnalysisRepository analysisRepository;
   late VetDocumentAnalysisCubit cubit;
 
-  const petContext = PetHealthContext(name: 'Rocky', species: 'Dog');
+  const petContext = PetHealthContext(petId: 'pet-1', name: 'Rocky', species: 'Dog');
   const validFile = PickedFileInfo(path: '/tmp/report.jpg', name: 'report.jpg', sizeBytes: 1024);
   const result = VetDocumentAnalysisResult(
     summary: 's',

@@ -51,21 +51,21 @@ void main() {
 
   group('validatePetContext', () {
     test('rejects an empty name', () {
-      const context = PetHealthContext(name: '  ', species: 'Dog');
+      const context = PetHealthContext(petId: 'pet-1', name: '  ', species: 'Dog');
       final result = validatePetContext(context);
       expect(result.isValid, isFalse);
       expect(result.error, contains('name'));
     });
 
     test('rejects an empty species', () {
-      const context = PetHealthContext(name: 'Rocky', species: '');
+      const context = PetHealthContext(petId: 'pet-1', name: 'Rocky', species: '');
       final result = validatePetContext(context);
       expect(result.isValid, isFalse);
       expect(result.error, contains('Species'));
     });
 
     test('accepts a valid pet context', () {
-      const context = PetHealthContext(name: 'Rocky', species: 'Dog');
+      const context = PetHealthContext(petId: 'pet-1', name: 'Rocky', species: 'Dog');
       final result = validatePetContext(context);
       expect(result.isValid, isTrue);
     });
