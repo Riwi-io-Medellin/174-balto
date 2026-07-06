@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/pet.dart';
+import '../../../domain/entities/vet_document_analysis.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
@@ -49,7 +50,11 @@ class ManagePetsScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      Icon(Icons.pets, size: 48, color: _primary.withValues(alpha: 0.4)),
+                      Icon(
+                        Icons.pets,
+                        size: 48,
+                        color: _primary.withValues(alpha: 0.4),
+                      ),
                       const SizedBox(height: 12),
                       const Text(
                         'No pets registered yet',
@@ -59,10 +64,12 @@ class ManagePetsScreen extends StatelessWidget {
                   ),
                 )
               else
-                ...pets.map((pet) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: _buildDismissibleCard(context, pet),
-                    )),
+                ...pets.map(
+                  (pet) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _buildDismissibleCard(context, pet),
+                  ),
+                ),
               const SizedBox(height: 12),
               _buildAddButton(context),
             ],
@@ -133,6 +140,7 @@ class ManagePetsScreen extends StatelessWidget {
       if (age != null) age,
       if (pet.weight != null) '${pet.weight!.toStringAsFixed(1)} kg',
     ];
+    final healthIndicator = _healthIndicator(pet);
 
     return InkWell(
       onTap: () => Navigator.of(context).push(
@@ -165,13 +173,24 @@ class ManagePetsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    pet.name,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: _textDark,
-                    ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          pet.name,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: _textDark,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (healthIndicator != null) ...[
+                        const SizedBox(width: 6),
+                        healthIndicator,
+                      ],
+                    ],
                   ),
                   if (chips.isNotEmpty) ...[
                     const SizedBox(height: 4),
@@ -200,6 +219,26 @@ class ManagePetsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget? _healthIndicator(Pet pet) {
+    if (pet.latestHealthUrgency == null) return null;
+    final level = UrgencyLevel.fromJson(pet.latestHealthUrgency!);
+    if (level == UrgencyLevel.routine) return null;
+
+    final color = switch (level) {
+      UrgencyLevel.scheduleVetVisit => const Color(0xFFE8A84C),
+      UrgencyLevel.urgent => const Color(0xFFD05A24),
+      UrgencyLevel.emergency => const Color(0xFFD32F2F),
+      UrgencyLevel.routine => _primary,
+    };
+    final icon = switch (level) {
+      UrgencyLevel.scheduleVetVisit => Icons.event_note_rounded,
+      UrgencyLevel.urgent => Icons.warning_rounded,
+      UrgencyLevel.emergency => Icons.emergency_rounded,
+      UrgencyLevel.routine => Icons.favorite_rounded,
+    };
+    return Icon(icon, size: 16, color: color);
   }
 
   Widget _buildAvatar(Pet pet) {
@@ -255,7 +294,10 @@ class ManagePetsScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: _bgPurple,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: _purple.withValues(alpha: 0.30), width: 1.5),
+          border: Border.all(
+            color: _purple.withValues(alpha: 0.30),
+            width: 1.5,
+          ),
         ),
         alignment: Alignment.center,
         child: const Text(

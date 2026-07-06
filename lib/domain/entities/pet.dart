@@ -12,6 +12,7 @@ class Pet extends Equatable {
     this.photoUrl,
     this.weight,
     required this.createdAt,
+    this.latestHealthUrgency,
   });
 
   final String id;
@@ -24,6 +25,7 @@ class Pet extends Equatable {
   final String? photoUrl;
   final double? weight;
   final DateTime createdAt;
+  final String? latestHealthUrgency;
 
   @override
   List<Object?> get props => [
@@ -37,5 +39,6 @@ class Pet extends Equatable {
         photoUrl,
         weight,
         createdAt,
+        latestHealthUrgency,
       ];
 }

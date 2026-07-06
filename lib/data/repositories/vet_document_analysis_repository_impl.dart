@@ -31,4 +31,18 @@ class VetDocumentAnalysisRepositoryImpl implements VetDocumentAnalysisRepository
       );
     }
   }
+
+  @override
+  Future<List<VetDocumentAnalysisHistoryItem>> getHistory(String petId) async {
+    try {
+      return await _remote.getHistory(petId);
+    } on VetDocumentAnalysisFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw VetDocumentAnalysisFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
 }

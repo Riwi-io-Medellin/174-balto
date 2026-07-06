@@ -6,6 +6,8 @@ abstract class VetDocumentAnalysisRepository {
     required PetHealthContext context,
     required List<String> fileUrls,
   });
+
+  Future<List<VetDocumentAnalysisHistoryItem>> getHistory(String petId);
 }
 
 class VetDocumentAnalysisFailure implements Exception {

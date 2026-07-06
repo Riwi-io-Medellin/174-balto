@@ -12,6 +12,7 @@ class PetDto {
     this.photoUrl,
     this.weight,
     required this.createdAt,
+    this.latestHealthUrgency,
   });
 
   final String id;
@@ -24,6 +25,7 @@ class PetDto {
   final String? photoUrl;
   final double? weight;
   final DateTime createdAt;
+  final String? latestHealthUrgency;
 
   factory PetDto.fromJson(Map<String, dynamic> json) {
     return PetDto(
@@ -39,6 +41,7 @@ class PetDto {
       photoUrl: json['photoUrl'] as String?,
       weight: (json['weight'] as num?)?.toDouble(),
       createdAt: DateTime.parse(json['createdAt'] as String).toLocal(),
+      latestHealthUrgency: json['latestHealthUrgency'] as String?,
     );
   }
 
@@ -64,5 +67,6 @@ class PetDto {
         photoUrl: photoUrl,
         weight: weight,
         createdAt: createdAt,
+        latestHealthUrgency: latestHealthUrgency,
       );
 }
