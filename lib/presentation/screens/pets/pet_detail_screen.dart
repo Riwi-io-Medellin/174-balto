@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
+import '../vet_document_analysis/vet_document_analysis_screen.dart';
 import 'clinical_history/pet_clinical_history_screen.dart';
 import 'edit_pet_screen.dart';
 
@@ -291,6 +293,25 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                     ),
                   ],
                 ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => VetDocumentAnalysisScreen(pet: pet),
+                  ),
+                ),
+                icon: const Icon(Icons.medical_information_outlined),
+                label: const Text('Health Document Analysis'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.aiCoach,
+                  side: const BorderSide(color: AppColors.aiCoach),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
               ),
             ),
             const SizedBox(height: 16),

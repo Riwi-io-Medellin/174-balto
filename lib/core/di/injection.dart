@@ -11,6 +11,7 @@ import '../../data/datasources/pet_clinical_remote_datasource.dart';
 import '../../data/datasources/pet_remote_datasource.dart';
 import '../../data/datasources/upload_remote_datasource.dart';
 import '../../data/datasources/user_remote_datasource.dart';
+import '../../data/datasources/vet_document_analysis_remote_datasource.dart';
 import '../../data/datasources/walk_booking_remote_datasource.dart';
 import '../../data/datasources/walk_session_remote_datasource.dart';
 import '../../data/datasources/walker_availability_remote_datasource.dart';
@@ -27,6 +28,7 @@ import '../../data/repositories/pet_clinical_repository_impl.dart';
 import '../../data/repositories/pet_repository_impl.dart';
 import '../../data/repositories/upload_repository_impl.dart';
 import '../../data/repositories/user_repository_impl.dart';
+import '../../data/repositories/vet_document_analysis_repository_impl.dart';
 import '../../data/repositories/walk_booking_repository_impl.dart';
 import '../../data/repositories/walk_session_repository_impl.dart';
 import '../../data/repositories/walker_availability_repository_impl.dart';
@@ -43,6 +45,7 @@ import '../../domain/repositories/pet_clinical_repository.dart';
 import '../../domain/repositories/pet_repository.dart';
 import '../../domain/repositories/upload_repository.dart';
 import '../../domain/repositories/user_repository.dart';
+import '../../domain/repositories/vet_document_analysis_repository.dart';
 import '../../domain/repositories/walk_booking_repository.dart';
 import '../../domain/repositories/walk_session_repository.dart';
 import '../../domain/repositories/walker_availability_repository.dart';
@@ -55,6 +58,7 @@ import '../../presentation/bloc/coach/coach_cubit.dart';
 import '../../presentation/bloc/feedback/feedback_cubit.dart';
 import '../../presentation/bloc/my_walks/my_walks_cubit.dart';
 import '../../presentation/bloc/profile/profile_cubit.dart';
+import '../../presentation/bloc/vet_document_analysis/vet_document_analysis_cubit.dart';
 import '../../presentation/bloc/walk_booking/walk_booking_cubit.dart';
 import '../../presentation/bloc/walker/walker_cubit.dart';
 import '../../presentation/bloc/walker_availability/walker_availability_cubit.dart';
@@ -245,5 +249,19 @@ void setupDependencies() {
   // Feedback
   sl.registerFactory<FeedbackCubit>(
     () => FeedbackCubit(sl<FeedbackRepository>()),
+  );
+
+  // Vet document analysis
+  sl.registerLazySingleton<VetDocumentAnalysisRemoteDataSource>(
+    () => VetDocumentAnalysisRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<VetDocumentAnalysisRepository>(
+    () => VetDocumentAnalysisRepositoryImpl(sl<VetDocumentAnalysisRemoteDataSource>()),
+  );
+  sl.registerFactory<VetDocumentAnalysisCubit>(
+    () => VetDocumentAnalysisCubit(
+      uploadRepository: sl<UploadRepository>(),
+      analysisRepository: sl<VetDocumentAnalysisRepository>(),
+    ),
   );
 }

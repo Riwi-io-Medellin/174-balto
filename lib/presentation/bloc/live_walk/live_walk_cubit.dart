@@ -141,7 +141,7 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
       final points = await _sessionRepository.getRoute(sessionId);
       if (points.isEmpty) return;
       final s = state;
-      if (s is! LiveWalkActive) return;
+      if (s is! LiveWalkActive) return; 
       final last = points.last;
       emit(s.copyWith(
         currentPosition: last,
@@ -171,6 +171,7 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
       }
     } catch (_) {}
   }
+
 
   void _onWalkCompleted([Map<String, dynamic>? payload]) {
     final s = state;
