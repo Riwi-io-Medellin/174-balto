@@ -7,6 +7,7 @@ import '../../data/datasources/coach_remote_datasource.dart';
 import '../../data/datasources/feedback_remote_datasource.dart';
 import '../../data/datasources/me_remote_datasource.dart';
 import '../../data/datasources/notification_remote_datasource.dart';
+import '../../data/datasources/pet_clinical_remote_datasource.dart';
 import '../../data/datasources/pet_remote_datasource.dart';
 import '../../data/datasources/upload_remote_datasource.dart';
 import '../../data/datasources/user_remote_datasource.dart';
@@ -22,6 +23,7 @@ import '../../data/repositories/coach_repository_impl.dart';
 import '../../data/repositories/feedback_repository_impl.dart';
 import '../../data/repositories/me_repository_impl.dart';
 import '../../data/repositories/notification_repository_impl.dart';
+import '../../data/repositories/pet_clinical_repository_impl.dart';
 import '../../data/repositories/pet_repository_impl.dart';
 import '../../data/repositories/upload_repository_impl.dart';
 import '../../data/repositories/user_repository_impl.dart';
@@ -37,6 +39,7 @@ import '../../domain/repositories/coach_repository.dart';
 import '../../domain/repositories/feedback_repository.dart';
 import '../../domain/repositories/me_repository.dart';
 import '../../domain/repositories/notification_repository.dart';
+import '../../domain/repositories/pet_clinical_repository.dart';
 import '../../domain/repositories/pet_repository.dart';
 import '../../domain/repositories/upload_repository.dart';
 import '../../domain/repositories/user_repository.dart';
@@ -90,6 +93,14 @@ void setupDependencies() {
   );
   sl.registerLazySingleton<PetRepository>(
     () => PetRepositoryImpl(sl<PetRemoteDataSource>()),
+  );
+
+  // Pet clinical history
+  sl.registerLazySingleton<PetClinicalRemoteDataSource>(
+    () => PetClinicalRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<PetClinicalRepository>(
+    () => PetClinicalRepositoryImpl(sl<PetClinicalRemoteDataSource>()),
   );
 
   // Walking history

@@ -11,6 +11,10 @@ class Pet extends Equatable {
     this.description,
     this.photoUrl,
     this.weight,
+    this.sex,
+    this.color,
+    this.identificationNumber,
+    this.microchipNumber,
     required this.createdAt,
     this.isLost = false,
     this.lostLatitude,
@@ -27,6 +31,10 @@ class Pet extends Equatable {
   final String? description;
   final String? photoUrl;
   final double? weight;
+  final String? sex;
+  final String? color;
+  final String? identificationNumber;
+  final String? microchipNumber;
   final DateTime createdAt;
   final bool isLost;
   final double? lostLatitude;
@@ -49,6 +57,10 @@ class Pet extends Equatable {
       description: description,
       photoUrl: photoUrl,
       weight: weight,
+      sex: sex,
+      color: color,
+      identificationNumber: identificationNumber,
+      microchipNumber: microchipNumber,
       createdAt: createdAt,
       isLost: isLost ?? this.isLost,
       lostLatitude: lostLatitude ?? this.lostLatitude,
@@ -68,6 +80,10 @@ class Pet extends Equatable {
         description,
         photoUrl,
         weight,
+        sex,
+        color,
+        identificationNumber,
+        microchipNumber,
         createdAt,
         isLost,
         lostLatitude,

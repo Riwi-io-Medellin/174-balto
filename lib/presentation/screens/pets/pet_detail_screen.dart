@@ -8,6 +8,7 @@ import '../../../domain/entities/pet.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
+import 'clinical_history/pet_clinical_history_screen.dart';
 import 'edit_pet_screen.dart';
 
 class PetDetailScreen extends StatefulWidget {
@@ -293,6 +294,8 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
               ),
             ),
             const SizedBox(height: 16),
+            _clinicalHistoryCard(context, pet),
+            const SizedBox(height: 16),
             if (pet.isLost) ...[
               Container(
                 width: double.infinity,
@@ -321,6 +324,60 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
               ),
             ],
             _lostStatusButton(pet),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _clinicalHistoryCard(BuildContext context, Pet pet) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => PetClinicalHistoryScreen(pet: pet)),
+      ),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1BAA71).withValues(alpha: 0.10),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.folder_shared_outlined, color: Color(0xFF1BAA71), size: 20),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Historia Clínica',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textDark),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Documentos, eventos, tips y documento oficial',
+                    style: TextStyle(fontSize: 12, color: _textMuted),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: _textMuted),
           ],
         ),
       ),

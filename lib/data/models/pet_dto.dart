@@ -11,6 +11,10 @@ class PetDto {
     this.description,
     this.photoUrl,
     this.weight,
+    this.sex,
+    this.color,
+    this.identificationNumber,
+    this.microchipNumber,
     required this.createdAt,
   });
 
@@ -23,6 +27,10 @@ class PetDto {
   final String? description;
   final String? photoUrl;
   final double? weight;
+  final String? sex;
+  final String? color;
+  final String? identificationNumber;
+  final String? microchipNumber;
   final DateTime createdAt;
 
   factory PetDto.fromJson(Map<String, dynamic> json) {
@@ -38,6 +46,10 @@ class PetDto {
       description: json['description'] as String?,
       photoUrl: json['photoUrl'] as String?,
       weight: (json['weight'] as num?)?.toDouble(),
+      sex: json['sex'] as String?,
+      color: json['color'] as String?,
+      identificationNumber: json['identificationNumber'] as String?,
+      microchipNumber: json['microchipNumber'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String).toLocal(),
     );
   }
@@ -63,6 +75,10 @@ class PetDto {
         description: description,
         photoUrl: photoUrl,
         weight: weight,
+        sex: sex,
+        color: color,
+        identificationNumber: identificationNumber,
+        microchipNumber: microchipNumber,
         createdAt: createdAt,
       );
 }
