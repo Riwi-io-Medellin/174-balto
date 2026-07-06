@@ -50,7 +50,7 @@ class CoachCubit extends Cubit<CoachState> {
     } on CoachFailure catch (e) {
       emit(CoachLoaded(messages: withUser, sendError: e.message));
     } catch (_) {
-      emit(CoachLoaded(messages: withUser, sendError: 'Error inesperado.'));
+      emit(CoachLoaded(messages: withUser, sendError: 'Unexpected error.'));
     }
   }
 

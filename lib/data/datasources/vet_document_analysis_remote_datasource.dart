@@ -33,6 +33,21 @@ class VetDocumentAnalysisRemoteDataSource {
     _throwFailure(status, data);
   }
 
+  Future<List<VetDocumentAnalysisHistoryItem>> getHistory(String petId) async {
+    final response = await _dio.get<dynamic>('/vet-document-analysis/pet/$petId/history');
+    final status = response.statusCode ?? 0;
+    final data = response.data;
+
+    if (status == 200 && data is List) {
+      return data
+          .cast<Map<String, dynamic>>()
+          .map(VetDocumentAnalysisHistoryItem.fromJson)
+          .toList();
+    }
+
+    _throwFailure(status, data);
+  }
+
   Never _throwFailure(int status, dynamic data) {
     if (data is Map<String, dynamic> &&
         data['code'] is String &&

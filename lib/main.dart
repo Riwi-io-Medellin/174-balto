@@ -1,7 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'core/di/injection.dart';
+import 'core/services/push_notification_service.dart';
 import 'core/storage/token_storage.dart';
 import 'presentation/screens/auth/login_screen.dart';
 import 'presentation/screens/home/home_page.dart';
@@ -11,8 +14,13 @@ import 'presentation/screens/walks/walks_page.dart';
 import 'presentation/screens/coach/coach_screen.dart';
 import 'presentation/widgets/bottom_nav/balto_bottom_nav_bar.dart';
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   setupDependencies();
   final tokenStorage = sl<TokenStorage>();
   final rememberMe = await tokenStorage.readRememberMe();
@@ -20,6 +28,11 @@ void main() async {
     await tokenStorage.clear();
   }
   final token = await tokenStorage.readAccessToken();
+
+  final pushService = sl<PushNotificationService>();
+  await pushService.initialize(navigatorKey: navigatorKey);
+  if (token != null) await pushService.registerCurrentToken();
+
   runApp(BaltoApp(isLoggedIn: token != null));
 }
 
@@ -36,6 +49,7 @@ class BaltoApp extends StatelessWidget {
     );
     return MaterialApp(
       title: 'Balto',
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: base.copyWith(
         textTheme: GoogleFonts.interTextTheme(base.textTheme).apply(

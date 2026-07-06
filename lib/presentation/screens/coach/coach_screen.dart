@@ -64,18 +64,18 @@ class _CoachViewState extends State<_CoachView> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Nueva sesión'),
+        title: const Text('New session'),
         content:
-            const Text('¿Borrar el historial de esta conversación?'),
+            const Text('Clear this conversation\'s history?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text(
-              'Borrar',
+              'Clear',
               style: TextStyle(color: Colors.red),
             ),
           ),
@@ -140,7 +140,7 @@ class _CoachViewState extends State<_CoachView> {
                     Icons.refresh_rounded,
                     color: Color(0xFF6B7280),
                   ),
-                  tooltip: 'Nueva sesión',
+                  tooltip: 'New session',
                   onPressed: _confirmClear,
                 ),
             ],
@@ -224,7 +224,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Tu asistente de bienestar animal.\nPregúntame sobre el cuidado, nutrición\ny salud de tu mascota.',
+              'Your pet wellness assistant.\nAsk me about your pet\'s care, nutrition,\nand health.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -284,7 +284,7 @@ class _InputBar extends StatelessWidget {
               maxLines: null,
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
-                hintText: 'Pregunta sobre tu mascota…',
+                hintText: 'Ask about your pet…',
                 hintStyle: const TextStyle(
                   color: Color(0xFF9CA3AF),
                   fontSize: 15,

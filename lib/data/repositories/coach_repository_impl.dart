@@ -21,15 +21,15 @@ class CoachRepositoryImpl implements CoachRepository {
     } on DioException catch (e) {
       final status = e.response?.statusCode ?? 0;
       if (status == 401) {
-        throw CoachFailure('UNAUTHORIZED', 'Sesión expirada.');
+        throw CoachFailure('UNAUTHORIZED', 'Session expired.');
       }
       if (status == 503) {
         throw CoachFailure(
-            'SERVICE_UNAVAILABLE', 'El coach no está disponible.');
+            'SERVICE_UNAVAILABLE', 'The coach is not available.');
       }
-      throw CoachFailure('NETWORK_ERROR', 'Error de conexión. Intenta de nuevo.');
+      throw CoachFailure('NETWORK_ERROR', 'Connection error. Please try again.');
     } catch (_) {
-      throw CoachFailure('UNKNOWN', 'Error inesperado.');
+      throw CoachFailure('UNKNOWN', 'Unexpected error.');
     }
   }
 }

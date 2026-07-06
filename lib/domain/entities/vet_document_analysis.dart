@@ -58,6 +58,32 @@ class AbnormalValue extends Equatable {
   List<Object?> get props => [label, value, referenceRange, interpretation];
 }
 
+class VetDocumentAnalysisHistoryItem extends Equatable {
+  const VetDocumentAnalysisHistoryItem({
+    required this.id,
+    required this.createdAt,
+    this.documentType,
+    required this.result,
+  });
+
+  final String id;
+  final DateTime createdAt;
+  final String? documentType;
+  final VetDocumentAnalysisResult result;
+
+  factory VetDocumentAnalysisHistoryItem.fromJson(Map<String, dynamic> json) {
+    return VetDocumentAnalysisHistoryItem(
+      id: json['id'] as String,
+      createdAt: DateTime.parse(json['createdAt'] as String).toLocal(),
+      documentType: json['documentType'] as String?,
+      result: VetDocumentAnalysisResult.fromJson(json['result'] as Map<String, dynamic>),
+    );
+  }
+
+  @override
+  List<Object?> get props => [id, createdAt, documentType, result];
+}
+
 class VetDocumentAnalysisResult extends Equatable {
   const VetDocumentAnalysisResult({
     required this.summary,

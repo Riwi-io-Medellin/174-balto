@@ -38,13 +38,13 @@ class CoachRemoteDataSource {
     }
 
     if (status == 400) {
-      throw CoachFailure('VALIDATION_FAILED', 'No se pudo enviar el mensaje.');
+      throw CoachFailure('VALIDATION_FAILED', 'Could not send the message.');
     }
     if (status == 503) {
       throw CoachFailure(
-          'SERVICE_UNAVAILABLE', 'El coach no está disponible ahora.');
+          'SERVICE_UNAVAILABLE', 'The coach is not available right now.');
     }
 
-    throw CoachFailure('CHAT_FAILED', 'Respuesta inesperada ($status).');
+    throw CoachFailure('CHAT_FAILED', 'Unexpected response ($status).');
   }
 }

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../domain/entities/pet_clinical_event.dart';
 
-/// Línea de tiempo de eventos clínicos (consulta, vacuna, cirugía, etc).
-/// Cada evento se muestra como una tarjeta con lo esencial y un botón
-/// para expandir todos los detalles.
+/// Timeline of clinical events (visit, vaccine, surgery, etc).
+/// Each event is shown as a card with the essentials and a button
+/// to expand all the details.
 class ClinicalTimeline extends StatelessWidget {
   const ClinicalTimeline({super.key, required this.events});
 
@@ -48,7 +48,7 @@ class ClinicalTimeline extends StatelessWidget {
           children: [
             Icon(Icons.timeline_rounded, size: 40, color: Color(0xFFB0B8C1)),
             SizedBox(height: 10),
-            Text('Aún no hay eventos registrados.', style: TextStyle(color: Color(0xFF6B7280), fontSize: 13)),
+            Text('No events recorded yet.', style: TextStyle(color: Color(0xFF6B7280), fontSize: 13)),
           ],
         ),
       );
@@ -164,16 +164,16 @@ class _TimelineEntryState extends State<_TimelineEntry> {
                   ],
                   if (_expanded) ...[
                     const Divider(height: 20, color: Color(0xFFE0E4EC)),
-                    _detailRow('Motivo', e.reason),
-                    _detailRow('Signos clínicos', e.clinicalSigns),
-                    _detailRow('Hallazgos', e.findings),
-                    _detailRow('Exámenes realizados', e.examsPerformed),
-                    _detailRow('Resultados', e.examResults),
-                    _detailRow('Procedimientos', e.procedures),
-                    _detailRow('Recomendaciones', e.recommendations),
-                    _detailRow('Observaciones', e.observations),
+                    _detailRow('Reason', e.reason),
+                    _detailRow('Clinical signs', e.clinicalSigns),
+                    _detailRow('Findings', e.findings),
+                    _detailRow('Exams performed', e.examsPerformed),
+                    _detailRow('Results', e.examResults),
+                    _detailRow('Procedures', e.procedures),
+                    _detailRow('Recommendations', e.recommendations),
+                    _detailRow('Observations', e.observations),
                     if (e.medications.isNotEmpty) ...[
-                      const Text('Medicamentos', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: _textMuted)),
+                      const Text('Medications', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: _textMuted)),
                       const SizedBox(height: 4),
                       for (final m in e.medications)
                         Padding(
@@ -186,7 +186,7 @@ class _TimelineEntryState extends State<_TimelineEntry> {
                     ],
                     if (e.nextControlDate != null)
                       _detailRow(
-                        'Próximo control',
+                        'Next check-up',
                         '${e.nextControlDate!.day}/${e.nextControlDate!.month}/${e.nextControlDate!.year}',
                       ),
                   ],
@@ -197,7 +197,7 @@ class _TimelineEntryState extends State<_TimelineEntry> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          _expanded ? 'Ver menos' : 'Ver detalles',
+                          _expanded ? 'See less' : 'See details',
                           style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _accent),
                         ),
                         Icon(_expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded, size: 16, color: _accent),

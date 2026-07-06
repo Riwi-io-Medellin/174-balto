@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection.dart';
@@ -15,9 +14,10 @@ import 'widgets/clinical_event_form_screen.dart';
 import 'widgets/clinical_timeline.dart';
 import 'widgets/clinical_tips_section.dart';
 
-/// Módulo de Historia Clínica dentro del perfil de la mascota.
-/// Flujo: subir documentos -> IA analiza -> formulario editable -> guardar
-/// -> timeline + tips + documento oficial.
+/// Clinical History module within the pet's profile.
+/// Flow: upload documents -> AI analyzes -> editable form -> save
+/// -> timeline + tips. The generated official document can be downloaded
+/// from the Health Document Analysis screen.
 class PetClinicalHistoryScreen extends StatefulWidget {
   const PetClinicalHistoryScreen({super.key, required this.pet});
 
@@ -37,7 +37,7 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
 
   bool _loading = true;
   bool _processing = false;
-  String _processingMessage = 'Analizando documento...';
+  String _processingMessage = 'Analyzing document...';
   PetClinicalRecord? _record;
   List<PetClinicalTip> _tips = [];
   Timer? _processingTimer;
@@ -68,7 +68,7 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
       });
     } catch (_) {
       if (!mounted) return;
-      BaltoToast.error(context, 'No se pudo cargar la historia clínica.');
+      BaltoToast.error(context, 'Could not load the clinical history.');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -76,9 +76,9 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
 
   void _startProcessingMessages() {
     const messages = [
-      'Analizando documento...',
-      'Extrayendo información...',
-      'Generando formulario...',
+      'Analyzing document...',
+      'Extracting information...',
+      'Generating form...',
     ];
     var i = 0;
     setState(() {
@@ -107,7 +107,7 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
       );
     } catch (_) {
       if (!mounted) return;
-      BaltoToast.error(context, 'No se pudo abrir el selector de archivos.');
+      BaltoToast.error(context, 'Could not open the file picker.');
       return;
     }
     if (result == null || result.files.isEmpty) return;
@@ -132,7 +132,7 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
       if (documentIds.isEmpty) {
         _stopProcessingMessages();
         if (!mounted) return;
-        BaltoToast.warning(context, 'No se pudo subir ningún archivo.');
+        BaltoToast.warning(context, 'Could not upload any file.');
         return;
       }
 
@@ -160,24 +160,12 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
     }
   }
 
-  Future<void> _downloadDocument() async {
-    final url = _record?.documentUrl;
-    if (url == null || url.isEmpty) return;
-    final uri = Uri.tryParse(url);
-    if (uri == null || !await canLaunchUrl(uri)) {
-      if (!mounted) return;
-      BaltoToast.error(context, 'No se pudo abrir el documento.');
-      return;
-    }
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _bg,
       appBar: AppBar(
-        title: const Text('Historia Clínica'),
+        title: const Text('Clinical History'),
         backgroundColor: Colors.white,
         foregroundColor: _textDark,
         elevation: 0,
@@ -194,17 +182,13 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
                     children: [
                       _uploadCard(),
                       const SizedBox(height: 24),
-                      _sectionTitle('Documento oficial'),
-                      const SizedBox(height: 10),
-                      _documentCard(),
-                      const SizedBox(height: 24),
                       if (_tips.isNotEmpty) ...[
-                        _sectionTitle('Tips generados por IA'),
+                        _sectionTitle('AI-generated tips'),
                         const SizedBox(height: 10),
                         ClinicalTipsSection(tips: _tips),
                         const SizedBox(height: 24),
                       ],
-                      _sectionTitle('Historial clínico'),
+                      _sectionTitle('Clinical history log'),
                       const SizedBox(height: 14),
                       ClinicalTimeline(events: _record?.events ?? []),
                     ],
@@ -248,11 +232,11 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Agregar documento médico',
+                    const Text('Add a medical document',
                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textDark)),
                     const SizedBox(height: 2),
                     Text(
-                      'PDF o imágenes. La IA extrae los datos automáticamente.',
+                      'PDF or images. AI extracts the data automatically.',
                       style: const TextStyle(fontSize: 12, color: _textMuted),
                     ),
                   ],
@@ -266,7 +250,7 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
             child: ElevatedButton.icon(
               onPressed: _processing ? null : _uploadDocuments,
               icon: const Icon(Icons.add_rounded),
-              label: const Text('Subir historia clínica', style: TextStyle(fontWeight: FontWeight.w700)),
+              label: const Text('Upload clinical history', style: TextStyle(fontWeight: FontWeight.w700)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _accent,
                 foregroundColor: Colors.white,
@@ -280,51 +264,6 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
       ),
     );
   }
-
-  Widget _documentCard() {
-    final hasDocument = _record?.documentUrl != null && _record!.documentUrl!.isNotEmpty;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE0E4EC)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(color: _accent.withValues(alpha: 0.10), shape: BoxShape.circle),
-            child: const Icon(Icons.picture_as_pdf_outlined, size: 20, color: _accent),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              hasDocument
-                  ? 'Documento generado ${_formatDate(_record!.documentGeneratedAt!)}'
-                  : 'Aún no se ha generado el documento.',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: hasDocument ? FontWeight.w600 : FontWeight.w500,
-                color: hasDocument ? _textDark : _textMuted,
-              ),
-            ),
-          ),
-          if (hasDocument)
-            TextButton.icon(
-              onPressed: _downloadDocument,
-              icon: const Icon(Icons.download_rounded, size: 16),
-              label: const Text('Descargar'),
-              style: TextButton.styleFrom(foregroundColor: _accent),
-            ),
-        ],
-      ),
-    );
-  }
-
-  String _formatDate(DateTime d) => 'el ${d.day}/${d.month}/${d.year}';
 
   Widget _processingOverlay() {
     return Container(

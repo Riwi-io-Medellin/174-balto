@@ -32,16 +32,16 @@ class PetClinicalTipCategory {
   static String label(String value) {
     switch (value) {
       case care:
-        return 'Cuidados';
+        return 'Care';
       case feeding:
-        return 'Alimentación';
+        return 'Feeding';
       case vaccination:
-        return 'Vacunas';
+        return 'Vaccination';
       case alert:
-        return 'Alerta';
+        return 'Alert';
       case general:
       default:
-        return 'Recomendación';
+        return 'Recommendation';
     }
   }
 }

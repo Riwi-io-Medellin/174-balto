@@ -18,6 +18,7 @@ import '../../data/datasources/walker_availability_remote_datasource.dart';
 import '../../data/datasources/walker_profile_remote_datasource.dart';
 import '../../data/datasources/walker_remote_datasource.dart';
 import '../../data/datasources/walking_history_remote_datasource.dart';
+import '../services/push_notification_service.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../data/repositories/business_repository_impl.dart';
 import '../../data/repositories/coach_repository_impl.dart';
@@ -122,6 +123,9 @@ void setupDependencies() {
   sl.registerLazySingleton<NotificationRepository>(
     () => NotificationRepositoryImpl(sl<NotificationRemoteDataSource>()),
   );
+  sl.registerLazySingleton<PushNotificationService>(
+    () => PushNotificationService(sl<NotificationRepository>()),
+  );
 
   // Upload
   sl.registerLazySingleton<UploadRemoteDataSource>(
@@ -200,7 +204,7 @@ void setupDependencies() {
   );
 
   // Cubits
-  sl.registerFactory<AuthCubit>(() => AuthCubit(sl()));
+  sl.registerFactory<AuthCubit>(() => AuthCubit(sl(), sl<PushNotificationService>()));
   sl.registerFactory<ProfileCubit>(
     () => ProfileCubit(
       userRepository: sl<UserRepository>(),

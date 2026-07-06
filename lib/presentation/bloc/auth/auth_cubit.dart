@@ -1,12 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/services/push_notification_service.dart';
 import '../../../domain/repositories/auth_repository.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit(this._repository) : super(const AuthInitial());
+  AuthCubit(this._repository, this._pushNotificationService) : super(const AuthInitial());
 
   final AuthRepository _repository;
+  final PushNotificationService _pushNotificationService;
 
   Future<void> register({
     required String firstName,
@@ -29,6 +31,7 @@ class AuthCubit extends Cubit<AuthState> {
         phone: phone,
       );
       emit(AuthAuthenticated(tokens));
+      await _pushNotificationService.registerCurrentToken();
     } on AuthFailure catch (e) {
       emit(AuthError(e.code, e.message));
     }
@@ -47,12 +50,14 @@ class AuthCubit extends Cubit<AuthState> {
         rememberMe: rememberMe,
       );
       emit(AuthAuthenticated(tokens));
+      await _pushNotificationService.registerCurrentToken();
     } on AuthFailure catch (e) {
       emit(AuthError(e.code, e.message));
     }
   }
 
   Future<void> logout() async {
+    await _pushNotificationService.unregisterCurrentToken();
     await _repository.logout();
     emit(const AuthInitial());
   }

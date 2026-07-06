@@ -5,15 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/utils/vet_document_validators.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/pet.dart';
+import '../../../domain/entities/pet_clinical_record.dart';
 import '../../../domain/entities/pet_health_context.dart';
+import '../../../domain/repositories/pet_clinical_repository.dart';
 import '../../bloc/vet_document_analysis/vet_document_analysis_cubit.dart';
 import '../../bloc/vet_document_analysis/vet_document_analysis_state.dart';
+import '../pets/clinical_history/pet_clinical_history_screen.dart';
 import 'widgets/analysis_result_view.dart';
 
 const _requiredDisclaimer =
@@ -71,6 +75,8 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
   String? _selectedSex;
   String? _selectedDocumentType;
 
+  PetClinicalRecord? _clinicalRecord;
+
   @override
   void initState() {
     super.initState();
@@ -85,7 +91,54 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
       if (pet.species != null && _speciesList.contains(pet.species)) {
         _selectedSpecies = pet.species;
       }
+      _selectedSex = _normalizeSex(pet.sex);
+      _loadClinicalRecord();
     }
+  }
+
+  Future<void> _loadClinicalRecord() async {
+    final pet = widget.pet;
+    if (pet == null) return;
+    try {
+      final record = await sl<PetClinicalRepository>().getRecord(pet.id);
+      if (!mounted) return;
+      setState(() => _clinicalRecord = record);
+    } catch (_) {
+      // No clinical record yet, or the fetch failed — the card just won't show a link.
+    }
+  }
+
+  Future<void> _downloadDocument() async {
+    final url = _clinicalRecord?.documentUrl;
+    if (url == null || url.isEmpty) return;
+    final uri = Uri.tryParse(url);
+    if (uri == null || !await canLaunchUrl(uri)) {
+      if (!mounted) return;
+      BaltoToast.error(context, 'Could not open the document.');
+      return;
+    }
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  Future<void> _openClinicalHistory() async {
+    final pet = widget.pet;
+    if (pet == null) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => PetClinicalHistoryScreen(pet: pet)),
+    );
+    if (!mounted) return;
+    _loadClinicalRecord();
+  }
+
+  // pet.sex is free text (set via the Clinical History form), so it may be
+  // "Male", "male", "M", "Macho", etc. rather than one of our fixed options.
+  String? _normalizeSex(String? sex) {
+    if (sex == null) return null;
+    if (_sexOptions.contains(sex)) return sex;
+    final normalized = sex.trim().toLowerCase();
+    if (normalized.startsWith('m')) return 'Male';
+    if (normalized.startsWith('f') || normalized.startsWith('h')) return 'Female';
+    return null;
   }
 
   @override
@@ -227,6 +280,10 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnalysisResultView(result: state.result),
+          if (widget.pet != null) ...[
+            const SizedBox(height: 24),
+            _clinicalDocumentCard(),
+          ],
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
@@ -262,6 +319,10 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _disclaimerNotice(),
+            if (widget.pet != null) ...[
+              const SizedBox(height: 16),
+              _clinicalDocumentCard(),
+            ],
             const SizedBox(height: 20),
             _fieldLabel('Documents'),
             const SizedBox(height: 8),
@@ -429,6 +490,56 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
             icon: const Icon(Icons.close, size: 18),
             onPressed: () => context.read<VetDocumentAnalysisCubit>().removeFile(index),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _clinicalDocumentCard() {
+    final hasDocument = _clinicalRecord?.documentUrl != null &&
+        _clinicalRecord!.documentUrl!.isNotEmpty;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE0E4EC)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(color: _primary.withValues(alpha: 0.10), shape: BoxShape.circle),
+            child: Icon(
+              hasDocument ? Icons.picture_as_pdf_outlined : Icons.folder_shared_outlined,
+              size: 20,
+              color: _primary,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              hasDocument
+                  ? 'Official clinical history document available.'
+                  : 'No official clinical history document yet.',
+              style: const TextStyle(fontSize: 13, color: _textDark),
+            ),
+          ),
+          if (hasDocument)
+            TextButton.icon(
+              onPressed: _downloadDocument,
+              icon: const Icon(Icons.download_rounded, size: 16),
+              label: const Text('Download'),
+              style: TextButton.styleFrom(foregroundColor: _primary),
+            )
+          else
+            TextButton(
+              onPressed: _openClinicalHistory,
+              style: TextButton.styleFrom(foregroundColor: _primary),
+              child: const Text('Open history'),
+            ),
         ],
       ),
     );

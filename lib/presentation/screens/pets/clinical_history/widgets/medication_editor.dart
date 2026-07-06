@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../../domain/entities/pet_clinical_draft.dart';
 
-/// Lista editable de medicamentos: nombre, dosis, frecuencia, duración.
-/// Permite agregar y eliminar filas dinámicamente.
+/// Editable medication list: name, dose, frequency, duration.
+/// Allows adding and removing rows dynamically.
 class MedicationEditor extends StatefulWidget {
   const MedicationEditor({
     super.key,
@@ -59,7 +59,7 @@ class _MedicationEditorState extends State<MedicationEditor> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Text(
-              'Sin medicamentos agregados.',
+              'No medications added.',
               style: const TextStyle(fontSize: 13, color: _textMuted),
             ),
           ),
@@ -79,7 +79,7 @@ class _MedicationEditorState extends State<MedicationEditor> {
                   children: [
                     Expanded(
                       child: Text(
-                        'Medicamento ${i + 1}',
+                        'Medication ${i + 1}',
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
@@ -105,7 +105,7 @@ class _MedicationEditorState extends State<MedicationEditor> {
                 TextFormField(
                   initialValue: _items[i].name,
                   style: const TextStyle(fontSize: 13, color: _textDark),
-                  decoration: _decoration('Nombre del medicamento'),
+                  decoration: _decoration('Medication name'),
                   onChanged: (v) {
                     _items[i].name = v;
                     widget.onChanged(_items);
@@ -118,7 +118,7 @@ class _MedicationEditorState extends State<MedicationEditor> {
                       child: TextFormField(
                         initialValue: _items[i].dose,
                         style: const TextStyle(fontSize: 13, color: _textDark),
-                        decoration: _decoration('Dosis'),
+                        decoration: _decoration('Dose'),
                         onChanged: (v) {
                           _items[i].dose = v.isEmpty ? null : v;
                           widget.onChanged(_items);
@@ -130,7 +130,7 @@ class _MedicationEditorState extends State<MedicationEditor> {
                       child: TextFormField(
                         initialValue: _items[i].frequency,
                         style: const TextStyle(fontSize: 13, color: _textDark),
-                        decoration: _decoration('Frecuencia'),
+                        decoration: _decoration('Frequency'),
                         onChanged: (v) {
                           _items[i].frequency = v.isEmpty ? null : v;
                           widget.onChanged(_items);
@@ -143,7 +143,7 @@ class _MedicationEditorState extends State<MedicationEditor> {
                 TextFormField(
                   initialValue: _items[i].duration,
                   style: const TextStyle(fontSize: 13, color: _textDark),
-                  decoration: _decoration('Duración (ej. 7 días)'),
+                  decoration: _decoration('Duration (e.g. 7 days)'),
                   onChanged: (v) {
                     _items[i].duration = v.isEmpty ? null : v;
                     widget.onChanged(_items);
@@ -156,7 +156,7 @@ class _MedicationEditorState extends State<MedicationEditor> {
         OutlinedButton.icon(
           onPressed: _add,
           icon: Icon(Icons.add_rounded, size: 18, color: widget.accentColor),
-          label: Text('Agregar medicamento', style: TextStyle(color: widget.accentColor)),
+          label: Text('Add medication', style: TextStyle(color: widget.accentColor)),
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: widget.accentColor),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

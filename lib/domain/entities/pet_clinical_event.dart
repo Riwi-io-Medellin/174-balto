@@ -1,6 +1,6 @@
 import 'pet_clinical_medication.dart';
 
-/// Tipos de evento soportados por el backend (PetClinicalEventType).
+/// Event types supported by the backend (PetClinicalEventType).
 class PetClinicalEventType {
   PetClinicalEventType._();
 
@@ -27,27 +27,27 @@ class PetClinicalEventType {
   static String label(String value) {
     switch (value) {
       case consultation:
-        return 'Consulta';
+        return 'Consultation';
       case vaccine:
-        return 'Vacuna';
+        return 'Vaccine';
       case deworming:
-        return 'Desparasitación';
+        return 'Deworming';
       case surgery:
-        return 'Cirugía';
+        return 'Surgery';
       case lab:
-        return 'Laboratorio';
+        return 'Lab';
       case hospitalization:
-        return 'Hospitalización';
+        return 'Hospitalization';
       case sterilization:
-        return 'Esterilización';
+        return 'Sterilization';
       case other:
       default:
-        return 'Otro';
+        return 'Other';
     }
   }
 }
 
-/// Evento clínico ya persistido (viene del GET de historia clínica).
+/// Clinical event already persisted (comes from the clinical history GET).
 class PetClinicalEvent {
   const PetClinicalEvent({
     required this.id,

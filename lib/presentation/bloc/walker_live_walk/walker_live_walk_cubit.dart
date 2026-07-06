@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../core/services/active_session_tracker.dart';
 import '../../../core/services/walker_live_walk_service.dart';
 import '../../../data/datasources/upload_remote_datasource.dart';
 import '../../../domain/entities/walk_booking.dart';
@@ -67,6 +68,7 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
       await _liveWalkService.start();
 
       emit(WalkerLiveWalkActive(sessionId: _sessionId));
+      if (_sessionId != null) ActiveSessionTracker.enter(_sessionId!);
 
       _positionSub = _liveWalkService.positionStream.listen(_onPosition);
 
@@ -238,6 +240,7 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
     _elapsedTimer?.cancel();
     _positionSub?.cancel();
     _liveWalkService.dispose();
+    if (_sessionId != null) ActiveSessionTracker.leave(_sessionId!);
     return super.close();
   }
 }

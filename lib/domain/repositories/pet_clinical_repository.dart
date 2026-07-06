@@ -3,7 +3,7 @@ import '../entities/pet_clinical_event.dart';
 import '../entities/pet_clinical_record.dart';
 
 abstract class PetClinicalRepository {
-  /// 1. Registra metadata de un archivo ya subido a /api/upload (fuente para IA).
+  /// 1. Registers metadata for a file already uploaded to /api/upload (AI source).
   Future<String> registerSourceDocument({
     required String petId,
     required String fileUrl,
@@ -11,22 +11,22 @@ abstract class PetClinicalRepository {
     required String fileType,
   });
 
-  /// 2. Corre OCR + extracción IA sobre los documentos registrados.
+  /// 2. Runs OCR + AI extraction on the registered documents.
   Future<ClinicalExtractionDraft> runExtraction({
     required String petId,
     required List<String> documentIds,
   });
 
-  /// 3. Confirma el formulario revisado -> guarda evento + regenera documento + tips.
+  /// 3. Confirms the reviewed form -> saves the event + regenerates the document + tips.
   Future<PetClinicalEvent> confirmEvent({
     required String petId,
     required ClinicalExtractionDraft draft,
   });
 
-  /// 4. Historia clínica estructurada completa.
+  /// 4. Full structured clinical history.
   Future<PetClinicalRecord> getRecord(String petId);
 
-  /// 5. Tips generados por IA.
+  /// 5. AI-generated tips.
   Future<List<PetClinicalTip>> getTips(String petId);
 }
 

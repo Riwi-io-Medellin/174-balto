@@ -10,8 +10,8 @@ import '../../../../../domain/entities/pet_clinical_event.dart';
 import '../../../../../domain/repositories/pet_clinical_repository.dart';
 import 'medication_editor.dart';
 
-/// Formulario completo y editable de la historia clínica.
-/// El usuario siempre tiene la última palabra: ningún campo está bloqueado.
+/// Full, editable clinical history form.
+/// The user always has the final say: no field is locked.
 class ClinicalEventFormScreen extends StatefulWidget {
   const ClinicalEventFormScreen({
     super.key,
@@ -36,7 +36,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
   late ClinicalExtractionDraft _draft;
   bool _saving = false;
 
-  // Perfil mascota
+  // Pet profile
   late final _sexCtrl = TextEditingController(text: _draft.petProfile.sex ?? '');
   late final _colorCtrl = TextEditingController(text: _draft.petProfile.color ?? '');
   late final _idCtrl = TextEditingController(text: _draft.petProfile.identificationNumber ?? '');
@@ -44,19 +44,19 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
   late final _profileWeightCtrl =
       TextEditingController(text: _draft.petProfile.weight?.toString() ?? '');
 
-  // Antecedentes
+  // History
   late final _allergiesCtrl = TextEditingController(text: _draft.clinicalRecord.allergies ?? '');
   late final _chronicCtrl =
       TextEditingController(text: _draft.clinicalRecord.chronicConditions ?? '');
   late final _dietCtrl =
       TextEditingController(text: _draft.clinicalRecord.dietaryRestrictions ?? '');
 
-  // Consulta / evento
+  // Visit / event
   late final _clinicCtrl = TextEditingController(text: _draft.event.clinicName ?? '');
   late final _vetCtrl = TextEditingController(text: _draft.event.veterinarianName ?? '');
   late final _reasonCtrl = TextEditingController(text: _draft.event.reason ?? '');
 
-  // Exploración clínica
+  // Clinical exam
   late final _signsCtrl = TextEditingController(text: _draft.event.clinicalSigns ?? '');
   late final _tempCtrl = TextEditingController(text: _draft.event.temperature?.toString() ?? '');
   late final _hrCtrl = TextEditingController(text: _draft.event.heartRate?.toString() ?? '');
@@ -67,12 +67,12 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
       TextEditingController(text: _draft.event.bodyCondition ?? '');
   late final _findingsCtrl = TextEditingController(text: _draft.event.findings ?? '');
 
-  // Diagnóstico y exámenes
+  // Diagnosis and exams
   late final _diagnosisCtrl = TextEditingController(text: _draft.event.diagnosis ?? '');
   late final _examsCtrl = TextEditingController(text: _draft.event.examsPerformed ?? '');
   late final _examResultsCtrl = TextEditingController(text: _draft.event.examResults ?? '');
 
-  // Tratamiento y seguimiento
+  // Treatment and follow-up
   late final _proceduresCtrl = TextEditingController(text: _draft.event.procedures ?? '');
   late final _recommendationsCtrl =
       TextEditingController(text: _draft.event.recommendations ?? '');
@@ -158,7 +158,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
     try {
       await sl<PetClinicalRepository>().confirmEvent(petId: widget.pet.id, draft: _draft);
       if (!mounted) return;
-      BaltoToast.success(context, 'Historia clínica guardada.');
+      BaltoToast.success(context, 'Clinical history saved.');
       Navigator.of(context).pop(true);
     } on PetClinicalFailure catch (e) {
       if (!mounted) return;
@@ -175,14 +175,14 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('¿Descartar cambios?'),
-        content: const Text('La información revisada no se guardará.'),
+        title: const Text('Discard changes?'),
+        content: const Text('The reviewed information will not be saved.'),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Seguir editando')),
+          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Keep editing')),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: TextButton.styleFrom(foregroundColor: const Color(0xFFD05A24)),
-            child: const Text('Descartar'),
+            child: const Text('Discard'),
           ),
         ],
       ),
@@ -276,7 +276,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
     return Scaffold(
       backgroundColor: _bg,
       appBar: AppBar(
-        title: const Text('Revisar historia clínica'),
+        title: const Text('Review clinical history'),
         backgroundColor: Colors.white,
         foregroundColor: _textDark,
         elevation: 0,
@@ -298,7 +298,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Revisa y edita todo antes de guardar. Ningún campo está bloqueado.',
+                      'Review and edit everything before saving. No field is locked.',
                       style: TextStyle(fontSize: 12, color: _accent, fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -310,87 +310,87 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 children: [
                   _section(
-                    title: 'Datos de la mascota',
+                    title: 'Pet details',
                     icon: Icons.pets_rounded,
                     initiallyExpanded: true,
                     children: [
-                      _field(_sexCtrl, 'Sexo (macho/hembra)'),
+                      _field(_sexCtrl, 'Sex (male/female)'),
                       _field(_colorCtrl, 'Color'),
-                      _field(_idCtrl, 'Número de identificación'),
+                      _field(_idCtrl, 'Identification number'),
                       _field(_microchipCtrl, 'Microchip'),
-                      _field(_profileWeightCtrl, 'Peso (kg)',
+                      _field(_profileWeightCtrl, 'Weight (kg)',
                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
                           formatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))]),
                     ],
                   ),
                   _section(
-                    title: 'Antecedentes',
+                    title: 'Medical history',
                     icon: Icons.history_edu_rounded,
                     children: [
-                      _field(_allergiesCtrl, 'Alergias', maxLines: 2),
-                      _field(_chronicCtrl, 'Enfermedades crónicas', maxLines: 2),
-                      _field(_dietCtrl, 'Restricciones alimenticias', maxLines: 2),
+                      _field(_allergiesCtrl, 'Allergies', maxLines: 2),
+                      _field(_chronicCtrl, 'Chronic conditions', maxLines: 2),
+                      _field(_dietCtrl, 'Dietary restrictions', maxLines: 2),
                     ],
                   ),
                   _section(
-                    title: 'Consulta',
+                    title: 'Visit',
                     icon: Icons.event_note_rounded,
                     initiallyExpanded: true,
                     children: [
                       _eventTypeDropdown(),
                       const SizedBox(height: 12),
                       _dateField(
-                        label: 'Fecha de la consulta',
+                        label: 'Visit date',
                         value: _draft.event.eventDate,
                         onTap: _pickEventDate,
                       ),
-                      _field(_clinicCtrl, 'Clínica', icon: Icons.local_hospital_outlined),
-                      _field(_vetCtrl, 'Veterinario', icon: Icons.badge_outlined),
-                      _field(_reasonCtrl, 'Motivo de la consulta', maxLines: 2),
+                      _field(_clinicCtrl, 'Clinic', icon: Icons.local_hospital_outlined),
+                      _field(_vetCtrl, 'Veterinarian', icon: Icons.badge_outlined),
+                      _field(_reasonCtrl, 'Reason for the visit', maxLines: 2),
                     ],
                   ),
                   _section(
-                    title: 'Exploración clínica',
+                    title: 'Clinical exam',
                     icon: Icons.monitor_heart_outlined,
                     children: [
-                      _field(_signsCtrl, 'Signos clínicos', maxLines: 2),
+                      _field(_signsCtrl, 'Clinical signs', maxLines: 2),
                       Row(children: [
                         Expanded(
-                            child: _field(_tempCtrl, 'Temperatura (°C)',
+                            child: _field(_tempCtrl, 'Temperature (°C)',
                                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                 formatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,1}'))])),
                         const SizedBox(width: 10),
                         Expanded(
-                            child: _field(_hrCtrl, 'Frec. cardíaca',
+                            child: _field(_hrCtrl, 'Heart rate',
                                 keyboardType: TextInputType.number,
                                 formatters: [FilteringTextInputFormatter.digitsOnly])),
                       ]),
                       Row(children: [
                         Expanded(
-                            child: _field(_rrCtrl, 'Frec. respiratoria',
+                            child: _field(_rrCtrl, 'Respiratory rate',
                                 keyboardType: TextInputType.number,
                                 formatters: [FilteringTextInputFormatter.digitsOnly])),
                         const SizedBox(width: 10),
                         Expanded(
-                            child: _field(_eventWeightCtrl, 'Peso actual (kg)',
+                            child: _field(_eventWeightCtrl, 'Current weight (kg)',
                                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                 formatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))])),
                       ]),
-                      _field(_bodyConditionCtrl, 'Estado corporal'),
-                      _field(_findingsCtrl, 'Hallazgos relevantes', maxLines: 2),
+                      _field(_bodyConditionCtrl, 'Body condition'),
+                      _field(_findingsCtrl, 'Relevant findings', maxLines: 2),
                     ],
                   ),
                   _section(
-                    title: 'Diagnóstico y exámenes',
+                    title: 'Diagnosis and exams',
                     icon: Icons.biotech_outlined,
                     children: [
-                      _field(_diagnosisCtrl, 'Diagnóstico', maxLines: 2),
-                      _field(_examsCtrl, 'Exámenes realizados', maxLines: 2),
-                      _field(_examResultsCtrl, 'Resultados', maxLines: 2),
+                      _field(_diagnosisCtrl, 'Diagnosis', maxLines: 2),
+                      _field(_examsCtrl, 'Exams performed', maxLines: 2),
+                      _field(_examResultsCtrl, 'Results', maxLines: 2),
                     ],
                   ),
                   _section(
-                    title: 'Tratamiento',
+                    title: 'Treatment',
                     icon: Icons.medication_outlined,
                     children: [
                       MedicationEditor(
@@ -399,17 +399,17 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                         onChanged: (meds) => _draft.event.medications = meds,
                       ),
                       const SizedBox(height: 4),
-                      _field(_proceduresCtrl, 'Procedimientos', maxLines: 2),
+                      _field(_proceduresCtrl, 'Procedures', maxLines: 2),
                     ],
                   ),
                   _section(
-                    title: 'Recomendaciones y seguimiento',
+                    title: 'Recommendations and follow-up',
                     icon: Icons.checklist_rtl_rounded,
                     children: [
-                      _field(_recommendationsCtrl, 'Recomendaciones', maxLines: 2),
-                      _field(_observationsCtrl, 'Observaciones', maxLines: 2),
+                      _field(_recommendationsCtrl, 'Recommendations', maxLines: 2),
+                      _field(_observationsCtrl, 'Observations', maxLines: 2),
                       _dateField(
-                        label: 'Próximo control',
+                        label: 'Next check-up',
                         value: _draft.event.nextControlDate,
                         onTap: _pickNextControlDate,
                         icon: Icons.event_available_outlined,
@@ -436,7 +436,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
-                      child: const Text('Cancelar'),
+                      child: const Text('Cancel'),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -455,7 +455,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                           ? const SizedBox(
                               width: 20, height: 20,
                               child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Colors.white)))
-                          : const Text('Guardar historia clínica', style: TextStyle(fontWeight: FontWeight.w700)),
+                          : const Text('Save clinical history', style: TextStyle(fontWeight: FontWeight.w700)),
                     ),
                   ),
                 ],
@@ -471,7 +471,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
     return DropdownButtonFormField<String>(
       value: _draft.event.eventType,
       isExpanded: true,
-      decoration: _decoration('Tipo de evento', icon: Icons.category_outlined),
+      decoration: _decoration('Event type', icon: Icons.category_outlined),
       style: const TextStyle(fontSize: 14, color: _textDark),
       dropdownColor: Colors.white,
       borderRadius: BorderRadius.circular(12),

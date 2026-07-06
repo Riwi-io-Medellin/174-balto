@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../../../core/services/active_session_tracker.dart';
 import '../../../core/services/walk_tracking_service.dart';
 import '../../../core/storage/token_storage.dart';
 import '../../../domain/entities/walk_booking.dart';
@@ -109,6 +110,7 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
       petName: pet.name,
       sessionId: sessionId,
     ));
+    ActiveSessionTracker.enter(sessionId);
 
     final token = await _tokenStorage.readAccessToken() ?? '';
     await _trackingService.start(sessionId, token);
@@ -241,6 +243,7 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
     final sid = _resolvedSessionId ?? booking.walkSessionId;
     if (sid != null) {
       await _trackingService.stop(sid);
+      ActiveSessionTracker.leave(sid);
     }
     _trackingService.dispose();
     return super.close();

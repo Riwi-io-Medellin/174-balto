@@ -1,8 +1,8 @@
 import 'pet_clinical_event.dart';
 import 'pet_clinical_medication.dart';
 
-/// Datos de perfil de la mascota que vienen dentro del draft de IA
-/// y que también se pueden editar manualmente (sex/color/microchip/etc).
+/// Pet profile data that comes inside the AI draft
+/// and can also be edited manually (sex/color/microchip/etc).
 class PetProfileDraft {
   PetProfileDraft({
     this.sex,
@@ -19,7 +19,7 @@ class PetProfileDraft {
   double? weight;
 }
 
-/// Antecedentes acumulativos de la mascota (alergias, crónicas, dieta).
+/// Cumulative pet history (allergies, chronic conditions, diet).
 class ClinicalRecordDraft {
   ClinicalRecordDraft({
     this.allergies,
@@ -32,7 +32,7 @@ class ClinicalRecordDraft {
   String? dietaryRestrictions;
 }
 
-/// Medicamento editable dentro del evento (lista dinámica).
+/// Editable medication within the event (dynamic list).
 class ClinicalMedicationDraft {
   ClinicalMedicationDraft({
     required this.name,
@@ -49,7 +49,7 @@ class ClinicalMedicationDraft {
   factory ClinicalMedicationDraft.empty() => ClinicalMedicationDraft(name: '');
 }
 
-/// El nuevo evento clínico que se va a registrar (consulta, vacuna, cirugía, etc).
+/// The new clinical event to be registered (visit, vaccine, surgery, etc).
 class ClinicalEventDraft {
   ClinicalEventDraft({
     this.eventType = PetClinicalEventType.consultation,
@@ -99,8 +99,8 @@ class ClinicalEventDraft {
       ClinicalEventDraft(eventDate: DateTime.now());
 }
 
-/// El formulario completo: lo que devuelve la extracción de IA y lo que
-/// el usuario termina de revisar/editar antes de confirmar.
+/// The complete form: what the AI extraction returns and what
+/// the user finishes reviewing/editing before confirming.
 class ClinicalExtractionDraft {
   ClinicalExtractionDraft({
     required this.petProfile,

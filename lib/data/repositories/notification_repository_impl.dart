@@ -73,4 +73,32 @@ class NotificationRepositoryImpl implements NotificationRepository {
       );
     }
   }
+
+  @override
+  Future<void> registerDeviceToken({required String token, required String platform}) async {
+    try {
+      await _remote.registerDeviceToken(token: token, platform: platform);
+    } on NotificationFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw NotificationFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
+
+  @override
+  Future<void> removeDeviceToken(String token) async {
+    try {
+      await _remote.removeDeviceToken(token);
+    } on NotificationFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw NotificationFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
 }

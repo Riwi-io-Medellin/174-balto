@@ -6,10 +6,14 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/pet.dart';
+import '../../../domain/entities/vet_document_analysis.dart';
 import '../../../domain/repositories/pet_repository.dart';
+import '../../../domain/repositories/vet_document_analysis_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
 import '../vet_document_analysis/vet_document_analysis_screen.dart';
+import '../vet_document_analysis/widgets/analysis_result_view.dart';
+import '../vet_document_analysis/widgets/urgency_badge.dart';
 import 'clinical_history/pet_clinical_history_screen.dart';
 import 'edit_pet_screen.dart';
 
@@ -33,11 +37,53 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
   String get petId => widget.petId;
   bool _lostActionLoading = false;
 
+  late Future<List<VetDocumentAnalysisHistoryItem>> _historyFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _historyFuture = _loadHistory();
+  }
+
+  Future<List<VetDocumentAnalysisHistoryItem>> _loadHistory() =>
+      sl<VetDocumentAnalysisRepository>().getHistory(widget.petId);
+
+  Future<void> _openAnalysisScreen(Pet pet) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => VetDocumentAnalysisScreen(pet: pet)),
+    );
+    if (!mounted) return;
+    setState(() => _historyFuture = _loadHistory());
+    await context.read<ProfileCubit>().load();
+  }
+
+  void _openHistoryItem(VetDocumentAnalysisHistoryItem item) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          appBar: AppBar(
+            title: Text('Analysis · ${_formatDate(item.createdAt)}'),
+            backgroundColor: Colors.white,
+            foregroundColor: _textDark,
+            elevation: 0,
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: AnalysisResultView(result: item.result),
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
   Pet? _findPet(BuildContext context) {
     final state = context.read<ProfileCubit>().state;
     if (state is ProfileLoaded) {
       try {
-        return state.pets.firstWhere((p) => p.id == petId);
+        return state.pets.firstWhere((p) => p.id == widget.petId);
       } catch (_) {
         return null;
       }
@@ -50,7 +96,9 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Pet'),
-        content: Text('Remove ${pet.name} from your pets? This cannot be undone.'),
+        content: Text(
+          'Remove ${pet.name} from your pets? This cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -199,10 +247,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
   Widget build(BuildContext context) {
     final pet = _findPet(context);
     if (pet == null) {
-      return const Scaffold(
-        backgroundColor: _bg,
-        body: SizedBox.shrink(),
-      );
+      return const Scaffold(backgroundColor: _bg, body: SizedBox.shrink());
     }
 
     final age = pet.birthDate != null
@@ -236,115 +281,203 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
           ),
         ],
       ),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.06),
+                  blurRadius: 24,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                _buildPhoto(pet),
+                const SizedBox(height: 16),
+                Text(
+                  pet.name,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: _textDark,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _infoRow(Icons.pets, 'Species', pet.species ?? 'Not specified'),
+                const SizedBox(height: 12),
+                _infoRow(
+                  Icons.style_outlined,
+                  'Breed',
+                  pet.breed ?? 'Not specified',
+                ),
+                const SizedBox(height: 12),
+                _infoRow(Icons.cake_outlined, 'Age', age),
+                if (pet.weight != null) ...[
+                  const SizedBox(height: 12),
+                  _infoRow(
+                    Icons.monitor_weight_outlined,
+                    'Weight',
+                    '${pet.weight!.toStringAsFixed(1)} kg',
+                  ),
+                ],
+                if (pet.description != null) ...[
+                  const SizedBox(height: 16),
+                  const Divider(color: Color(0xFFE0E4F0)),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      pet.description!,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: _textMuted,
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: OutlinedButton.icon(
+              onPressed: () => _openAnalysisScreen(pet),
+              icon: const Icon(Icons.medical_information_outlined),
+              label: const Text('Health Document Analysis'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.aiCoach,
+                side: const BorderSide(color: AppColors.aiCoach),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          _buildHistorySection(),
+          const SizedBox(height: 16),
+          _clinicalHistoryCard(context, pet),
+          const SizedBox(height: 16),
+          if (pet.isLost) ...[
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              margin: const EdgeInsets.only(bottom: 10),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
-                    blurRadius: 24,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+                color: _orange.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Column(
+              child: Row(
                 children: [
-                  _buildPhoto(pet),
-                  const SizedBox(height: 16),
-                  Text(
-                    pet.name,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: _textDark,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  _infoRow(Icons.pets, 'Species', pet.species ?? 'Not specified'),
-                  const SizedBox(height: 12),
-                  _infoRow(Icons.style_outlined, 'Breed', pet.breed ?? 'Not specified'),
-                  const SizedBox(height: 12),
-                  _infoRow(Icons.cake_outlined, 'Age', age),
-                  if (pet.weight != null) ...[
-                    const SizedBox(height: 12),
-                    _infoRow(Icons.monitor_weight_outlined, 'Weight', '${pet.weight!.toStringAsFixed(1)} kg'),
-                  ],
-                  if (pet.description != null) ...[
-                    const SizedBox(height: 16),
-                    const Divider(color: Color(0xFFE0E4F0)),
-                    const SizedBox(height: 12),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        pet.description!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: _textMuted,
-                          height: 1.5,
-                        ),
+                  const Icon(Icons.warning_amber_rounded, color: _orange, size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${pet.name} is currently marked as lost.',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: _orange,
                       ),
                     ),
-                  ],
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: OutlinedButton.icon(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => VetDocumentAnalysisScreen(pet: pet),
-                  ),
-                ),
-                icon: const Icon(Icons.medical_information_outlined),
-                label: const Text('Health Document Analysis'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.aiCoach,
-                  side: const BorderSide(color: AppColors.aiCoach),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
+          ],
+          _lostStatusButton(pet),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistorySection() {
+    return FutureBuilder<List<VetDocumentAnalysisHistoryItem>>(
+      future: _historyFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return const SizedBox.shrink();
+        }
+        final history = snapshot.data ?? const [];
+        if (history.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Recent Health Analyses',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: _textDark,
               ),
             ),
-            const SizedBox(height: 16),
-            _clinicalHistoryCard(context, pet),
-            const SizedBox(height: 16),
-            if (pet.isLost) ...[
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                margin: const EdgeInsets.only(bottom: 10),
-                decoration: BoxDecoration(
-                  color: _orange.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.warning_amber_rounded, color: _orange, size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        '${pet.name} is currently marked as lost.',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: _orange,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+            const SizedBox(height: 12),
+            ...history.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _historyTile(item),
               ),
-            ],
-            _lostStatusButton(pet),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _historyTile(VetDocumentAnalysisHistoryItem item) {
+    return InkWell(
+      onTap: () => _openHistoryItem(item),
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _formatDate(item.createdAt),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: _textMuted,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    item.result.summary,
+                    style: const TextStyle(fontSize: 14, color: _textDark),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            UrgencyBadge(urgencyLevel: item.result.urgencyLevel),
           ],
         ),
       ),
@@ -387,12 +520,12 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Historia Clínica',
+                    'Clinical History Log',
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textDark),
                   ),
                   SizedBox(height: 2),
                   Text(
-                    'Documentos, eventos, tips y documento oficial',
+                    'Upload documents, edit medical events, and view the visit timeline',
                     style: TextStyle(fontSize: 12, color: _textMuted),
                   ),
                 ],
@@ -451,10 +584,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
       children: [
         Icon(icon, size: 18, color: _primary),
         const SizedBox(width: 10),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 14, color: _textMuted),
-        ),
+        Text(label, style: const TextStyle(fontSize: 14, color: _textMuted)),
         const Spacer(),
         Text(
           value,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../domain/entities/pet.dart';
+import '../../../../domain/entities/vet_document_analysis.dart';
 
 class PetHeroCard extends StatefulWidget {
   const PetHeroCard({super.key, required this.pets, required this.onTap});
@@ -78,7 +79,8 @@ class _PetCard extends StatelessWidget {
   String get _subtitle {
     if (pet == null) return 'Tap to get started';
     final parts = <String>[];
-    if (pet?.species != null && pet!.species!.isNotEmpty) parts.add(pet!.species!);
+    if (pet?.species != null && pet!.species!.isNotEmpty)
+      parts.add(pet!.species!);
     if (pet?.breed != null && pet!.breed!.isNotEmpty) parts.add(pet!.breed!);
     if (pet?.birthDate != null) {
       final age = DateTime.now().year - pet!.birthDate!.year;
@@ -233,8 +235,7 @@ class _PetCard extends StatelessWidget {
             _GlassChip(label: 'Balto')
           else
             const SizedBox.shrink(),
-          if (total > 1)
-            _GlassChip(label: '${index + 1} / $total'),
+          if (total > 1) _GlassChip(label: '${index + 1} / $total'),
         ],
       ),
     );
@@ -283,7 +284,12 @@ class _PetCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            _StatusPill(isEmpty: pet == null),
+            _StatusPill(
+              isEmpty: pet == null,
+              urgencyLevel: pet?.latestHealthUrgency != null
+                  ? UrgencyLevel.fromJson(pet!.latestHealthUrgency!)
+                  : null,
+            ),
           ],
         ),
       ),
@@ -305,7 +311,10 @@ class _GlassChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(99),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.30), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.30),
+          width: 1,
+        ),
       ),
       child: Text(
         label,
@@ -323,30 +332,56 @@ class _GlassChip extends StatelessWidget {
 // ─── Status pill ──────────────────────────────────────────────────────────────
 
 class _StatusPill extends StatelessWidget {
-  const _StatusPill({required this.isEmpty});
+  const _StatusPill({required this.isEmpty, this.urgencyLevel});
 
   final bool isEmpty;
+  final UrgencyLevel? urgencyLevel;
+
+  static const _healthy = Color(0xFFFF6B8A);
+
+  (IconData, Color, String) get _visual {
+    if (isEmpty) return (Icons.add_circle_outline, Colors.white, 'ADD PET');
+    return switch (urgencyLevel) {
+      null ||
+      UrgencyLevel.routine => (Icons.favorite_rounded, _healthy, 'HEALTHY'),
+      UrgencyLevel.scheduleVetVisit => (
+        Icons.event_note_rounded,
+        const Color(0xFFE8A84C),
+        'CHECKUP',
+      ),
+      UrgencyLevel.urgent => (
+        Icons.warning_rounded,
+        const Color(0xFFD05A24),
+        'URGENT',
+      ),
+      UrgencyLevel.emergency => (
+        Icons.emergency_rounded,
+        const Color(0xFFD32F2F),
+        'EMERGENCY',
+      ),
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
+    final (icon, color, label) = _visual;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(99),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.30), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.30),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            isEmpty ? Icons.add_circle_outline : Icons.favorite_rounded,
-            size: 13,
-            color: isEmpty ? Colors.white : const Color(0xFFFF6B8A),
-          ),
+          Icon(icon, size: 13, color: color),
           const SizedBox(width: 5),
           Text(
-            isEmpty ? 'ADD PET' : 'HEALTHY',
+            label,
             style: const TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w700,

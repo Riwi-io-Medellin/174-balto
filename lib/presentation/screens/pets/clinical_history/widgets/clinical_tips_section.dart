@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../../domain/entities/pet_clinical_record.dart';
 
-/// Tarjetas limpias con los consejos generados automáticamente
-/// cada vez que cambia la historia clínica.
+/// Clean cards with the tips automatically generated
+/// every time the clinical history changes.
 class ClinicalTipsSection extends StatelessWidget {
   const ClinicalTipsSection({super.key, required this.tips});
 

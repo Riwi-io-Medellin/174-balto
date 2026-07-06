@@ -109,4 +109,32 @@ class NotificationRemoteDataSource {
       'Unexpected response ($status).',
     );
   }
+
+  Future<void> registerDeviceToken({required String token, required String platform}) async {
+    final response = await _dio.post<dynamic>(
+      '/notifications/device-token',
+      data: {'token': token, 'platform': platform},
+    );
+    final status = response.statusCode ?? 0;
+    if (status == 204) return;
+
+    throw NotificationFailure(
+      'DEVICE_TOKEN_REGISTER_FAILED',
+      'Unexpected response ($status).',
+    );
+  }
+
+  Future<void> removeDeviceToken(String token) async {
+    final response = await _dio.post<dynamic>(
+      '/notifications/device-token/remove',
+      data: {'token': token},
+    );
+    final status = response.statusCode ?? 0;
+    if (status == 204) return;
+
+    throw NotificationFailure(
+      'DEVICE_TOKEN_REMOVE_FAILED',
+      'Unexpected response ($status).',
+    );
+  }
 }

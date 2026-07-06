@@ -5,6 +5,7 @@
         <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
         <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
         <uses-permission android:name="android.permission.WAKE_LOCK" />
+        <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
         <application
             android:label="Balto"
             android:name="${applicationName}"
@@ -42,6 +43,15 @@
             <meta-data
                 android:name="flutterEmbedding"
                 android:value="2" />
+
+            <!-- Default notification channel/icon used by FCM when the app is
+                backgrounded or killed. -->
+            <meta-data
+                android:name="com.google.firebase.messaging.default_notification_channel_id"
+                android:value="balto_default_channel" />
+            <meta-data
+                android:name="com.google.firebase.messaging.default_notification_icon"
+                android:resource="@mipmap/launcher_icon" />
         </application>
         <!-- Required to query activities that can process text, see:
             https://developer.android.com/training/package-visibility and

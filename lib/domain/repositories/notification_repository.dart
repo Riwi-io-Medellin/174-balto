@@ -12,6 +12,10 @@ abstract class NotificationRepository {
   Future<void> markAsRead(String id);
 
   Future<void> markAllAsRead();
+
+  Future<void> registerDeviceToken({required String token, required String platform});
+
+  Future<void> removeDeviceToken(String token);
 }
 
 class NotificationFailure implements Exception {
