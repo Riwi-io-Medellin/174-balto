@@ -21,6 +21,7 @@ class WalkerLiveWalkStarting extends WalkerLiveWalkState {
 
 class WalkerLiveWalkActive extends WalkerLiveWalkState {
   const WalkerLiveWalkActive({
+    this.sessionId,
     this.currentPosition,
     this.accuracyMeters,
     this.elapsedSeconds = 0,
@@ -31,6 +32,7 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
     this.mediaUploadError,
   });
 
+  final String? sessionId;
   final LatLng? currentPosition;
   final double? accuracyMeters;
   final int elapsedSeconds;
@@ -41,6 +43,7 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
   final String? mediaUploadError;
 
   WalkerLiveWalkActive copyWith({
+    String? sessionId,
     LatLng? currentPosition,
     double? accuracyMeters,
     int? elapsedSeconds,
@@ -52,6 +55,7 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
     String? mediaUploadError,
   }) =>
       WalkerLiveWalkActive(
+        sessionId: sessionId ?? this.sessionId,
         currentPosition: currentPosition ?? this.currentPosition,
         accuracyMeters: accuracyMeters ?? this.accuracyMeters,
         elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
@@ -66,6 +70,7 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
 
   @override
   List<Object?> get props => [
+        sessionId,
         currentPosition,
         accuracyMeters,
         elapsedSeconds,
