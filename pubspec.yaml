@@ -51,7 +51,6 @@ dependencies:
   geolocator_android: ^4.0.0
   shimmer: ^3.0.0
   google_maps_flutter: ^2.9.0
-  file_picker: ^8.1.7
 
 dev_dependencies:
   flutter_test:

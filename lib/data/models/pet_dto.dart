@@ -16,6 +16,10 @@ class PetDto {
     this.identificationNumber,
     this.microchipNumber,
     required this.createdAt,
+    this.isLost = false,
+    this.lostLatitude,
+    this.lostLongitude,
+    this.lostAt,
   });
 
   final String id;
@@ -32,6 +36,10 @@ class PetDto {
   final String? identificationNumber;
   final String? microchipNumber;
   final DateTime createdAt;
+  final bool isLost;
+  final double? lostLatitude;
+  final double? lostLongitude;
+  final DateTime? lostAt;
 
   factory PetDto.fromJson(Map<String, dynamic> json) {
     return PetDto(
@@ -51,6 +59,12 @@ class PetDto {
       identificationNumber: json['identificationNumber'] as String?,
       microchipNumber: json['microchipNumber'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String).toLocal(),
+      isLost: json['isLost'] as bool? ?? false,
+      lostLatitude: (json['lostLatitude'] as num?)?.toDouble(),
+      lostLongitude: (json['lostLongitude'] as num?)?.toDouble(),
+      lostAt: json['lostAt'] != null
+          ? DateTime.parse(json['lostAt'] as String).toLocal()
+          : null,
     );
   }
 
@@ -80,5 +94,9 @@ class PetDto {
         identificationNumber: identificationNumber,
         microchipNumber: microchipNumber,
         createdAt: createdAt,
+        isLost: isLost,
+        lostLatitude: lostLatitude,
+        lostLongitude: lostLongitude,
+        lostAt: lostAt,
       );
 }

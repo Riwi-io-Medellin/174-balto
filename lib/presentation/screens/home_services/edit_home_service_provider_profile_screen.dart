@@ -7,7 +7,6 @@ import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/home_service_provider_profile.dart';
 import '../../../domain/repositories/home_service_profile_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
-import '../../bloc/profile/profile_state.dart';
 
 class EditHomeServiceProviderProfileScreen extends StatefulWidget {
   const EditHomeServiceProviderProfileScreen({super.key});
@@ -44,31 +43,31 @@ class _EditHomeServiceProviderProfileScreenState
     _maxConcurrentCtrl = TextEditingController();
     _baseLocationCtrl = TextEditingController();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      try {
-        final state = context.read<ProfileCubit>().state;
-        if (state is ProfileLoaded) {
-          final pp = state.homeServiceProviderProfile;
-          if (pp == null || pp.status != HomeServiceProviderStatus.approved) {
-            if (!mounted) return;
-            BaltoToast.warning(context, 'Provider profile not available.');
-            Navigator.of(context).pop();
-            return;
-          }
-          _bioCtrl.text = pp.bio ?? '';
-          _yearsCtrl.text =
-              pp.yearsOfExperience != null ? pp.yearsOfExperience.toString() : '';
-          _maxConcurrentCtrl.text = pp.maxConcurrentBookings.toString();
-          _baseLocationCtrl.text = pp.baseLocation ?? '';
-          _isAcceptingBookings = pp.isAcceptingBookings;
-          setState(() => _initialized = true);
-        }
-      } catch (_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) => _init());
+  }
+
+  Future<void> _init() async {
+    try {
+      final pp = await sl<HomeServiceProfileRepository>().getMyProfile();
+      if (pp == null || pp.status != HomeServiceProviderStatus.approved) {
         if (!mounted) return;
-        BaltoToast.error(context, 'Failed to load profile.');
+        BaltoToast.warning(context, 'Provider profile not available.');
         Navigator.of(context).pop();
+        return;
       }
-    });
+      _bioCtrl.text = pp.bio ?? '';
+      _yearsCtrl.text =
+          pp.yearsOfExperience != null ? pp.yearsOfExperience.toString() : '';
+      _maxConcurrentCtrl.text = pp.maxConcurrentBookings.toString();
+      _baseLocationCtrl.text = pp.baseLocation ?? '';
+      _isAcceptingBookings = pp.isAcceptingBookings;
+      if (!mounted) return;
+      setState(() => _initialized = true);
+    } catch (_) {
+      if (!mounted) return;
+      BaltoToast.error(context, 'Failed to load profile.');
+      Navigator.of(context).pop();
+    }
   }
 
   @override

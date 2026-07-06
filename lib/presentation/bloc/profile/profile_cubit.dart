@@ -111,4 +111,38 @@ class ProfileCubit extends Cubit<ProfileState> {
       return onError(e);
     }
   }
+
+  Future<void> reportLost({
+    required String petId,
+    required double lostLatitude,
+    required double lostLongitude,
+  }) async {
+    final updated = await _petRepository.reportLost(
+      id: petId,
+      lostLatitude: lostLatitude,
+      lostLongitude: lostLongitude,
+    );
+    _replacePet(updated);
+  }
+
+  Future<void> markFound(String petId) async {
+    final updated = await _petRepository.markFound(petId);
+    _replacePet(updated);
+  }
+
+  void _replacePet(Pet updated) {
+    final current = state;
+    if (current is! ProfileLoaded) return;
+    emit(ProfileLoaded(
+      user: current.user,
+      pets: [
+        for (final p in current.pets)
+          if (p.id == updated.id) updated else p,
+      ],
+      walkCount: current.walkCount,
+      walkerProfile: current.walkerProfile,
+      businessProfile: current.businessProfile,
+      unreadNotificationCount: current.unreadNotificationCount,
+    ));
+  }
 }

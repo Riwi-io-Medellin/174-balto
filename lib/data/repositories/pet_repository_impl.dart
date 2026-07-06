@@ -119,4 +119,42 @@ class PetRepositoryImpl implements PetRepository {
       );
     }
   }
+
+  @override
+  Future<Pet> reportLost({
+    required String id,
+    required double lostLatitude,
+    required double lostLongitude,
+  }) async {
+    try {
+      final dto = await _remote.reportLost(
+        id,
+        lostLatitude: lostLatitude,
+        lostLongitude: lostLongitude,
+      );
+      return dto.toEntity();
+    } on PetFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw PetFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
+
+  @override
+  Future<Pet> markFound(String id) async {
+    try {
+      final dto = await _remote.markFound(id);
+      return dto.toEntity();
+    } on PetFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw PetFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
 }
