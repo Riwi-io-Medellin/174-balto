@@ -26,7 +26,7 @@ class SupportScreen extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: AppRadius.radius20,
@@ -38,62 +38,52 @@ class SupportScreen extends StatelessWidget {
               ),
             ],
           ),
-          child: _buildSupportItem(
-            icon: Icons.email_outlined,
-            title: 'Email us',
-            subtitle: 'support@balto.app',
-            url: 'mailto:support@balto.app',
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: AppColors.navWalks.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.email_outlined,
+                  size: 30,
+                  color: AppColors.navWalks,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Need help?',
+                style: AppTextStyles.h3.copyWith(color: _textDark),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Send us an email and our team will get back to you soon.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: _textMuted, height: 1.4),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => _openUrl('mailto:support@balto.app'),
+                  icon: const Icon(Icons.email_outlined, size: 18),
+                  label: const Text('support@balto.app'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.navWalks,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: AppRadius.radius14,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSupportItem({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required String url,
-  }) {
-    return InkWell(
-      onTap: () => _openUrl(url),
-      borderRadius: AppRadius.radius12,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        child: Row(
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: AppColors.navWalks.withValues(alpha: 0.1),
-                borderRadius: AppRadius.radius12,
-              ),
-              child: Icon(icon, size: 20, color: AppColors.navWalks),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: AppTextStyles.bodyStrong.copyWith(color: _textDark),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 12, color: _textMuted),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(
-              Icons.chevron_right,
-              size: 20,
-              color: AppColors.textMuted,
-            ),
-          ],
         ),
       ),
     );
