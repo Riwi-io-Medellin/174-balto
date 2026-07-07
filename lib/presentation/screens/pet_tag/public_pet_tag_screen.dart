@@ -180,6 +180,7 @@ class _PublicPetTagScreenState extends State<PublicPetTagScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (pet.breed != null) _infoRow('Breed', pet.breed!),
+                    if (pet.sex != null) _infoRow('Sex', pet.sex!),
                     if (pet.color != null) _infoRow('Color', pet.color!),
                     if (pet.birthDate != null)
                       _infoRow(

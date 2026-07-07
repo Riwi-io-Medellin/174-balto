@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../domain/repositories/notification_repository.dart';
 import '../../presentation/screens/notifications/notifications_screen.dart';
@@ -59,7 +62,14 @@ class PushNotificationService {
         final entityId = parts.length > 1 && parts[1].isNotEmpty
             ? parts[1]
             : null;
-        _handleNotificationTap(type: type, entityId: entityId);
+        final metadata = parts.length > 2 && parts[2].isNotEmpty
+            ? parts[2]
+            : null;
+        _handleNotificationTap(
+          type: type,
+          entityId: entityId,
+          metadata: metadata,
+        );
       },
     );
 
@@ -74,6 +84,7 @@ class PushNotificationService {
       (message) => _handleNotificationTap(
         type: message.data['type'],
         entityId: message.data['entityId'],
+        metadata: message.data['metadata'],
       ),
     );
 
@@ -82,6 +93,7 @@ class PushNotificationService {
       _handleNotificationTap(
         type: initialMessage.data['type'],
         entityId: initialMessage.data['entityId'],
+        metadata: initialMessage.data['metadata'],
       );
     }
 
@@ -147,11 +159,15 @@ class PushNotificationService {
         ),
         iOS: DarwinNotificationDetails(),
       ),
-      payload: '$type|${entityId ?? ''}',
+      payload: '$type|${entityId ?? ''}|${data['metadata'] ?? ''}',
     );
   }
 
-  void _handleNotificationTap({String? type, String? entityId}) {
+  void _handleNotificationTap({
+    String? type,
+    String? entityId,
+    String? metadata,
+  }) {
     final navigator = navigatorKey?.currentState;
     if (navigator == null) return;
     if (type == 'lost_pet' && entityId != null) {
@@ -160,8 +176,28 @@ class PushNotificationService {
       );
       return;
     }
+    if (type == 'pet_location_shared') {
+      _openSharedLocationInMaps(metadata);
+      return;
+    }
     navigator.push(
       MaterialPageRoute(builder: (_) => const NotificationsScreen()),
     );
+  }
+
+  Future<void> _openSharedLocationInMaps(String? metadata) async {
+    if (metadata == null || metadata.isEmpty) return;
+    try {
+      final decoded = jsonDecode(metadata) as Map<String, dynamic>;
+      final lat = decoded['latitude'];
+      final lng = decoded['longitude'];
+      if (lat == null || lng == null) return;
+      final uri = Uri.parse(
+        'https://maps.google.com/?q=$lat,$lng',
+      );
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      debugPrint('Failed to open shared location: $e');
+    }
   }
 }

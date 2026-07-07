@@ -26,6 +26,8 @@ class BusinessDto {
     this.latitude,
     this.longitude,
     this.isOpenNow = false,
+    this.sellsServices = false,
+    this.sellsProducts = false,
   });
 
   factory BusinessDto.fromJson(Map<String, dynamic> json) {
@@ -52,6 +54,8 @@ class BusinessDto {
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
       isOpenNow: json['isOpenNow'] as bool? ?? false,
+      sellsServices: json['sellsServices'] as bool? ?? false,
+      sellsProducts: json['sellsProducts'] as bool? ?? false,
     );
   }
 
@@ -75,10 +79,13 @@ class BusinessDto {
   final double? latitude;
   final double? longitude;
   final bool isOpenNow;
+  final bool sellsServices;
+  final bool sellsProducts;
 
   Business toEntity({
     List<BusinessServiceItem> services = const [],
     List<BusinessHour> openingHours = const [],
+    List<BusinessDocumentItem> gallery = const [],
   }) => Business(
     id: id,
     ownerUserId: ownerUserId,
@@ -100,8 +107,11 @@ class BusinessDto {
     latitude: latitude,
     longitude: longitude,
     isOpen: isOpenNow,
+    sellsServices: sellsServices,
+    sellsProducts: sellsProducts,
     services: services,
     openingHours: openingHours,
+    gallery: gallery,
   );
 }
 
@@ -113,6 +123,7 @@ class BusinessServiceItemDto {
     required this.price,
     this.description,
     this.photoUrl,
+    this.itemKind = 'service',
   });
 
   factory BusinessServiceItemDto.fromJson(Map<String, dynamic> json) {
@@ -123,6 +134,7 @@ class BusinessServiceItemDto {
       price: (json['price'] as num?)?.toDouble() ?? 0,
       description: json['description'] as String?,
       photoUrl: json['photoUrl'] as String?,
+      itemKind: json['itemKind'] as String? ?? 'service',
     );
   }
 
@@ -132,6 +144,7 @@ class BusinessServiceItemDto {
   final double price;
   final String? description;
   final String? photoUrl;
+  final String itemKind;
 
   BusinessServiceItem toEntity() => BusinessServiceItem(
     id: id,
@@ -140,6 +153,41 @@ class BusinessServiceItemDto {
     price: price,
     description: description,
     photoUrl: photoUrl,
+    itemKind: itemKind,
+  );
+}
+
+class BusinessDocumentDto {
+  BusinessDocumentDto({
+    required this.id,
+    required this.businessId,
+    required this.documentType,
+    required this.fileUrl,
+  });
+
+  factory BusinessDocumentDto.fromJson(Map<String, dynamic> json) {
+    return BusinessDocumentDto(
+      id: json['id'] as String,
+      businessId: json['businessId'] as String? ?? '',
+      documentType: json['documentType'] as String? ?? '',
+      fileUrl: json['fileUrl'] as String? ?? '',
+    );
+  }
+
+  static List<BusinessDocumentDto> fromJsonList(List<dynamic> list) => list
+      .map((e) => BusinessDocumentDto.fromJson(e as Map<String, dynamic>))
+      .toList();
+
+  final String id;
+  final String businessId;
+  final String documentType;
+  final String fileUrl;
+
+  BusinessDocumentItem toEntity() => BusinessDocumentItem(
+    id: id,
+    businessId: businessId,
+    documentType: documentType,
+    fileUrl: fileUrl,
   );
 }
 

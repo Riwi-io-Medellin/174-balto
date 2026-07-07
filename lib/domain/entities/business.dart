@@ -23,8 +23,11 @@ class Business extends Equatable {
     this.longitude,
     this.isOpen = false,
     this.distanceKm,
+    this.sellsServices = false,
+    this.sellsProducts = false,
     this.services = const [],
     this.openingHours = const [],
+    this.gallery = const [],
   });
 
   final String id;
@@ -52,12 +55,26 @@ class Business extends Equatable {
   /// Null when the business or the user has no known coordinates yet.
   final double? distanceKm;
 
+  /// Market feature: independent toggles so a business can sell services,
+  /// products, both, or neither (hides the Market tab on the profile).
+  final bool sellsServices;
+  final bool sellsProducts;
+
   final List<BusinessServiceItem> services;
   final List<BusinessHour> openingHours;
+
+  /// Gallery photos (backed by business_documents, documentType='gallery').
+  final List<BusinessDocumentItem> gallery;
 
   bool get isVeterinary => type == 'veterinary';
   bool get isStore => type == 'petshop';
   bool get isVerified => verificationStatus == 'approved';
+  bool get hasMarket => sellsServices || sellsProducts;
+
+  List<BusinessServiceItem> get serviceItems =>
+      services.where((s) => s.itemKind == 'service').toList();
+  List<BusinessServiceItem> get productItems =>
+      services.where((s) => s.itemKind == 'product').toList();
 
   Business copyWith({double? distanceKm}) => Business(
     id: id,
@@ -81,8 +98,11 @@ class Business extends Equatable {
     longitude: longitude,
     isOpen: isOpen,
     distanceKm: distanceKm ?? this.distanceKm,
+    sellsServices: sellsServices,
+    sellsProducts: sellsProducts,
     services: services,
     openingHours: openingHours,
+    gallery: gallery,
   );
 
   @override
@@ -97,6 +117,7 @@ class BusinessServiceItem extends Equatable {
     required this.price,
     this.description,
     this.photoUrl,
+    this.itemKind = 'service',
   });
 
   final String id;
@@ -106,8 +127,32 @@ class BusinessServiceItem extends Equatable {
   final String? description;
   final String? photoUrl;
 
+  /// 'service' or 'product' — same table backs both sides of the Market feature.
+  final String itemKind;
+
+  bool get isProduct => itemKind == 'product';
+
   @override
-  List<Object?> get props => [id, serviceType, price];
+  List<Object?> get props => [id, serviceType, price, itemKind];
+}
+
+/// A single business gallery photo (backed by business_documents,
+/// documentType = 'gallery'). Kept separate from the main [Business.photoUrl].
+class BusinessDocumentItem extends Equatable {
+  const BusinessDocumentItem({
+    required this.id,
+    required this.businessId,
+    required this.documentType,
+    required this.fileUrl,
+  });
+
+  final String id;
+  final String businessId;
+  final String documentType;
+  final String fileUrl;
+
+  @override
+  List<Object?> get props => [id];
 }
 
 /// Weekly recurring opening hour for a single day (0 = Sunday ... 6 = Saturday).
