@@ -121,6 +121,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return Icons.storefront_rounded;
       case 'lost_pet':
         return Icons.pets;
+      case 'pet_tag_scanned':
+        return Icons.nfc_rounded;
+      case 'pet_location_shared':
+        return Icons.location_on_rounded;
       case 'system':
         return Icons.info_outline;
       default:
@@ -144,6 +148,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return const Color(0xFFD05A24);
       case 'lost_pet':
         return const Color(0xFFE53935);
+      case 'pet_tag_scanned':
+        return const Color(0xFF1BAA71);
+      case 'pet_location_shared':
+        return const Color(0xFFD05A24);
       case 'system':
         return const Color(0xFF3A80C2);
       default:
@@ -153,7 +161,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   String _formatDate(DateTime date) {
     final now = DateTime.now();
-    final diff = now.difference(date);
+    var diff = now.difference(date);
+    if (diff.isNegative) diff = Duration.zero;
     if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
     if (diff.inHours < 24) return '${diff.inHours}h ago';
     if (diff.inDays < 7) return '${diff.inDays}d ago';

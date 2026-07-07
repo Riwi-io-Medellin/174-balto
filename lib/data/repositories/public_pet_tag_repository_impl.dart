@@ -23,4 +23,22 @@ class PublicPetTagRepositoryImpl implements PublicPetTagRepository {
       );
     }
   }
+
+  @override
+  Future<void> shareLocation({
+    required String petId,
+    required double latitude,
+    required double longitude,
+  }) async {
+    try {
+      await _remote.shareLocation(petId: petId, latitude: latitude, longitude: longitude);
+    } on PublicPetTagFailure {
+      rethrow;
+    } on DioException catch (e) {
+      throw PublicPetTagFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
+    }
+  }
 }

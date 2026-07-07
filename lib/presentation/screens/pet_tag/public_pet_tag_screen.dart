@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/di/injection.dart';
+import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/public_pet_tag_info.dart';
 import '../../../domain/repositories/public_pet_tag_repository.dart';
 
@@ -24,6 +26,7 @@ class _PublicPetTagScreenState extends State<PublicPetTagScreen> {
   static const Color _orange = Color(0xFFE58A00);
 
   late Future<PublicPetTagInfo> _future;
+  bool _sharingLocation = false;
 
   @override
   void initState() {
@@ -35,6 +38,41 @@ class _PublicPetTagScreenState extends State<PublicPetTagScreen> {
     final uri = Uri(scheme: 'tel', path: phone);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
+    }
+  }
+
+  Future<void> _shareLocation(PublicPetTagInfo pet) async {
+    setState(() => _sharingLocation = true);
+    try {
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          BaltoToast.error(context, 'Location permission is required to share your location.');
+        }
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+      );
+
+      await sl<PublicPetTagRepository>().shareLocation(
+        petId: pet.id,
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
+
+      if (!mounted) return;
+      BaltoToast.success(context, 'Your location was sent to ${pet.ownerName}.');
+    } catch (e) {
+      if (!mounted) return;
+      BaltoToast.error(context, 'Could not share your location. ${e.toString()}');
+    } finally {
+      if (mounted) setState(() => _sharingLocation = false);
     }
   }
 
@@ -159,6 +197,29 @@ class _PublicPetTagScreenState extends State<PublicPetTagScreen> {
                     ),
                   ),
                 ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: _sharingLocation ? null : () => _shareLocation(pet),
+                  icon: _sharingLocation
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.location_on_rounded),
+                  label: const Text('Share My Location with Owner'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFD05A24),
+                    side: const BorderSide(color: Color(0xFFD05A24)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                ),
+              ),
             ],
           );
         },

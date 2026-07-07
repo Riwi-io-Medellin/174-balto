@@ -26,4 +26,26 @@ class PublicPetTagRemoteDataSource {
       'Unexpected response ($status).',
     );
   }
+
+  Future<void> shareLocation({
+    required String petId,
+    required double latitude,
+    required double longitude,
+  }) async {
+    final response = await _dio.post<dynamic>(
+      '/pet-tag/$petId/location',
+      data: {'latitude': latitude, 'longitude': longitude},
+    );
+    final status = response.statusCode ?? 0;
+    if (status == 204) return;
+
+    if (status == 404) {
+      throw PublicPetTagFailure('PET_NOT_FOUND', 'This tag is not linked to a pet.');
+    }
+
+    throw PublicPetTagFailure(
+      'SHARE_LOCATION_FAILED',
+      'Unexpected response ($status).',
+    );
+  }
 }
