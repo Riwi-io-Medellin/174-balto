@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../domain/entities/walk.dart';
 import '../../widgets/review_sheet.dart';
 
@@ -12,7 +14,7 @@ class CompletedWalkSummaryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
           _SummaryAppBar(walk: walk),
@@ -54,7 +56,7 @@ class _SummaryAppBar extends StatelessWidget {
     return SliverAppBar(
       pinned: true,
       backgroundColor: Colors.white,
-      foregroundColor: const Color(0xFF1A1A2E),
+      foregroundColor: AppColors.textPrimary,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       title: Column(
@@ -62,19 +64,11 @@ class _SummaryAppBar extends StatelessWidget {
         children: [
           Text(
             '${walk.petName}\'s Walk',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1A2E),
-            ),
+            style: AppTextStyles.h3,
           ),
-          const Text(
+          Text(
             'Summary',
-            style: TextStyle(
-              fontSize: 12,
-              color: Color(0xFF8A95A3),
-              fontWeight: FontWeight.w500,
-            ),
+            style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -105,7 +99,7 @@ class _CompletedBanner extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
       ),
       child: Column(
         children: [
@@ -243,7 +237,7 @@ class _RoutePreviewCard extends StatelessWidget {
     return Container(
       height: 160,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -253,7 +247,7 @@ class _RoutePreviewCard extends StatelessWidget {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         child: Stack(
           fit: StackFit.expand,
           children: [
@@ -266,21 +260,17 @@ class _RoutePreviewCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.9),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.radius20,
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.route_outlined,
+                    const Icon(Icons.route_outlined,
                         color: AppColors.navWalks, size: 13),
-                    SizedBox(width: 5),
+                    const SizedBox(width: 5),
                     Text(
                       'Route Preview',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF1A1A2E),
-                      ),
+                      style: AppTextStyles.micro.copyWith(color: AppColors.textPrimary),
                     ),
                   ],
                 ),
@@ -311,7 +301,7 @@ class _MiniMapPainter extends CustomPainter {
               size.width / 4 - 10,
               size.height / 3 - 10,
             ),
-            const Radius.circular(4),
+            const Radius.circular(AppRadius.r4),
           ),
           block,
         );
@@ -455,7 +445,7 @@ class _GridTile extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -505,7 +495,7 @@ class _WalkerCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -543,7 +533,7 @@ class _WalkerCard extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
-                        color: Color(0xFF1A1A2E),
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(width: 5),
@@ -565,11 +555,7 @@ class _WalkerCard extends StatelessWidget {
               const SizedBox(width: 3),
               Text(
                 walk.walkerRating.toStringAsFixed(1),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: Color(0xFF1A1A2E),
-                ),
+                style: AppTextStyles.bodyBold,
               ),
             ],
           ),
@@ -591,7 +577,7 @@ class _RatingCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -603,18 +589,14 @@ class _RatingCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.star_outline_rounded,
+              const Icon(Icons.star_outline_rounded,
                   color: Color(0xFFE8A84C), size: 18),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Your Rating',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: Color(0xFF1A1A2E),
-                ),
+                style: AppTextStyles.bodyBold,
               ),
             ],
           ),
@@ -665,7 +647,7 @@ class _RateWalkButton extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -676,18 +658,14 @@ class _RateWalkButton extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.star_outline_rounded,
+              const Icon(Icons.star_outline_rounded,
                   color: Color(0xFFE8A84C), size: 18),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Rate this walk',
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: Color(0xFF1A1A2E),
-                ),
+                style: AppTextStyles.bodyBold,
               ),
             ],
           ),
@@ -701,7 +679,7 @@ class _RateWalkButton extends StatelessWidget {
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF1A1A2E),
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 16),
@@ -715,7 +693,7 @@ class _RateWalkButton extends StatelessWidget {
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.radius12,
                 ),
               ),
               child: const Text(

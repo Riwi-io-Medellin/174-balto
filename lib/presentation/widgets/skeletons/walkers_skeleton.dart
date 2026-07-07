@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_radius.dart';
 import 'skeleton_box.dart';
 
 class WalkersSkeleton extends StatelessWidget {
@@ -25,7 +26,7 @@ class _WalkerCardSkeleton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -63,7 +64,7 @@ class _WalkerCardSkeleton extends StatelessWidget {
                         height: 38,
                         decoration: BoxDecoration(
                           color: const Color(0xFFE0E0E0),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: AppRadius.radius10,
                         ),
                       ),
                     ),
@@ -73,7 +74,7 @@ class _WalkerCardSkeleton extends StatelessWidget {
                         height: 38,
                         decoration: BoxDecoration(
                           color: const Color(0xFFE0E0E0),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: AppRadius.radius10,
                         ),
                       ),
                     ),

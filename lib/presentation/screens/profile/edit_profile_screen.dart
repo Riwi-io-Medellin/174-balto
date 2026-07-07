@@ -6,6 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/user.dart';
@@ -94,7 +97,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _saving = false;
   bool _detectingCity = false;
 
-  static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _inputFill = Color(0xFFEEF3F3);
   static const Color _textDark = Color(0xFF1A1A2E);
@@ -201,7 +203,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       filled: true,
       fillColor: _inputFill,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -219,16 +221,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       filled: true,
       fillColor: _inputFill,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: _primary, width: 1.5),
+        borderRadius: AppRadius.radius12,
+        borderSide: BorderSide(color: AppColors.navWalks, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
@@ -312,7 +314,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.radius20,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.06),
@@ -324,14 +326,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Center(
+                Center(
                   child: Text(
                     'Edit Your Profile',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: _textDark,
-                    ),
+                    style: AppTextStyles.h1.copyWith(color: _textDark),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -339,7 +337,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   pickedImage: _pickedImage,
                   photoUrl: currentPhotoUrl,
                   onTap: _pickImage,
-                  primary: _primary,
+                  primary: AppColors.navWalks,
                 )),
                 const SizedBox(height: 28),
                 _fieldLabel('First Name'),
@@ -400,8 +398,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEAF5FF),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: _primary.withValues(alpha: 0.25)),
+                    borderRadius: AppRadius.radius12,
+                    border: Border.all(color: AppColors.navWalks.withValues(alpha: 0.25)),
                   ),
                   child: const Row(
                     children: [
@@ -436,8 +434,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: _primary.withValues(alpha: 0.10),
-                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.navWalks.withValues(alpha: 0.10),
+                          borderRadius: AppRadius.radius8,
                         ),
                         child: _detectingCity
                             ? SizedBox(
@@ -445,20 +443,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 height: 14,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(_primary),
+                                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.navWalks),
                                 ),
                               )
                             : Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.my_location, size: 13, color: _primary),
+                                  Icon(Icons.my_location, size: 13, color: AppColors.navWalks),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Detect',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: _primary,
+                                    style: AppTextStyles.captionStrong.copyWith(
+                                      color: AppColors.navWalks,
                                     ),
                                   ),
                                 ],
@@ -477,7 +473,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   style: const TextStyle(fontSize: 14, color: _textDark),
                   dropdownColor: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.radius12,
                   items: _antioquiaCities.keys
                       .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                       .toList(),
@@ -490,10 +486,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: ElevatedButton(
                     onPressed: _saving ? null : _save,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _primary,
+                      backgroundColor: AppColors.navWalks,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.radius14,
                       ),
                       elevation: 0,
                     ),

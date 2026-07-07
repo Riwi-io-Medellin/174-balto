@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/availability_exception.dart';
@@ -245,7 +247,7 @@ class _HomeProviderAvailabilityScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -258,13 +260,9 @@ class _HomeProviderAvailabilityScreenState
             color: Color(0xFF1F2937),
           ),
         ),
-        title: const Text(
+        title: Text(
           'Manage Availability',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF1F2937),
-          ),
+          style: AppTextStyles.h3.copyWith(color: const Color(0xFF1F2937)),
         ),
         centerTitle: true,
         actions: [
@@ -324,7 +322,7 @@ class _HomeProviderAvailabilityScreenState
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.radius12,
                         ),
                       ),
                       child: const Text('Retry'),
@@ -382,7 +380,7 @@ class _HomeProviderAvailabilityScreenState
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
         border: Border.all(color: const Color(0xFFE0E4EC)),
       ),
       child: Column(
@@ -411,11 +409,7 @@ class _HomeProviderAvailabilityScreenState
               const SizedBox(width: 10),
               Text(
                 _dayNames[dayOfWeek],
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF1F2937),
-                ),
+                style: AppTextStyles.bodyBold.copyWith(color: const Color(0xFF1F2937)),
               ),
               const Spacer(),
               if (intervals.isNotEmpty)
@@ -430,15 +424,11 @@ class _HomeProviderAvailabilityScreenState
                     ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFF0ED),
-                      borderRadius: BorderRadius.circular(99),
+                      borderRadius: AppRadius.radiusPill,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Clear',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFFD05A24),
-                      ),
+                      style: AppTextStyles.micro.copyWith(color: const Color(0xFFD05A24)),
                     ),
                   ),
                 ),
@@ -470,7 +460,7 @@ class _HomeProviderAvailabilityScreenState
               style: TextButton.styleFrom(
                 foregroundColor: _accent,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.radius10,
                   side: BorderSide(
                     color: _accent.withValues(alpha: 0.30),
                     style: BorderStyle.solid,
@@ -555,8 +545,8 @@ class _HomeProviderAvailabilityScreenState
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFFF5F6FA),
-          borderRadius: BorderRadius.circular(10),
+          color: AppColors.background,
+          borderRadius: AppRadius.radius10,
           border: Border.all(color: const Color(0xFFE0E4EC)),
         ),
         child: Row(
@@ -590,7 +580,7 @@ class _HomeProviderAvailabilityScreenState
       padding: const EdgeInsets.symmetric(vertical: 32),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
         border: Border.all(color: const Color(0xFFE0E4EC)),
       ),
       child: const Column(
@@ -619,7 +609,7 @@ class _HomeProviderAvailabilityScreenState
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
         border: Border.all(color: const Color(0xFFE0E4EC)),
       ),
       child: Column(
@@ -650,11 +640,7 @@ class _HomeProviderAvailabilityScreenState
               Expanded(
                 child: Text(
                   _formatDate(entry.date),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1F2937),
-                  ),
+                  style: AppTextStyles.bodyBold.copyWith(color: const Color(0xFF1F2937)),
                 ),
               ),
               GestureDetector(
@@ -691,8 +677,8 @@ class _HomeProviderAvailabilityScreenState
                     decoration: BoxDecoration(
                       color: entry.isUnavailable
                           ? const Color(0xFFFFF0ED)
-                          : const Color(0xFFF5F6FA),
-                      borderRadius: BorderRadius.circular(10),
+                          : AppColors.background,
+                      borderRadius: AppRadius.radius10,
                       border: Border.all(
                         color: entry.isUnavailable
                             ? const Color(0xFFD05A24).withValues(alpha: 0.30)
@@ -702,9 +688,7 @@ class _HomeProviderAvailabilityScreenState
                     child: Text(
                       entry.isUnavailable ? 'Unavailable' : 'Custom hours',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
+                      style: AppTextStyles.captionStrong.copyWith(
                         color: entry.isUnavailable
                             ? const Color(0xFFD05A24)
                             : const Color(0xFF1F2937),
@@ -761,7 +745,7 @@ class _HomeProviderAvailabilityScreenState
             color: _accent.withValues(alpha: 0.30),
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: AppRadius.radius12,
           ),
           padding: const EdgeInsets.symmetric(vertical: 12),
         ),

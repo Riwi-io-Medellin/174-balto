@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../widgets/skeletons/walks_skeleton.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/walk_booking.dart';
 import '../../bloc/my_walks/my_walks_cubit.dart';
 import '../../bloc/my_walks/my_walks_state.dart';
+import '../../widgets/balto_dialog.dart';
+import '../../widgets/balto_header.dart';
+import '../../widgets/balto_screen_scaffold.dart';
+import '../../widgets/states/empty_state_view.dart';
+import '../../widgets/states/error_state_view.dart';
 import 'live_walk_screen.dart';
 import 'walk_route_summary_screen.dart';
 
@@ -28,8 +35,12 @@ class _WalksView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+    return BaltoScreenScaffold(
+      header: BaltoHeader.iconTitle(
+        icon: Icons.directions_walk_rounded,
+        iconColor: AppColors.navWalks,
+        title: 'My Walks',
+      ),
       body: BlocConsumer<MyWalksCubit, MyWalksState>(
         listener: (context, state) {
           if (state is MyWalksLoaded) {
@@ -45,48 +56,14 @@ class _WalksView extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is MyWalksLoading) {
-            return CustomScrollView(
-              slivers: [
-                const _WalksAppBar(),
-                const SliverToBoxAdapter(child: WalksSkeleton()),
-              ],
-            );
+            return const WalksSkeleton();
           }
 
           if (state is MyWalksError) {
-            return CustomScrollView(
-              slivers: [
-                const _WalksAppBar(),
-                SliverFillRemaining(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.error_outline,
-                              size: 48, color: Colors.grey),
-                          const SizedBox(height: 12),
-                          Text(state.message,
-                              textAlign: TextAlign.center,
-                              style:
-                                  const TextStyle(color: Colors.grey)),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: () =>
-                                context.read<MyWalksCubit>().load(),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.navWalks,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: const Text('Retry'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            return ErrorStateView(
+              message: state.message,
+              accentColor: AppColors.navWalks,
+              onRetry: () => context.read<MyWalksCubit>().load(),
             );
           }
 
@@ -115,7 +92,6 @@ class _WalksView extends StatelessWidget {
               child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
-                  const _WalksAppBar(),
                   if (state.inProgress.isNotEmpty) ...[
                     const _SectionHeader(
                         label: 'In Progress',
@@ -155,7 +131,7 @@ class _WalksView extends StatelessWidget {
                   if (completedToday.isNotEmpty) ...[
                     const _SectionHeader(
                         label: 'Completed Today',
-                        color: Color(0xFF1BAA71)),
+                        color: AppColors.petProfile),
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (ctx, i) =>
@@ -167,7 +143,7 @@ class _WalksView extends StatelessWidget {
                   if (olderHistory.isNotEmpty) ...[
                     const _SectionHeader(
                         label: 'History',
-                        color: Color(0xFF8A95A3)),
+                        color: AppColors.textSecondary),
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (ctx, i) =>
@@ -177,30 +153,11 @@ class _WalksView extends StatelessWidget {
                     ),
                   ],
                   if (isEmpty)
-                    SliverFillRemaining(
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.directions_walk_rounded,
-                              size: 64,
-                              color: Colors.grey.shade300,
-                            ),
-                            const SizedBox(height: 16),
-                            const Text(
-                              'No walks yet.',
-                              style: TextStyle(
-                                  color: Colors.grey, fontSize: 15),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Book a walker to get started.',
-                              style: TextStyle(
-                                  color: Colors.grey, fontSize: 13),
-                            ),
-                          ],
-                        ),
+                    const SliverFillRemaining(
+                      child: EmptyStateView(
+                        icon: Icons.directions_walk_rounded,
+                        title: 'No walks yet.',
+                        subtitle: 'Book a walker to get started.',
                       ),
                     ),
                   const SliverToBoxAdapter(child: SizedBox(height: 24)),
@@ -211,48 +168,6 @@ class _WalksView extends StatelessWidget {
 
           return const SizedBox.shrink();
         },
-      ),
-    );
-  }
-}
-
-class _WalksAppBar extends StatelessWidget {
-  const _WalksAppBar();
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverAppBar(
-      pinned: true,
-      expandedHeight: 120,
-      backgroundColor: Colors.white,
-      elevation: 0,
-      surfaceTintColor: Colors.transparent,
-      flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-        title: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: AppColors.navWalks.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(Icons.directions_walk_rounded,
-                  color: AppColors.navWalks, size: 20),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              'My Walks',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1A1A2E),
-              ),
-            ),
-          ],
-        ),
-        background: Container(color: Colors.white),
       ),
     );
   }
@@ -276,7 +191,7 @@ class _SectionHeader extends StatelessWidget {
               height: 18,
               decoration: BoxDecoration(
                 color: color,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.radius2,
               ),
             ),
             const SizedBox(width: 10),
@@ -336,7 +251,7 @@ class _BookingCard extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
       child: Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         clipBehavior: Clip.antiAlias,
         elevation: 0,
         child: InkWell(
@@ -366,7 +281,7 @@ class _BookingCard extends StatelessWidget {
                   : null,
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: AppRadius.radius16,
               border: Border.all(color: Colors.grey.shade100),
             ),
             padding: const EdgeInsets.all(16),
@@ -382,7 +297,7 @@ class _BookingCard extends StatelessWidget {
                       color: inProgress
                           ? AppColors.navWalkers.withValues(alpha: 0.12)
                           : AppColors.navWalks.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.radius12,
                     ),
                     child: Icon(
                       Icons.directions_walk_rounded,
@@ -492,7 +407,7 @@ class _BookingCard extends StatelessWidget {
                       padding:
                           const EdgeInsets.symmetric(vertical: 8),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                          borderRadius: AppRadius.radius10),
                     ),
                     child: const Text('Cancel Booking',
                         style: TextStyle(fontSize: 13)),
@@ -508,27 +423,15 @@ class _BookingCard extends StatelessWidget {
   }
 
   Future<void> _confirmCancel(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Cancel booking?'),
-        content:
-            const Text('This action cannot be undone. The walker will be notified.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Keep it'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            style: TextButton.styleFrom(
-                foregroundColor: AppColors.alert),
-            child: const Text('Yes, cancel'),
-          ),
-        ],
-      ),
+    final confirmed = await BaltoDialog.confirm(
+      context,
+      title: 'Cancel booking?',
+      message: 'This action cannot be undone. The walker will be notified.',
+      confirmLabel: 'Yes, cancel',
+      cancelLabel: 'Keep it',
+      destructive: true,
     );
-    if (confirmed == true && context.mounted) {
+    if (confirmed && context.mounted) {
       context.read<MyWalksCubit>().cancelBooking(booking.id);
     }
   }
@@ -561,7 +464,7 @@ class _ProgressBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: AppRadius.radius4,
           child: LinearProgressIndicator(
             value: progress,
             backgroundColor: const Color(0xFFE8F0F8),
@@ -573,11 +476,7 @@ class _ProgressBar extends StatelessWidget {
         const SizedBox(height: 3),
         Text(
           '$elapsed / $total min',
-          style: const TextStyle(
-            fontSize: 11,
-            color: AppColors.navWalkers,
-            fontWeight: FontWeight.w600,
-          ),
+          style: AppTextStyles.micro.copyWith(color: AppColors.navWalkers),
         ),
       ],
     );
@@ -598,7 +497,7 @@ class _StatusBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
       ),
       child: Text(
         label,

@@ -5,6 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/repositories/pet_repository.dart';
@@ -30,7 +33,6 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
   String? _selectedSpecies;
   String? _selectedBreed;
 
-  static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _inputFill = Color(0xFFEEF3F3);
   static const Color _textDark = Color(0xFF1A1A2E);
@@ -75,7 +77,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
       filled: true,
       fillColor: _inputFill,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -90,16 +92,16 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
       filled: true,
       fillColor: _inputFill,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: _primary, width: 1.5),
+        borderRadius: AppRadius.radius12,
+        borderSide: BorderSide(color: AppColors.navWalks, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
@@ -178,7 +180,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.radius20,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.06),
@@ -190,14 +192,10 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Center(
+                Center(
                   child: Text(
                     'Register Your Pet',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: _textDark,
-                    ),
+                    style: AppTextStyles.h1.copyWith(color: _textDark),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -272,10 +270,10 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                   child: ElevatedButton(
                     onPressed: _saving ? null : _save,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _primary,
+                      backgroundColor: AppColors.navWalks,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.radius14,
                       ),
                       elevation: 0,
                     ),
@@ -317,7 +315,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
           ),
           style: const TextStyle(fontSize: 14, color: _textDark),
           dropdownColor: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.radius12,
           items: _speciesList
               .map((s) => DropdownMenuItem(value: s, child: Text(s)))
               .toList(),
@@ -346,7 +344,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
           ),
           style: const TextStyle(fontSize: 14, color: _textDark),
           dropdownColor: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.radius12,
           items: breeds
               .map((b) => DropdownMenuItem(value: b, child: Text(b)))
               .toList(),
@@ -363,7 +361,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
           Stack(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.radius16,
                 child: Image.file(
                   File(_pickedImage!.path),
                   width: double.infinity,
@@ -396,23 +394,23 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
               height: 120,
               decoration: BoxDecoration(
                 color: _inputFill,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.radius16,
                 border: Border.all(
-                  color: _primary.withValues(alpha: 0.3),
+                  color: AppColors.navWalks.withValues(alpha: 0.3),
                   width: 1.5,
                 ),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.camera_alt_outlined, size: 32, color: _primary),
+                  Icon(Icons.camera_alt_outlined, size: 32, color: AppColors.navWalks),
                   const SizedBox(height: 8),
                   Text(
                     'Add Photo',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: _primary,
+                      color: AppColors.navWalks,
                     ),
                   ),
                 ],

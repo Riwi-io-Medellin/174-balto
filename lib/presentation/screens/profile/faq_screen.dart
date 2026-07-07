@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+
 class FaqScreen extends StatefulWidget {
   const FaqScreen({super.key});
 
@@ -9,16 +12,15 @@ class FaqScreen extends StatefulWidget {
 }
 
 class _FaqScreenState extends State<FaqScreen> {
+  static const Color _bg = Color(0xFFF0F4F4);
+  static const Color _textDark = Color(0xFF1A1A2E);
+  static const Color _textMuted = Color(0xFF6B7280);
+
   int _expandedIndex = -1;
   final List<ExpansibleController> _controllers = List.generate(
     8,
     (_) => ExpansibleController(),
   );
-
-  static const Color _bg = Color(0xFFF0F4F4);
-  static const Color _textDark = Color(0xFF1A1A2E);
-  static const Color _textMuted = Color(0xFF6B7280);
-  static const Color _primary = Color(0xFF3A80C2);
 
   void _onItemTap(int index) {
     HapticFeedback.lightImpact();
@@ -55,7 +57,7 @@ class _FaqScreenState extends State<FaqScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.radius20,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.06),
@@ -154,13 +156,13 @@ class _FaqScreenState extends State<FaqScreen> {
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: _primary.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
+          color: AppColors.navWalks.withValues(alpha: 0.1),
+          borderRadius: AppRadius.radius12,
         ),
         child: Icon(
           Icons.help_outline,
           size: 20,
-          color: _primary,
+          color: AppColors.navWalks,
         ),
       ),
       title: Row(

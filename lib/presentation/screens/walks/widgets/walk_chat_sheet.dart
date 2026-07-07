@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_radius.dart';
 import '../../../../domain/entities/chat_message.dart';
 import '../../../bloc/walk_chat/walk_chat_cubit.dart';
 import '../../../bloc/walk_chat/walk_chat_state.dart';
@@ -60,7 +61,7 @@ class _WalkChatSheetState extends State<WalkChatSheet> {
                 height: 4,
                 decoration: BoxDecoration(
                   color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: AppRadius.radius2,
                 ),
               ),
               const Padding(
@@ -125,7 +126,7 @@ class _WalkChatSheetState extends State<WalkChatSheet> {
                           fillColor: Colors.grey.shade100,
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(24),
+                            borderRadius: AppRadius.radius24,
                             borderSide: BorderSide.none,
                           ),
                         ),
@@ -165,10 +166,10 @@ class _ChatBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: isMine ? AppColors.navWalks : Colors.grey.shade100,
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(16),
-            topRight: const Radius.circular(16),
-            bottomLeft: Radius.circular(isMine ? 16 : 4),
-            bottomRight: Radius.circular(isMine ? 4 : 16),
+            topLeft: const Radius.circular(AppRadius.r16),
+            topRight: const Radius.circular(AppRadius.r16),
+            bottomLeft: Radius.circular(isMine ? AppRadius.r16 : AppRadius.r4),
+            bottomRight: Radius.circular(isMine ? AppRadius.r4 : AppRadius.r16),
           ),
         ),
         child: Text(

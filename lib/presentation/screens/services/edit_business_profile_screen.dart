@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/repositories/business_repository.dart';
@@ -22,7 +24,7 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
   bool _saving = false;
   bool _initialized = false;
 
-  static const Color _bg = Color(0xFFF5F6FA);
+  static const Color _bg = AppColors.background;
   static const Color _textDark = Color(0xFF1F2937);
   static const Color _textMuted = Color(0xFF8A93A0);
   static const Color _green = AppColors.navWalkers;
@@ -100,7 +102,7 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: _textDark),
         ),
-        title: const Text('Edit Business', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _textDark)),
+        title: Text('Edit Business', style: AppTextStyles.h3.copyWith(color: _textDark)),
         centerTitle: true,
         actions: [
           TextButton(
@@ -170,7 +172,7 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
   }
 
   Widget _fieldLabel(String text) {
-    return Text(text, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF5A6473)));
+    return Text(text, style: AppTextStyles.label.copyWith(color: const Color(0xFF5A6473)));
   }
 
   InputDecoration _inputDecoration({required String hint}) {
@@ -179,9 +181,9 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
       hintStyle: const TextStyle(color: _textMuted, fontSize: 14),
       filled: true,
       fillColor: Colors.white,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE0E4EC))),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE0E4EC))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _green, width: 1.5)),
+      border: OutlineInputBorder(borderRadius: AppRadius.radius12, borderSide: const BorderSide(color: Color(0xFFE0E4EC))),
+      enabledBorder: OutlineInputBorder(borderRadius: AppRadius.radius12, borderSide: const BorderSide(color: Color(0xFFE0E4EC))),
+      focusedBorder: OutlineInputBorder(borderRadius: AppRadius.radius12, borderSide: const BorderSide(color: _green, width: 1.5)),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     );
   }
@@ -196,7 +198,7 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
           backgroundColor: _green,
           foregroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
           disabledBackgroundColor: _green.withValues(alpha: 0.45),
         ),
         child: _saving

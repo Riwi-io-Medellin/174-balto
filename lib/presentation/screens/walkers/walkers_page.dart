@@ -3,13 +3,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/entities/walker.dart';
 import '../../bloc/walker/walker_cubit.dart';
 import '../../bloc/walker/walker_state.dart';
 import '../walkers/walker_profile_page.dart';
 import 'become_walker_screen.dart';
+import '../../widgets/balto_header.dart';
+import '../../widgets/balto_screen_scaffold.dart';
 import '../../widgets/skeletons/walkers_skeleton.dart';
+import '../../widgets/states/empty_state_view.dart';
+import '../../widgets/states/error_state_view.dart';
 import 'widgets/walker_card.dart';
 import 'widgets/walker_filter_chip.dart';
 import 'widgets/walkers_search_bar.dart';
@@ -78,8 +83,7 @@ class _WalkersPageState extends State<WalkersPage> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: _cubit,
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF5F6FA),
+      child: BaltoScreenScaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () => Navigator.of(context).push(
             MaterialPageRoute(
@@ -91,39 +95,34 @@ class _WalkersPageState extends State<WalkersPage> {
           elevation: 4,
           child: const Icon(Icons.add_rounded),
         ),
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeader(),
-                    const SizedBox(height: 16),
-                    const WalkersSearchBar(),
-                    const SizedBox(height: 14),
-                    _buildFilterRow(),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 22),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'Available Now',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF1F2937),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Expanded(child: _buildWalkerList()),
-            ],
-          ),
+        header: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            BaltoHeader.iconTitle(
+              icon: Icons.pets_rounded,
+              iconColor: AppColors.navWalkers,
+              title: 'Community Walkers',
+              actions: [
+                BaltoHeaderAction(icon: Icons.search_rounded, onPressed: () {}),
+                BaltoHeaderAction(icon: Icons.tune_rounded, onPressed: () {}),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const WalkersSearchBar(),
+            const SizedBox(height: 14),
+            _buildFilterRow(),
+          ],
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text('Available Now', style: AppTextStyles.h3),
+            ),
+            const SizedBox(height: 12),
+            Expanded(child: _buildWalkerList()),
+          ],
         ),
       ),
     );
@@ -136,31 +135,11 @@ class _WalkersPageState extends State<WalkersPage> {
           return const WalkersSkeleton();
         }
         if (state is WalkerError) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.cloud_off_rounded,
-                    size: 48,
-                    color: Color(0xFFB0B8C1),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    state.message,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Color(0xFF5A6473)),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _cubit.loadWalkers,
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            ),
+          return ErrorStateView(
+            icon: Icons.cloud_off_rounded,
+            message: state.message,
+            accentColor: AppColors.navWalkers,
+            onRetry: _cubit.loadWalkers,
           );
         }
 
@@ -177,30 +156,12 @@ class _WalkersPageState extends State<WalkersPage> {
         }
 
         if (walkers.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(32),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.search_off_rounded,
-                    size: 48,
-                    color: Color(0xFFB0B8C1),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'No walkers found in your area.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 15, color: Color(0xFF8A93A0)),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: _cubit.loadWalkers,
-                    child: const Text('Try again'),
-                  ),
-                ],
-              ),
+          return EmptyStateView(
+            icon: Icons.search_off_rounded,
+            title: 'No walkers found in your area.',
+            action: TextButton(
+              onPressed: _cubit.loadWalkers,
+              child: const Text('Try again'),
             ),
           );
         }
@@ -246,47 +207,6 @@ class _WalkersPageState extends State<WalkersPage> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildHeader() {
-    return Row(
-      children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: AppColors.navWalkers.withValues(alpha: 0.12),
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.pets_rounded,
-            size: 18,
-            color: AppColors.navWalkers,
-          ),
-        ),
-        const SizedBox(width: 10),
-        const Expanded(
-          child: Text(
-            'Community Walkers',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF1F2937),
-            ),
-          ),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.search_rounded, color: Color(0xFF1F2937)),
-          visualDensity: VisualDensity.compact,
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.tune_rounded, color: Color(0xFF1F2937)),
-          visualDensity: VisualDensity.compact,
-        ),
-      ],
     );
   }
 

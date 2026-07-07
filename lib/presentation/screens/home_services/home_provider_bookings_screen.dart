@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_shadows.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/home_service_booking.dart';
 import '../../bloc/home_provider_booking/home_provider_booking_cubit.dart';
 import '../../bloc/home_provider_booking/home_provider_booking_state.dart';
+import '../../widgets/balto_dialog.dart';
 
 class HomeProviderBookingsScreen extends StatelessWidget {
   const HomeProviderBookingsScreen({super.key});
@@ -34,13 +38,9 @@ class _HomeProviderBookingsView extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          title: const Text(
+          title: Text(
             'My Bookings',
-            style: TextStyle(
-              color: _accent,
-              fontWeight: FontWeight.w700,
-              fontSize: 18,
-            ),
+            style: AppTextStyles.h3.copyWith(color: _accent),
           ),
           iconTheme: const IconThemeData(color: _accent),
           bottom: const TabBar(
@@ -226,15 +226,9 @@ class _BookingCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: AppShadows.subtle,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -316,7 +310,7 @@ class _BookingCard extends StatelessWidget {
                         foregroundColor: _orange,
                         side: const BorderSide(color: _orange),
                         padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.radius8),
                       ),
                       child: const Text('Reject', style: TextStyle(fontSize: 13)),
                     ),
@@ -334,7 +328,7 @@ class _BookingCard extends StatelessWidget {
                         backgroundColor: _accent,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.radius8),
                       ),
                       child: isPerformingAction
                           ? const SizedBox(
@@ -363,7 +357,7 @@ class _BookingCard extends StatelessWidget {
                       backgroundColor: _accent,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.radius8),
                       elevation: 0,
                     ),
                   ),
@@ -383,7 +377,7 @@ class _BookingCard extends StatelessWidget {
                       backgroundColor: const Color(0xFF1565C0),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.radius8),
                       elevation: 0,
                     ),
                   ),
@@ -404,7 +398,7 @@ class _BookingCard extends StatelessWidget {
                     foregroundColor: _orange,
                     side: const BorderSide(color: _orange),
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.radius8),
                   ),
                   child: isPerformingAction
                       ? const SizedBox(
@@ -442,18 +436,12 @@ class _BookingCard extends StatelessWidget {
     String content,
     VoidCallback onConfirm,
   ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(title),
-        content: Text(content),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Confirm')),
-        ],
-      ),
+    final confirmed = await BaltoDialog.confirm(
+      context,
+      title: title,
+      message: content,
     );
-    if (confirmed == true) onConfirm();
+    if (confirmed) onConfirm();
   }
 }
 
@@ -478,11 +466,11 @@ class _StatusBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
       ),
       child: Text(
         label,
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color),
+        style: AppTextStyles.micro.copyWith(color: color),
       ),
     );
   }

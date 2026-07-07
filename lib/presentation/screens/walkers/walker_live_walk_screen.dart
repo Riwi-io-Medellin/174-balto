@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/services/walk_chat_service.dart';
 import '../../../core/services/walker_live_walk_service.dart';
@@ -18,6 +20,7 @@ import '../../../domain/repositories/walk_session_repository.dart';
 import '../../bloc/walk_chat/walk_chat_cubit.dart';
 import '../../bloc/walker_live_walk/walker_live_walk_cubit.dart';
 import '../../bloc/walker_live_walk/walker_live_walk_state.dart';
+import '../../widgets/balto_dialog.dart';
 import '../walks/walk_route_summary_screen.dart';
 import '../walks/widgets/walk_chat_sheet.dart';
 
@@ -27,7 +30,7 @@ void _openChat(BuildContext context, String sessionId) {
     isScrollControlled: true,
     backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r20)),
     ),
     builder: (_) => BlocProvider<WalkChatCubit>(
       create: (_) => WalkChatCubit(
@@ -195,7 +198,7 @@ class _MapSection extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               decoration: BoxDecoration(
                 color: Colors.black.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.radius12,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -244,16 +247,16 @@ class _BackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.radius12,
       elevation: 4,
       shadowColor: Colors.black26,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         onTap: () => Navigator.of(context).pop(),
         child: const Padding(
           padding: EdgeInsets.all(10),
           child: Icon(Icons.arrow_back_rounded,
-              color: Color(0xFF1A1A2E), size: 22),
+              color: AppColors.textPrimary, size: 22),
         ),
       ),
     );
@@ -276,7 +279,7 @@ class _WalkingBadge extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.radius20,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.1),
@@ -330,7 +333,7 @@ class _BottomPanel extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r24)),
         boxShadow: [
           BoxShadow(
             color: Color(0x14000000),
@@ -351,7 +354,7 @@ class _BottomPanel extends StatelessWidget {
                 height: 4,
                 decoration: BoxDecoration(
                   color: const Color(0xFFE0E0E0),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: AppRadius.radius2,
                 ),
               ),
             ),
@@ -453,7 +456,7 @@ class _BottomPanel extends StatelessWidget {
                   disabledBackgroundColor:
                       const Color(0xFFD05A24).withValues(alpha: 0.4),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: AppRadius.radius14,
                   ),
                   elevation: 0,
                 ),
@@ -493,7 +496,7 @@ class _BottomPanel extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r20)),
       ),
       builder: (ctx) => SafeArea(
         child: Column(
@@ -505,7 +508,7 @@ class _BottomPanel extends StatelessWidget {
               height: 4,
               decoration: BoxDecoration(
                 color: const Color(0xFFE0E0E0),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.radius2,
               ),
             ),
             const SizedBox(height: 16),
@@ -539,29 +542,15 @@ class _BottomPanel extends StatelessWidget {
   }
 
   Future<void> _confirmEnd(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('End walk?'),
-        content: const Text(
-          'This will complete the walk and notify the owner.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Keep walking'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFFD05A24),
-            ),
-            child: const Text('End walk'),
-          ),
-        ],
-      ),
+    final confirmed = await BaltoDialog.confirm(
+      context,
+      title: 'End walk?',
+      message: 'This will complete the walk and notify the owner.',
+      confirmLabel: 'End walk',
+      cancelLabel: 'Keep walking',
+      destructive: true,
     );
-    if (confirmed == true && context.mounted) {
+    if (confirmed && context.mounted) {
       context.read<WalkerLiveWalkCubit>().endWalk();
     }
   }
@@ -598,9 +587,9 @@ class _MediaBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: enabled ? color.withValues(alpha: 0.09) : const Color(0xFFF0F0F0),
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.radius12,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         onTap: (enabled && !isLoading) ? onTap : null,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -621,9 +610,7 @@ class _MediaBtn extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                style: AppTextStyles.label.copyWith(
                   color: enabled ? color : Colors.grey,
                 ),
               ),
@@ -675,7 +662,7 @@ void _openWalkerMedia(BuildContext context, WalkMedia media) {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.black54,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.radius20,
                 ),
                 child: const Icon(Icons.close, color: Colors.white, size: 24),
               ),
@@ -697,14 +684,14 @@ class _MediaThumb extends StatelessWidget {
     return GestureDetector(
       onTap: () => _openWalkerMedia(context, media),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.radius10,
         child: Stack(
           children: [
             media.isVideo
                 ? Container(
                     width: 64,
                     height: 64,
-                    color: const Color(0xFF1A1A2E),
+                    color: AppColors.textPrimary,
                     child: const Icon(Icons.play_circle_fill_rounded,
                         color: Colors.white, size: 28),
                   )
@@ -747,7 +734,7 @@ class _StatTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
       ),
       child: Column(
         children: [
@@ -798,7 +785,7 @@ class _ErrorView extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1A1A2E),
+                    color: AppColors.textPrimary,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -820,7 +807,7 @@ class _ErrorView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 32, vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                        borderRadius: AppRadius.radius12),
                   ),
                   child: const Text('Retry'),
                 ),

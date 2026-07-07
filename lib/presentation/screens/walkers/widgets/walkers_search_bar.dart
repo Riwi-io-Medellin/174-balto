@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_radius.dart';
+
 class WalkersSearchBar extends StatelessWidget {
   const WalkersSearchBar({super.key, this.onChanged});
 
@@ -10,7 +12,7 @@ class WalkersSearchBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/entities/notification.dart';
 import '../../../domain/entities/pet.dart';
@@ -89,7 +91,7 @@ class _LostPetAlertBannerState extends State<LostPetAlertBanner> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: _alert.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         border: Border.all(color: _alert.withValues(alpha: 0.35)),
       ),
       child: Row(
@@ -119,10 +121,8 @@ class _LostPetAlertBannerState extends State<LostPetAlertBanner> {
                 const SizedBox(height: 4),
                 Text(
                   top.title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1F2937),
+                  style: AppTextStyles.bodyBold.copyWith(
+                    color: const Color(0xFF1F2937),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -134,11 +134,7 @@ class _LostPetAlertBannerState extends State<LostPetAlertBanner> {
                   const SizedBox(height: 4),
                   Text(
                     '+$extraCount more lost pet alert${extraCount == 1 ? '' : 's'}',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: _alert,
-                    ),
+                    style: AppTextStyles.micro.copyWith(color: _alert),
                   ),
                 ],
               ],
@@ -159,7 +155,7 @@ class _LostPetAlertBannerState extends State<LostPetAlertBanner> {
   Widget _photo(Pet? pet) {
     if (pet?.photoUrl != null && pet!.photoUrl!.isNotEmpty) {
       return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.radius10,
         child: Image.network(
           pet.photoUrl!,
           width: 48,
@@ -178,7 +174,7 @@ class _LostPetAlertBannerState extends State<LostPetAlertBanner> {
       height: 48,
       decoration: BoxDecoration(
         color: _alert.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.radius10,
       ),
       child: const Icon(Icons.pets, color: _alert),
     );

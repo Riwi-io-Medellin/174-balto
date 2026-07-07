@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/pet.dart';
@@ -15,11 +18,9 @@ import 'pet_detail_screen.dart';
 class ManagePetsScreen extends StatelessWidget {
   const ManagePetsScreen({super.key});
 
-  static const Color _primary = Color(0xFF1BAA71);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _textDark = Color(0xFF1A1A2E);
   static const Color _textMuted = Color(0xFF6B7280);
-  static const Color _purple = Color(0xFF5F36C2);
   static const Color _bgPurple = Color(0xFFF0EAFB);
   static const Color _red = Color(0xFFE53935);
 
@@ -46,14 +47,14 @@ class ManagePetsScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 48),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: AppRadius.radius16,
                   ),
                   child: Column(
                     children: [
                       Icon(
                         Icons.pets,
                         size: 48,
-                        color: _primary.withValues(alpha: 0.4),
+                        color: AppColors.petProfile.withValues(alpha: 0.4),
                       ),
                       const SizedBox(height: 12),
                       const Text(
@@ -121,7 +122,7 @@ class ManagePetsScreen extends StatelessWidget {
         padding: const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
           color: _red,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.radius14,
         ),
         child: const Icon(Icons.delete_outline, color: Colors.white, size: 24),
       ),
@@ -151,12 +152,12 @@ class ManagePetsScreen extends StatelessWidget {
           ),
         ),
       ),
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: AppRadius.radius14,
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.radius14,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
@@ -204,7 +205,7 @@ class ManagePetsScreen extends StatelessWidget {
             ),
             IconButton(
               icon: const Icon(Icons.edit_outlined, size: 20),
-              color: _purple,
+              color: AppColors.navCoach,
               visualDensity: VisualDensity.compact,
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
@@ -230,7 +231,7 @@ class ManagePetsScreen extends StatelessWidget {
       UrgencyLevel.scheduleVetVisit => const Color(0xFFE8A84C),
       UrgencyLevel.urgent => const Color(0xFFD05A24),
       UrgencyLevel.emergency => const Color(0xFFD32F2F),
-      UrgencyLevel.routine => _primary,
+      UrgencyLevel.routine => AppColors.petProfile,
     };
     final icon = switch (level) {
       UrgencyLevel.scheduleVetVisit => Icons.event_note_rounded,
@@ -244,7 +245,7 @@ class ManagePetsScreen extends StatelessWidget {
   Widget _buildAvatar(Pet pet) {
     if (pet.photoUrl != null && pet.photoUrl!.isNotEmpty) {
       return ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         child: Image.network(
           pet.photoUrl!,
           width: 48,
@@ -262,17 +263,13 @@ class ManagePetsScreen extends StatelessWidget {
       width: 48,
       height: 48,
       decoration: BoxDecoration(
-        color: _primary.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.petProfile.withValues(alpha: 0.12),
+        borderRadius: AppRadius.radius12,
       ),
       child: Center(
         child: Text(
           name[0].toUpperCase(),
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: _primary,
-          ),
+          style: AppTextStyles.h2.copyWith(color: AppColors.petProfile),
         ),
       ),
     );
@@ -293,20 +290,16 @@ class ManagePetsScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
           color: _bgPurple,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.radius14,
           border: Border.all(
-            color: _purple.withValues(alpha: 0.30),
+            color: AppColors.navCoach.withValues(alpha: 0.30),
             width: 1.5,
           ),
         ),
         alignment: Alignment.center,
-        child: const Text(
+        child: Text(
           '+ Add New Pet',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: _purple,
-          ),
+          style: AppTextStyles.bodyBold.copyWith(color: AppColors.navCoach),
         ),
       ),
     );

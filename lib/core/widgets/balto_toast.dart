@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
+import '../constants/app_radius.dart';
 
 /// Variants for branded toast messages.
 enum BaltoToastType { success, error, warning, info }
@@ -114,7 +115,7 @@ class _BaltoToastContent extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: _bg,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.radius14,
           boxShadow: [
             BoxShadow(
               color: _accent.withValues(alpha: 0.18),
@@ -129,7 +130,7 @@ class _BaltoToastContent extends StatelessWidget {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.radius14,
           child: IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,

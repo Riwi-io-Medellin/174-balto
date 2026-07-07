@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_radius.dart';
 import '../../../../domain/entities/walker.dart';
 
 class WalkerCard extends StatelessWidget {
@@ -25,7 +26,7 @@ class WalkerCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.07),
@@ -69,7 +70,7 @@ class WalkerCard extends StatelessWidget {
 
   Widget _buildImage() {
     return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.r20)),
       child: SizedBox(
         height: 180,
         width: double.infinity,
@@ -109,7 +110,7 @@ class WalkerCard extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: AppColors.navWalkers,
-                    borderRadius: BorderRadius.circular(99),
+                    borderRadius: AppRadius.radiusPill,
                   ),
                   child: const Text(
                     'TOP RATED',
@@ -131,7 +132,7 @@ class WalkerCard extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1BAA71),
-                    borderRadius: BorderRadius.circular(99),
+                    borderRadius: AppRadius.radiusPill,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -244,7 +245,7 @@ class WalkerCard extends StatelessWidget {
               foregroundColor: AppColors.navWalkers,
               side: const BorderSide(color: AppColors.navWalkers, width: 1.5),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.radius10,
               ),
               padding: const EdgeInsets.symmetric(vertical: 11),
             ),
@@ -263,7 +264,7 @@ class WalkerCard extends StatelessWidget {
               foregroundColor: Colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: AppRadius.radius10,
               ),
               padding: const EdgeInsets.symmetric(vertical: 11),
             ),

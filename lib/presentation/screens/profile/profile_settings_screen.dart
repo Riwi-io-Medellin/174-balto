@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
+
 class ProfileSettingsScreen extends StatelessWidget {
   const ProfileSettingsScreen({super.key});
 
@@ -24,7 +27,7 @@ class ProfileSettingsScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: AppRadius.radius20,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.06),
@@ -33,21 +36,17 @@ class ProfileSettingsScreen extends StatelessWidget {
               ),
             ],
           ),
-          child: const Column(
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.settings_outlined, size: 48, color: Color(0xFF9AA0B2)),
-              SizedBox(height: 16),
+              const Icon(Icons.settings_outlined, size: 48, color: Color(0xFF9AA0B2)),
+              const SizedBox(height: 16),
               Text(
                 'Profile Settings',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: _textDark,
-                ),
+                style: AppTextStyles.h3.copyWith(color: _textDark),
               ),
-              SizedBox(height: 8),
-              Text(
+              const SizedBox(height: 8),
+              const Text(
                 'Coming Soon',
                 style: TextStyle(fontSize: 14, color: _textMuted),
               ),

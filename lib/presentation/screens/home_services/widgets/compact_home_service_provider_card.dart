@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_radius.dart';
 import '../../../../domain/entities/home_service_provider.dart';
 
 class CompactHomeServiceProviderCard extends StatelessWidget {
@@ -21,7 +22,7 @@ class CompactHomeServiceProviderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: AppRadius.radius16,
       clipBehavior: Clip.antiAlias,
       elevation: 2,
       shadowColor: Colors.black.withValues(alpha: 0.07),
@@ -114,7 +115,7 @@ class _StatusBadge extends StatelessWidget {
         color: isActive
             ? AppColors.homeServices.withValues(alpha: 0.12)
             : const Color(0xFFF0F2F5),
-        borderRadius: BorderRadius.circular(99),
+        borderRadius: AppRadius.radiusPill,
       ),
       child: Text(
         isActive ? 'Active' : 'Unavailable',
@@ -137,7 +138,7 @@ class _ProviderBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
         color: const Color(0xFFFBEAF1),
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: AppRadius.radius6,
       ),
       child: const Text(
         'Home Service',

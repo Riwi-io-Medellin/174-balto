@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_radius.dart';
+import '../../core/constants/app_shadows.dart';
+import '../../core/constants/app_text_styles.dart';
 import '../../domain/entities/review.dart';
 
 class ReviewCard extends StatelessWidget {
@@ -24,14 +27,8 @@ class ReviewCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        borderRadius: AppRadius.radius14,
+        boxShadow: AppShadows.subtle,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,10 +53,8 @@ class ReviewCard extends StatelessWidget {
                   children: [
                     Text(
                       review.userName,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1F2937),
+                      style: AppTextStyles.bodyBold.copyWith(
+                        color: const Color(0xFF1F2937),
                       ),
                     ),
                     const SizedBox(height: 2),

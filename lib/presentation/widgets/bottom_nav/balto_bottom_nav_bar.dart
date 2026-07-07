@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
 import 'nav_item_model.dart';
 
 class BaltoBottomNavBar extends StatelessWidget {
@@ -51,7 +52,7 @@ class BaltoBottomNavBar extends StatelessWidget {
         height: 68,
         decoration: BoxDecoration(
           color: AppColors.navBarBackground,
-          borderRadius: BorderRadius.circular(40),
+          borderRadius: AppRadius.radius40,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.10),

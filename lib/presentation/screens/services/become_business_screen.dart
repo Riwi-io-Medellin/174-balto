@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/repositories/business_repository.dart';
@@ -36,7 +38,7 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
   static const _types = ['veterinary', 'grooming', 'shelter', 'petshop', 'other'];
 
   static const Color _green = AppColors.navWalkers;
-  static const Color _bg = Color(0xFFF5F6FA);
+  static const Color _bg = AppColors.background;
   static const Color _textDark = Color(0xFF1F2937);
   static const Color _textMid = Color(0xFF5A6473);
   static const Color _textMuted = Color(0xFF8A93A0);
@@ -126,15 +128,15 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
       filled: true,
       fillColor: Colors.white,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: const BorderSide(color: _green, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -155,7 +157,7 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
         ),
         title: Text(
           widget.isReapply ? 'Re-submit Application' : 'Register a Business',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _textDark),
+          style: AppTextStyles.h3.copyWith(color: _textDark),
         ),
         centerTitle: true,
       ),
@@ -211,7 +213,7 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 4))],
       ),
       child: Column(
@@ -255,14 +257,12 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
             decoration: BoxDecoration(
               color: selected ? _green : Colors.white,
-              borderRadius: BorderRadius.circular(99),
+              borderRadius: AppRadius.radiusPill,
               border: Border.all(color: selected ? _green : const Color(0xFFE0E4EC)),
             ),
             child: Text(
               t[0].toUpperCase() + t.substring(1),
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
+              style: AppTextStyles.label.copyWith(
                 color: selected ? Colors.white : _textMid,
               ),
             ),
@@ -281,7 +281,7 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
         height: 180,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.radius16,
           border: Border.all(color: const Color(0xFFDDE1EA), width: 1.5),
         ),
         child: Column(
@@ -307,7 +307,7 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
     return Stack(
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.radius16,
           child: Image.file(File(_pickedDocument!.path), width: double.infinity, height: 220, fit: BoxFit.cover),
         ),
         Positioned(
@@ -317,13 +317,13 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
             onTap: _submitting ? null : _pickDocument,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-              decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.55), borderRadius: BorderRadius.circular(99)),
-              child: const Row(
+              decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.55), borderRadius: AppRadius.radiusPill),
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.edit_rounded, size: 14, color: Colors.white),
-                  SizedBox(width: 6),
-                  Text('Change', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white)),
+                  const Icon(Icons.edit_rounded, size: 14, color: Colors.white),
+                  const SizedBox(width: 6),
+                  Text('Change', style: AppTextStyles.captionStrong.copyWith(color: Colors.white)),
                 ],
               ),
             ),
@@ -343,7 +343,7 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
           backgroundColor: _green,
           foregroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
           disabledBackgroundColor: _green.withValues(alpha: 0.45),
         ),
         child: _submitting

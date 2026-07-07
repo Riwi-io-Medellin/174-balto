@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_radius.dart';
 import 'skeleton_box.dart';
 
 /// A column of skeleton booking-card rows.
@@ -40,7 +41,7 @@ class WalksSkeleton extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: AppRadius.radius16,
           ),
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -53,7 +54,7 @@ class WalksSkeleton extends StatelessWidget {
                     height: 44,
                     decoration: BoxDecoration(
                       color: const Color(0xFFE0E0E0),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: AppRadius.radius10,
                     ),
                   ),
                   const SizedBox(width: 12),

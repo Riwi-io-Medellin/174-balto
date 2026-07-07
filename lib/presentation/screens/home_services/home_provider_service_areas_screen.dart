@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/home_provider_service_area.dart';
@@ -100,7 +102,7 @@ class _HomeProviderServiceAreasScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -109,9 +111,9 @@ class _HomeProviderServiceAreasScreenState
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: _textDark),
         ),
-        title: const Text(
+        title: Text(
           'Service Areas',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _textDark),
+          style: AppTextStyles.h3.copyWith(color: _textDark),
         ),
         centerTitle: true,
         actions: [
@@ -147,7 +149,7 @@ class _HomeProviderServiceAreasScreenState
                       padding: const EdgeInsets.symmetric(vertical: 32),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.radius14,
                         border: Border.all(color: const Color(0xFFE0E4EC)),
                       ),
                       child: const Column(
@@ -172,7 +174,7 @@ class _HomeProviderServiceAreasScreenState
                       style: OutlinedButton.styleFrom(
                         foregroundColor: _accent,
                         side: BorderSide(color: _accent.withValues(alpha: 0.30)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.radius12),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
@@ -189,7 +191,7 @@ class _HomeProviderServiceAreasScreenState
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
         border: Border.all(color: const Color(0xFFE0E4EC)),
       ),
       child: Column(
@@ -215,7 +217,7 @@ class _HomeProviderServiceAreasScreenState
                     isDense: true,
                     border: InputBorder.none,
                   ),
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textDark),
+                  style: AppTextStyles.bodyBold.copyWith(color: _textDark),
                   onChanged: (v) => area.label = v,
                 ),
               ),
@@ -274,9 +276,9 @@ class _HomeProviderServiceAreasScreenState
         labelStyle: const TextStyle(fontSize: 12, color: _textMuted),
         isDense: true,
         filled: true,
-        fillColor: const Color(0xFFF5F6FA),
+        fillColor: AppColors.background,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: AppRadius.radius10,
           borderSide: BorderSide.none,
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

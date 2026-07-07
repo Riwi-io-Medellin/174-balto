@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../core/constants/app_radius.dart';
 import '../../domain/entities/feedback_summary.dart';
 
 class RatingSummary extends StatelessWidget {
@@ -28,7 +29,7 @@ class RatingSummary extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -96,7 +97,7 @@ class RatingSummary extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: AppRadius.radius4,
                           child: LinearProgressIndicator(
                             value: fraction,
                             minHeight: 7,

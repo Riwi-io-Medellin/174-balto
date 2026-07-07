@@ -6,6 +6,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/services/walk_chat_service.dart';
 import '../../../core/services/walk_tracking_service.dart';
@@ -29,7 +31,7 @@ void _openChat(BuildContext context, String sessionId) {
     isScrollControlled: true,
     backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r20)),
     ),
     builder: (_) => BlocProvider<WalkChatCubit>(
       create: (_) => WalkChatCubit(
@@ -105,7 +107,7 @@ class _LiveWalkViewState extends State<_LiveWalkView> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF5F7FA),
+        backgroundColor: AppColors.background,
         body: BlocBuilder<LiveWalkCubit, LiveWalkState>(
           builder: (context, state) {
             if (state is LiveWalkError) {
@@ -203,12 +205,12 @@ class _MapSection extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               decoration: BoxDecoration(
                 color: Colors.black54,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.radius14,
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                     height: 16,
                     child: CircularProgressIndicator(
@@ -216,14 +218,10 @@ class _MapSection extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Text(
                     'Connecting to walker...',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                    ),
+                    style: AppTextStyles.label.copyWith(color: Colors.white),
                   ),
                 ],
               ),
@@ -253,16 +251,16 @@ class _BackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.radius12,
       elevation: 4,
       shadowColor: Colors.black26,
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         onTap: () => Navigator.of(context).pop(),
         child: const Padding(
           padding: EdgeInsets.all(10),
           child: Icon(Icons.arrow_back_rounded,
-              color: Color(0xFF1A1A2E), size: 22),
+              color: AppColors.textPrimary, size: 22),
         ),
       ),
     );
@@ -285,7 +283,7 @@ class _LiveBadge extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.radius20,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.1),
@@ -331,7 +329,7 @@ class _WaitingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -353,13 +351,9 @@ class _WaitingView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
+                Text(
                   'Waiting for your walker',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1A1A2E),
-                  ),
+                  style: AppTextStyles.h3,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
@@ -386,7 +380,7 @@ class _WaitingView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 32, vertical: 12),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                        borderRadius: AppRadius.radius12),
                     elevation: 0,
                   ),
                   child: const Text('Check now'),
@@ -416,7 +410,7 @@ class _ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -432,7 +426,7 @@ class _ErrorView extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1A1A2E),
+                    color: AppColors.textPrimary,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -452,7 +446,7 @@ class _ErrorView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 32, vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                        borderRadius: AppRadius.radius12),
                   ),
                   child: const Text('Retry'),
                 ),
@@ -484,7 +478,7 @@ class _StatusPanel extends StatelessWidget {
       width: double.infinity,
       decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r24)),
         boxShadow: [
           BoxShadow(
             color: Color(0x14000000),
@@ -508,7 +502,7 @@ class _StatusPanel extends StatelessWidget {
                       height: 4,
                       decoration: BoxDecoration(
                         color: const Color(0xFFE0E0E0),
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: AppRadius.radius2,
                       ),
                     ),
                   ),
@@ -582,7 +576,7 @@ class _WalkerRow extends StatelessWidget {
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 17,
-                  color: Color(0xFF1A1A2E),
+                  color: AppColors.textPrimary,
                 ),
               ),
               const Text(
@@ -597,7 +591,7 @@ class _WalkerRow extends StatelessWidget {
               const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             color: const Color(0xFFFFF8E6),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: AppRadius.radius20,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -607,11 +601,7 @@ class _WalkerRow extends StatelessWidget {
               const SizedBox(width: 3),
               Text(
                 rating.toStringAsFixed(1),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: Color(0xFF1A1A2E),
-                ),
+                style: AppTextStyles.bodyBold,
               ),
             ],
           ),
@@ -685,7 +675,7 @@ class _StatTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
       ),
       child: Column(
         children: [
@@ -781,9 +771,9 @@ class _ActionBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: bg,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: AppRadius.radius14,
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 14),
@@ -794,11 +784,7 @@ class _ActionBtn extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: fg,
-                ),
+                style: AppTextStyles.label.copyWith(color: fg),
               ),
             ],
           ),
@@ -817,7 +803,7 @@ class _WellnessCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFFF0FBF6),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         border: Border.all(
           color: AppColors.navWalkers.withValues(alpha: 0.2),
         ),
@@ -840,21 +826,13 @@ class _WellnessCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Peace of mind',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                    color: Color(0xFF1A1A2E),
-                  ),
+                  style: AppTextStyles.bodyBold,
                 ),
-                const Text(
+                Text(
                   'Live wellbeing check · All good',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.navWalkers,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.captionStrong.copyWith(color: AppColors.navWalkers),
                 ),
                 const SizedBox(height: 6),
                 const Text(
@@ -956,7 +934,7 @@ class _WalkMediaSectionState extends State<_WalkMediaSection> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF1A1A2E),
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 10),
@@ -1015,7 +993,7 @@ void _openMedia(BuildContext context, WalkMedia media) {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.black54,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.radius20,
                 ),
                 child: const Icon(Icons.close, color: Colors.white, size: 24),
               ),
@@ -1037,12 +1015,12 @@ class _OwnerMediaThumb extends StatelessWidget {
     return GestureDetector(
       onTap: () => _openMedia(context, media),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         child: media.isVideo
             ? Container(
                 width: 80,
                 height: 80,
-                color: const Color(0xFF1A1A2E),
+                color: AppColors.textPrimary,
                 child: const Icon(Icons.play_circle_fill_rounded,
                     color: Colors.white, size: 32),
               )

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_shadows.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/available_slot.dart';
@@ -60,7 +63,7 @@ class _HomeServiceBookingScreenState extends State<HomeServiceBookingScreen> {
         },
         builder: (context, state) {
           return Scaffold(
-            backgroundColor: const Color(0xFFF5F6FA),
+            backgroundColor: AppColors.background,
             appBar: AppBar(
               backgroundColor: const Color(0xFF1F2937),
               foregroundColor: Colors.white,
@@ -209,15 +212,15 @@ class _FormBody extends StatelessWidget {
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.radius12,
               borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.radius12,
               borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.radius12,
               borderSide: const BorderSide(color: _accent, width: 1.5),
             ),
             contentPadding: const EdgeInsets.all(14),
@@ -236,15 +239,15 @@ class _FormBody extends StatelessWidget {
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.radius12,
               borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.radius12,
               borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.radius12,
               borderSide: const BorderSide(color: _accent, width: 1.5),
             ),
             contentPadding: const EdgeInsets.all(14),
@@ -281,7 +284,7 @@ class _ServiceSelector extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: isSelected ? _accent.withValues(alpha: 0.08) : Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.radius12,
               border: Border.all(color: isSelected ? _accent : const Color(0xFFE0E4EC), width: isSelected ? 2 : 1),
             ),
             child: Row(
@@ -289,16 +292,14 @@ class _ServiceSelector extends StatelessWidget {
                 Expanded(
                   child: Text(
                     s.serviceTypeName,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
+                    style: AppTextStyles.bodyBold.copyWith(
                       color: isSelected ? _accent : const Color(0xFF1F2937),
                     ),
                   ),
                 ),
                 Text(
                   s.priceLabel,
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: isSelected ? _accent : const Color(0xFF5A6473)),
+                  style: AppTextStyles.label.copyWith(color: isSelected ? _accent : const Color(0xFF5A6473)),
                 ),
               ],
             ),
@@ -322,7 +323,7 @@ class _SectionTitle extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF1F2937))),
+        Text(title, style: AppTextStyles.titleSmall.copyWith(color: const Color(0xFF1F2937))),
         if (subtitle != null) ...[
           const SizedBox(height: 2),
           Text(subtitle!, style: const TextStyle(fontSize: 13, color: Color(0xFF8A93A0))),
@@ -378,7 +379,7 @@ class _PetCard extends StatelessWidget {
         width: 80,
         decoration: BoxDecoration(
           color: isSelected ? _accent.withValues(alpha: 0.08) : Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.radius16,
           border: Border.all(color: isSelected ? _accent : const Color(0xFFE0E4EC), width: isSelected ? 2 : 1),
           boxShadow: [
             BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
@@ -391,7 +392,7 @@ class _PetCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               pet.name,
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isSelected ? _accent : const Color(0xFF1F2937)),
+              style: AppTextStyles.micro.copyWith(color: isSelected ? _accent : const Color(0xFF1F2937)),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -437,7 +438,7 @@ class _AddPetCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 80,
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE0E4EC))),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: AppRadius.radius16, border: Border.all(color: const Color(0xFFE0E4EC))),
         child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -477,13 +478,13 @@ class _DurationSelector extends StatelessWidget {
                 height: 48,
                 decoration: BoxDecoration(
                   color: isSelected ? _accent : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.radius12,
                   border: Border.all(color: isSelected ? _accent : const Color(0xFFE0E4EC)),
                 ),
                 child: Center(
                   child: Text(
                     '$min min',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: isSelected ? Colors.white : const Color(0xFF5A6473)),
+                    style: AppTextStyles.bodyBold.copyWith(color: isSelected ? Colors.white : const Color(0xFF5A6473)),
                   ),
                 ),
               ),
@@ -536,12 +537,12 @@ class _DateSelector extends StatelessWidget {
       child: Container(
         height: 50,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE0E4EC))),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: AppRadius.radius12, border: Border.all(color: const Color(0xFFE0E4EC))),
         child: Row(
           children: [
             const Icon(Icons.calendar_today_rounded, size: 18, color: _accent),
             const SizedBox(width: 12),
-            Text(_label(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF1F2937))),
+            Text(_label(), style: AppTextStyles.bodyStrong.copyWith(color: const Color(0xFF1F2937))),
             const Spacer(),
             const Icon(Icons.chevron_right_rounded, color: Color(0xFFB0B8C1)),
           ],
@@ -574,7 +575,7 @@ class _SlotSelector extends StatelessWidget {
     if (form.slotsError != null) {
       return Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE0E4EC))),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: AppRadius.radius12, border: Border.all(color: const Color(0xFFE0E4EC))),
         child: Row(
           children: [
             const Icon(Icons.warning_amber_rounded, color: AppColors.alert, size: 20),
@@ -589,7 +590,7 @@ class _SlotSelector extends StatelessWidget {
     if (form.availableSlots.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE0E4EC))),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: AppRadius.radius12, border: Border.all(color: const Color(0xFFE0E4EC))),
         child: const Column(
           children: [
             Icon(Icons.event_busy_rounded, size: 36, color: Color(0xFFB0B8C1)),
@@ -614,7 +615,7 @@ class _SlotSelector extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               color: isSelected ? _accent : Colors.white,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.radius10,
               border: Border.all(color: isSelected ? _accent : const Color(0xFFE0E4EC), width: isSelected ? 2 : 1),
               boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 2))],
             ),
@@ -657,7 +658,7 @@ class _BookingFooter extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 16, offset: const Offset(0, -4))],
+          boxShadow: AppShadows.sheet,
         ),
         child: Row(
           children: [
@@ -681,7 +682,7 @@ class _BookingFooter extends StatelessWidget {
                   foregroundColor: Colors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
                 ),
                 child: Text(
                   form.canConfirm ? 'Confirm Booking' : 'Select a service, pet and slot',
@@ -731,7 +732,7 @@ class _NoPetsView extends StatelessWidget {
                 foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
               ),
               icon: const Icon(Icons.add_rounded),
               label: const Text('Add a Pet', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),

@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/pet.dart';
@@ -27,7 +29,6 @@ class PetDetailScreen extends StatefulWidget {
 }
 
 class _PetDetailScreenState extends State<PetDetailScreen> {
-  static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _textDark = Color(0xFF1A1A2E);
   static const Color _textMuted = Color(0xFF6B7280);
@@ -216,7 +217,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
             foregroundColor: const Color(0xFF1BAA71),
             side: const BorderSide(color: Color(0xFF1BAA71)),
             padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
           ),
         ),
       );
@@ -237,7 +238,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
           foregroundColor: _orange,
           side: const BorderSide(color: _orange),
           padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
         ),
       ),
     );
@@ -289,7 +290,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.radius20,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.06),
@@ -359,7 +360,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                 foregroundColor: AppColors.aiCoach,
                 side: const BorderSide(color: AppColors.aiCoach),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: AppRadius.radius14,
                 ),
               ),
             ),
@@ -376,7 +377,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
               margin: const EdgeInsets.only(bottom: 10),
               decoration: BoxDecoration(
                 color: _orange.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.radius12,
               ),
               child: Row(
                 children: [
@@ -385,11 +386,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                   Expanded(
                     child: Text(
                       '${pet.name} is currently marked as lost.',
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: _orange,
-                      ),
+                      style: AppTextStyles.label.copyWith(color: _orange),
                     ),
                   ),
                 ],
@@ -418,13 +415,9 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Recent Health Analyses',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: _textDark,
-              ),
+              style: AppTextStyles.titleSmall.copyWith(color: _textDark),
             ),
             const SizedBox(height: 12),
             ...history.map(
@@ -442,13 +435,13 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
   Widget _historyTile(VetDocumentAnalysisHistoryItem item) {
     return InkWell(
       onTap: () => _openHistoryItem(item),
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: AppRadius.radius14,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.radius14,
           border: Border.all(color: const Color(0xFFE5E7EB)),
         ),
         child: Row(
@@ -460,11 +453,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                 children: [
                   Text(
                     _formatDate(item.createdAt),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: _textMuted,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: AppTextStyles.captionStrong.copyWith(color: _textMuted),
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -494,7 +483,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.radius16,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -515,16 +504,16 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
               child: const Icon(Icons.folder_shared_outlined, color: Color(0xFF1BAA71), size: 20),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Clinical History Log',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textDark),
+                    style: AppTextStyles.bodyBold.copyWith(color: _textDark),
                   ),
-                  SizedBox(height: 2),
-                  Text(
+                  const SizedBox(height: 2),
+                  const Text(
                     'Upload documents, edit medical events, and view the visit timeline',
                     style: TextStyle(fontSize: 12, color: _textMuted),
                   ),
@@ -541,7 +530,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
   Widget _buildPhoto(Pet pet) {
     if (pet.photoUrl != null && pet.photoUrl!.isNotEmpty) {
       return ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         child: Image.network(
           pet.photoUrl!,
           width: 160,
@@ -563,7 +552,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
       width: 80,
       height: 80,
       decoration: BoxDecoration(
-        color: _primary.withValues(alpha: 0.1),
+        color: AppColors.navWalks.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Center(
@@ -572,7 +561,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
           style: const TextStyle(
             fontSize: 32,
             fontWeight: FontWeight.w700,
-            color: _primary,
+            color: AppColors.navWalks,
           ),
         ),
       ),
@@ -582,7 +571,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
   Widget _infoRow(IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: _primary),
+        Icon(icon, size: 18, color: AppColors.navWalks),
         const SizedBox(width: 10),
         Text(label, style: const TextStyle(fontSize: 14, color: _textMuted)),
         const Spacer(),

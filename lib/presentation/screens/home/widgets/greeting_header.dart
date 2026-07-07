@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_text_styles.dart';
 
 class GreetingHeader extends StatelessWidget {
   const GreetingHeader({
@@ -93,11 +94,7 @@ class _Initials extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         initials,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
+        style: AppTextStyles.h3.copyWith(color: Colors.white),
       ),
     );
   }
