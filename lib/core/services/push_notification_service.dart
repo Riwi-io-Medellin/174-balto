@@ -192,9 +192,7 @@ class PushNotificationService {
       final lat = decoded['latitude'];
       final lng = decoded['longitude'];
       if (lat == null || lng == null) return;
-      final uri = Uri.parse(
-        'https://maps.google.com/?q=$lat,$lng',
-      );
+      final uri = Uri.parse('https://maps.google.com/?q=$lat,$lng');
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (e) {
       debugPrint('Failed to open shared location: $e');

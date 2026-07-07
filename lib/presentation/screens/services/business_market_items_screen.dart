@@ -59,7 +59,10 @@ class _BusinessMarketItemsScreenState extends State<BusinessMarketItemsScreen>
     }
   }
 
-  Future<void> _openForm({BusinessServiceItem? existing, String? itemKind}) async {
+  Future<void> _openForm({
+    BusinessServiceItem? existing,
+    String? itemKind,
+  }) async {
     final typeCtrl = TextEditingController(text: existing?.serviceType ?? '');
     final priceCtrl = TextEditingController(
       text: existing != null ? existing.price.toStringAsFixed(2) : '',
@@ -228,7 +231,10 @@ class _BusinessMarketItemsScreenState extends State<BusinessMarketItemsScreen>
           labelColor: _accent,
           unselectedLabelColor: _textMuted,
           indicatorColor: _accent,
-          tabs: const [Tab(text: 'Services'), Tab(text: 'Products')],
+          tabs: const [
+            Tab(text: 'Services'),
+            Tab(text: 'Products'),
+          ],
         ),
       ),
       body: _loading
@@ -248,9 +254,7 @@ class _BusinessMarketItemsScreenState extends State<BusinessMarketItemsScreen>
       children: [
         items.isEmpty
             ? _emptyState(
-                kind == 'product'
-                    ? 'No products yet'
-                    : 'No services yet',
+                kind == 'product' ? 'No products yet' : 'No services yet',
               )
             : ListView.separated(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 90),
@@ -298,8 +302,7 @@ class _BusinessMarketItemsScreenState extends State<BusinessMarketItemsScreen>
                     color: _textDark,
                   ),
                 ),
-                if (item.description != null &&
-                    item.description!.isNotEmpty)
+                if (item.description != null && item.description!.isNotEmpty)
                   Text(
                     item.description!,
                     maxLines: 2,

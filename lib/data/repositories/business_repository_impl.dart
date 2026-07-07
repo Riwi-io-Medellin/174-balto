@@ -40,9 +40,7 @@ class BusinessRepositoryImpl implements BusinessRepository {
 
       final businessDto = await businessDtoFuture;
       final hours = (await hoursFuture).map((h) => h.toEntity()).toList();
-      final services = (await servicesFuture)
-          .map((s) => s.toEntity())
-          .toList();
+      final services = (await servicesFuture).map((s) => s.toEntity()).toList();
       final gallery = (await documentsFuture)
           .where((d) => d.documentType == 'gallery')
           .map((d) => d.toEntity())

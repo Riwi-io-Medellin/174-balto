@@ -73,9 +73,7 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
       _sellsServices = b.sellsServices;
       _sellsProducts = b.sellsProducts;
 
-      final gallery = await sl<BusinessRepository>().getBusinessDocuments(
-        b.id,
-      );
+      final gallery = await sl<BusinessRepository>().getBusinessDocuments(b.id);
       if (!mounted) return;
       setState(() {
         _gallery = gallery.where((d) => d.documentType == 'gallery').toList();
