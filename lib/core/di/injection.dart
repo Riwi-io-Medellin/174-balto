@@ -9,6 +9,7 @@ import '../../data/datasources/me_remote_datasource.dart';
 import '../../data/datasources/notification_remote_datasource.dart';
 import '../../data/datasources/pet_clinical_remote_datasource.dart';
 import '../../data/datasources/pet_remote_datasource.dart';
+import '../../data/datasources/public_pet_tag_remote_datasource.dart';
 import '../../data/datasources/upload_remote_datasource.dart';
 import '../../data/datasources/user_remote_datasource.dart';
 import '../../data/datasources/vet_document_analysis_remote_datasource.dart';
@@ -27,6 +28,7 @@ import '../../data/repositories/me_repository_impl.dart';
 import '../../data/repositories/notification_repository_impl.dart';
 import '../../data/repositories/pet_clinical_repository_impl.dart';
 import '../../data/repositories/pet_repository_impl.dart';
+import '../../data/repositories/public_pet_tag_repository_impl.dart';
 import '../../data/repositories/upload_repository_impl.dart';
 import '../../data/repositories/user_repository_impl.dart';
 import '../../data/repositories/vet_document_analysis_repository_impl.dart';
@@ -44,6 +46,7 @@ import '../../domain/repositories/me_repository.dart';
 import '../../domain/repositories/notification_repository.dart';
 import '../../domain/repositories/pet_clinical_repository.dart';
 import '../../domain/repositories/pet_repository.dart';
+import '../../domain/repositories/public_pet_tag_repository.dart';
 import '../../domain/repositories/upload_repository.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../../domain/repositories/vet_document_analysis_repository.dart';
@@ -193,6 +196,14 @@ void setupDependencies() {
   );
   sl.registerLazySingleton<WalkBookingRepository>(
     () => WalkBookingRepositoryImpl(sl<WalkBookingRemoteDataSource>()),
+  );
+
+  // Public pet tag (NFC)
+  sl.registerLazySingleton<PublicPetTagRemoteDataSource>(
+    () => PublicPetTagRemoteDataSource(sl<ApiClient>().dio),
+  );
+  sl.registerLazySingleton<PublicPetTagRepository>(
+    () => PublicPetTagRepositoryImpl(sl<PublicPetTagRemoteDataSource>()),
   );
 
   // Walk session

@@ -6,6 +6,8 @@
 	<string>Balto needs your location to track the walk in real time.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Balto needs your location to track the walk in real time.</string>
+	<key>NFCReaderUsageDescription</key>
+	<string>Balto uses NFC to read and write pet ID tags.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
