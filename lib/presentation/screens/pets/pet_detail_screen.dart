@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/config/env.dart';
 import '../../../core/di/injection.dart';
+import '../../../core/services/nfc_service.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/entities/vet_document_analysis.dart';
@@ -197,6 +199,36 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
     }
   }
 
+  Future<void> _writeNfcTag(BuildContext context, Pet pet) async {
+    final baseUrl = Env.apiBaseUrl.replaceFirst(RegExp(r'/api/?$'), '');
+    final url = '$baseUrl/pet-tag/${pet.id}';
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(width: 16),
+            Expanded(child: Text('Hold your phone near the NFC tag...')),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      await NfcService().writeUrl(url);
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
+      BaltoToast.success(context, 'Tag written for ${pet.name}.');
+    } catch (e) {
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
+      BaltoToast.error(context, 'Could not write tag: $e');
+    }
+  }
+
   Future<void> _markFound(BuildContext context, Pet pet) async {
     setState(() => _lostActionLoading = true);
     try {
@@ -378,6 +410,23 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.aiCoach,
                 side: const BorderSide(color: AppColors.aiCoach),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: OutlinedButton.icon(
+              onPressed: () => _writeNfcTag(context, pet),
+              icon: const Icon(Icons.nfc_rounded),
+              label: const Text('Write NFC Tag'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: _primary,
+                side: const BorderSide(color: _primary),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),

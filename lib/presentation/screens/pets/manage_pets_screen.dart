@@ -8,6 +8,7 @@ import '../../../domain/entities/vet_document_analysis.dart';
 import '../../../domain/repositories/pet_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
+import '../pet_tag/scan_nfc_tag_screen.dart';
 import 'create_pet_screen.dart';
 import 'edit_pet_screen.dart';
 import 'pet_detail_screen.dart';
@@ -32,6 +33,15 @@ class ManagePetsScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         foregroundColor: _textDark,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.nfc_rounded),
+            tooltip: 'Scan Pet Tag',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const ScanNfcTagScreen()),
+            ),
+          ),
+        ],
       ),
       body: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
