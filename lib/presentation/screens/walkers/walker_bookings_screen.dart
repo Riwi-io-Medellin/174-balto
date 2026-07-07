@@ -46,15 +46,12 @@ class _WalkerBookingsView extends StatelessWidget {
             ),
           ),
           iconTheme: const IconThemeData(color: _green),
-          bottom: TabBar(
+          bottom: const TabBar(
             labelColor: _green,
             unselectedLabelColor: Colors.grey,
             indicatorColor: _green,
-            labelStyle: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-            ),
-            tabs: const [
+            labelStyle: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            tabs: [
               Tab(text: 'Pending'),
               Tab(text: 'Upcoming'),
               Tab(text: 'Completed'),
@@ -178,8 +175,36 @@ class _BookingList extends StatelessWidget {
   final _TabType tabType;
   final List<WalkBooking> acceptedBookings;
 
+  // Computed once per build instead of once per card — avoids repeating the
+  // O(accepted) inner scan for every pending booking rendered.
+  Map<String, double> _minDistancesToAccepted() {
+    if (tabType != _TabType.pending) return const {};
+    final distances = <String, double>{};
+    for (final booking in bookings) {
+      if (booking.ownerLatitude == null || booking.ownerLongitude == null) {
+        continue;
+      }
+      double? minDist;
+      for (final accepted in acceptedBookings) {
+        if (accepted.ownerLatitude == null || accepted.ownerLongitude == null) {
+          continue;
+        }
+        final d = _haversineKm(
+          booking.ownerLatitude!,
+          booking.ownerLongitude!,
+          accepted.ownerLatitude!,
+          accepted.ownerLongitude!,
+        );
+        if (minDist == null || d < minDist) minDist = d;
+      }
+      if (minDist != null) distances[booking.id] = minDist;
+    }
+    return distances;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final distances = _minDistancesToAccepted();
     return RefreshIndicator(
       color: const Color(0xFF1BAA71),
       onRefresh: () => context.read<WalkerBookingCubit>().refresh(),
@@ -204,7 +229,7 @@ class _BookingList extends StatelessWidget {
                 booking: bookings[index],
                 isPerformingAction: isPerformingAction,
                 tabType: tabType,
-                acceptedBookings: acceptedBookings,
+                distanceKm: distances[bookings[index].id],
               ),
             ),
     );
@@ -215,8 +240,12 @@ double _haversineKm(double lat1, double lon1, double lat2, double lon2) {
   const r = 6371.0;
   final dLat = (lat2 - lat1) * pi / 180;
   final dLon = (lon2 - lon1) * pi / 180;
-  final a = sin(dLat / 2) * sin(dLat / 2) +
-      cos(lat1 * pi / 180) * cos(lat2 * pi / 180) * sin(dLon / 2) * sin(dLon / 2);
+  final a =
+      sin(dLat / 2) * sin(dLat / 2) +
+      cos(lat1 * pi / 180) *
+          cos(lat2 * pi / 180) *
+          sin(dLon / 2) *
+          sin(dLon / 2);
   return r * 2 * atan2(sqrt(a), sqrt(1 - a));
 }
 
@@ -225,13 +254,13 @@ class _BookingCard extends StatelessWidget {
     required this.booking,
     required this.isPerformingAction,
     required this.tabType,
-    this.acceptedBookings = const [],
+    this.distanceKm,
   });
 
   final WalkBooking booking;
   final bool isPerformingAction;
   final _TabType tabType;
-  final List<WalkBooking> acceptedBookings;
+  final double? distanceKm;
 
   static const _green = Color(0xFF1BAA71);
   static const _orange = Color(0xFFD05A24);
@@ -241,26 +270,13 @@ class _BookingCard extends StatelessWidget {
     final now = DateTime.now();
     // Allow starting from 15 minutes before the scheduled time
     final window = booking.slotStart.subtract(const Duration(minutes: 15));
-    final end =
-        booking.slotStart.add(Duration(minutes: booking.durationMinutes));
+    final end = booking.slotStart.add(
+      Duration(minutes: booking.durationMinutes),
+    );
     return now.isAfter(window) && now.isBefore(end);
   }
 
   bool _canRejoin() => booking.status == WalkBookingStatus.inProgress;
-
-  double? _minDistanceKmToAccepted() {
-    if (booking.ownerLatitude == null || booking.ownerLongitude == null) return null;
-    double? minDist;
-    for (final b in acceptedBookings) {
-      if (b.ownerLatitude == null || b.ownerLongitude == null) continue;
-      final d = _haversineKm(
-        booking.ownerLatitude!, booking.ownerLongitude!,
-        b.ownerLatitude!, b.ownerLongitude!,
-      );
-      if (minDist == null || d < minDist) minDist = d;
-    }
-    return minDist;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -270,10 +286,10 @@ class _BookingCard extends StatelessWidget {
     final price = booking.totalPrice != null
         ? '\$${booking.totalPrice!.toStringAsFixed(2)}'
         : booking.snapshotHourlyRate != null
-            ? '\$${booking.snapshotHourlyRate!.toStringAsFixed(2)}/hr'
-            : null;
+        ? '\$${booking.snapshotHourlyRate!.toStringAsFixed(2)}/hr'
+        : null;
 
-    final distKm = tabType == _TabType.pending ? _minDistanceKmToAccepted() : null;
+    final distKm = distanceKm;
     final isFarAway = distKm != null && distKm > 3.0;
 
     return Container(
@@ -300,8 +316,11 @@ class _BookingCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.calendar_today_rounded,
-                    size: 14, color: Colors.grey),
+                const Icon(
+                  Icons.calendar_today_rounded,
+                  size: 14,
+                  color: Colors.grey,
+                ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
@@ -320,17 +339,22 @@ class _BookingCard extends StatelessWidget {
               children: [
                 const Icon(Icons.timer_rounded, size: 14, color: Colors.grey),
                 const SizedBox(width: 6),
-                Text(duration,
-                    style:
-                        const TextStyle(fontSize: 13, color: Colors.black87)),
+                Text(
+                  duration,
+                  style: const TextStyle(fontSize: 13, color: Colors.black87),
+                ),
                 if (price != null) ...[
                   const SizedBox(width: 16),
-                  const Icon(Icons.attach_money_rounded,
-                      size: 14, color: Colors.grey),
+                  const Icon(
+                    Icons.attach_money_rounded,
+                    size: 14,
+                    color: Colors.grey,
+                  ),
                   const SizedBox(width: 2),
-                  Text(price,
-                      style: const TextStyle(
-                          fontSize: 13, color: Colors.black87)),
+                  Text(
+                    price,
+                    style: const TextStyle(fontSize: 13, color: Colors.black87),
+                  ),
                 ],
               ],
             ),
@@ -345,24 +369,34 @@ class _BookingCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       booking.specialInstructions!,
-                      style:
-                          const TextStyle(fontSize: 12, color: Colors.black54),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.black54,
+                      ),
                     ),
                   ),
                 ],
               ),
             ],
-            if (tabType == _TabType.pending && booking.ownerAddress != null) ...[
+            if (tabType == _TabType.pending &&
+                booking.ownerAddress != null) ...[
               const SizedBox(height: 8),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.place_rounded, size: 14, color: Color(0xFF3A80C2)),
+                  const Icon(
+                    Icons.place_rounded,
+                    size: 14,
+                    color: Color(0xFF3A80C2),
+                  ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       booking.ownerAddress!,
-                      style: const TextStyle(fontSize: 12, color: Color(0xFF3A80C2)),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF3A80C2),
+                      ),
                     ),
                   ),
                 ],
@@ -371,7 +405,10 @@ class _BookingCard extends StatelessWidget {
             if (isFarAway) ...[
               const SizedBox(height: 10),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFF8EC),
                   borderRadius: BorderRadius.circular(8),
@@ -379,8 +416,11 @@ class _BookingCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.warning_amber_rounded,
-                        size: 15, color: Color(0xFFB87300)),
+                    const Icon(
+                      Icons.warning_amber_rounded,
+                      size: 15,
+                      color: Color(0xFFB87300),
+                    ),
                     const SizedBox(width: 7),
                     Expanded(
                       child: Text(
@@ -404,22 +444,28 @@ class _BookingCard extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: isPerformingAction
                           ? null
-                          : () =>
-                              _confirmAction(context, 'Reject this booking?',
-                                  'The client will be notified.', () {
+                          : () => _confirmAction(
+                              context,
+                              'Reject this booking?',
+                              'The client will be notified.',
+                              () {
                                 context
                                     .read<WalkerBookingCubit>()
                                     .rejectBooking(booking.id);
-                              }),
+                              },
+                            ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: _orange,
                         side: const BorderSide(color: _orange),
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                      child: const Text('Reject',
-                          style: TextStyle(fontSize: 13)),
+                      child: const Text(
+                        'Reject',
+                        style: TextStyle(fontSize: 13),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -427,29 +473,37 @@ class _BookingCard extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: isPerformingAction
                           ? null
-                          : () =>
-                              _confirmAction(context, 'Accept this booking?',
-                                  'The client will be notified.', () {
+                          : () => _confirmAction(
+                              context,
+                              'Accept this booking?',
+                              'The client will be notified.',
+                              () {
                                 context
                                     .read<WalkerBookingCubit>()
                                     .acceptBooking(booking.id);
-                              }),
+                              },
+                            ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _green,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       child: isPerformingAction
                           ? const SizedBox(
                               height: 16,
                               width: 16,
                               child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white),
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
                             )
-                          : const Text('Accept',
-                              style: TextStyle(fontSize: 13)),
+                          : const Text(
+                              'Accept',
+                              style: TextStyle(fontSize: 13),
+                            ),
                     ),
                   ),
                 ],
@@ -464,21 +518,24 @@ class _BookingCard extends StatelessWidget {
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) =>
-                            WalkerLiveWalkScreen(booking: booking),
+                        builder: (_) => WalkerLiveWalkScreen(booking: booking),
                       ),
                     ),
                     icon: const Icon(Icons.map_rounded, size: 18),
                     label: const Text(
                       'Rejoin Walk',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF1565C0),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       elevation: 0,
                     ),
                   ),
@@ -491,21 +548,24 @@ class _BookingCard extends StatelessWidget {
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) =>
-                            WalkerLiveWalkScreen(booking: booking),
+                        builder: (_) => WalkerLiveWalkScreen(booking: booking),
                       ),
                     ),
                     icon: const Icon(Icons.directions_walk_rounded, size: 18),
                     label: const Text(
                       'Start Walk',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _green,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       elevation: 0,
                     ),
                   ),
@@ -517,26 +577,29 @@ class _BookingCard extends StatelessWidget {
                   onPressed: isPerformingAction
                       ? null
                       : () => _confirmAction(
-                            context,
-                            'Cancel this booking?',
-                            'The client will be notified.',
-                            () => context
-                                .read<WalkerBookingCubit>()
-                                .cancelBooking(booking.id),
-                          ),
+                          context,
+                          'Cancel this booking?',
+                          'The client will be notified.',
+                          () => context
+                              .read<WalkerBookingCubit>()
+                              .cancelBooking(booking.id),
+                        ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: _orange,
                     side: const BorderSide(color: _orange),
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   child: isPerformingAction
                       ? const SizedBox(
                           height: 16,
                           width: 16,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: _orange),
+                            strokeWidth: 2,
+                            color: _orange,
+                          ),
                         )
                       : const Text('Cancel', style: TextStyle(fontSize: 13)),
                 ),
@@ -551,8 +614,18 @@ class _BookingCard extends StatelessWidget {
   static String _formatSlot(DateTime dt) {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final day = days[dt.weekday - 1];
     final month = months[dt.month - 1];

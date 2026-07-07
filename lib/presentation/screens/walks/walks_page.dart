@@ -45,10 +45,10 @@ class _WalksView extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is MyWalksLoading) {
-            return CustomScrollView(
+            return const CustomScrollView(
               slivers: [
-                const _WalksAppBar(),
-                const SliverToBoxAdapter(child: WalksSkeleton()),
+                _WalksAppBar(),
+                SliverToBoxAdapter(child: WalksSkeleton()),
               ],
             );
           }
@@ -64,13 +64,17 @@ class _WalksView extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.error_outline,
-                              size: 48, color: Colors.grey),
+                          const Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.grey,
+                          ),
                           const SizedBox(height: 12),
-                          Text(state.message,
-                              textAlign: TextAlign.center,
-                              style:
-                                  const TextStyle(color: Colors.grey)),
+                          Text(
+                            state.message,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.grey),
+                          ),
                           const SizedBox(height: 16),
                           ElevatedButton(
                             onPressed: () =>
@@ -92,18 +96,22 @@ class _WalksView extends StatelessWidget {
 
           if (state is MyWalksLoaded) {
             final now = DateTime.now();
-            final completedToday = state.history
-                .where((b) =>
-                    b.status == WalkBookingStatus.completed &&
-                    b.slotStart.year == now.year &&
-                    b.slotStart.month == now.month &&
-                    b.slotStart.day == now.day)
-                .toList()
-              ..sort((a, b) => b.slotStart.compareTo(a.slotStart));
+            final completedToday =
+                state.history
+                    .where(
+                      (b) =>
+                          b.status == WalkBookingStatus.completed &&
+                          b.slotStart.year == now.year &&
+                          b.slotStart.month == now.month &&
+                          b.slotStart.day == now.day,
+                    )
+                    .toList()
+                  ..sort((a, b) => b.slotStart.compareTo(a.slotStart));
             final olderHistory = state.history
                 .where((b) => !completedToday.contains(b))
                 .toList();
-            final isEmpty = state.inProgress.isEmpty &&
+            final isEmpty =
+                state.inProgress.isEmpty &&
                 state.pending.isEmpty &&
                 state.upcoming.isEmpty &&
                 completedToday.isEmpty &&
@@ -118,60 +126,60 @@ class _WalksView extends StatelessWidget {
                   const _WalksAppBar(),
                   if (state.inProgress.isNotEmpty) ...[
                     const _SectionHeader(
-                        label: 'In Progress',
-                        color: AppColors.navWalkers),
+                      label: 'In Progress',
+                      color: AppColors.navWalkers,
+                    ),
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
-                        (ctx, i) =>
-                            _BookingCard(booking: state.inProgress[i]),
+                        (ctx, i) => _BookingCard(booking: state.inProgress[i]),
                         childCount: state.inProgress.length,
                       ),
                     ),
                   ],
                   if (state.pending.isNotEmpty) ...[
                     const _SectionHeader(
-                        label: 'Pending',
-                        color: AppColors.alert),
+                      label: 'Pending',
+                      color: AppColors.alert,
+                    ),
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
-                        (ctx, i) =>
-                            _BookingCard(booking: state.pending[i]),
+                        (ctx, i) => _BookingCard(booking: state.pending[i]),
                         childCount: state.pending.length,
                       ),
                     ),
                   ],
                   if (state.upcoming.isNotEmpty) ...[
                     const _SectionHeader(
-                        label: 'Upcoming',
-                        color: AppColors.navWalks),
+                      label: 'Upcoming',
+                      color: AppColors.navWalks,
+                    ),
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
-                        (ctx, i) =>
-                            _BookingCard(booking: state.upcoming[i]),
+                        (ctx, i) => _BookingCard(booking: state.upcoming[i]),
                         childCount: state.upcoming.length,
                       ),
                     ),
                   ],
                   if (completedToday.isNotEmpty) ...[
                     const _SectionHeader(
-                        label: 'Completed Today',
-                        color: Color(0xFF1BAA71)),
+                      label: 'Completed Today',
+                      color: Color(0xFF1BAA71),
+                    ),
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
-                        (ctx, i) =>
-                            _BookingCard(booking: completedToday[i]),
+                        (ctx, i) => _BookingCard(booking: completedToday[i]),
                         childCount: completedToday.length,
                       ),
                     ),
                   ],
                   if (olderHistory.isNotEmpty) ...[
                     const _SectionHeader(
-                        label: 'History',
-                        color: Color(0xFF8A95A3)),
+                      label: 'History',
+                      color: Color(0xFF8A95A3),
+                    ),
                     SliverList(
                       delegate: SliverChildBuilderDelegate(
-                        (ctx, i) =>
-                            _BookingCard(booking: olderHistory[i]),
+                        (ctx, i) => _BookingCard(booking: olderHistory[i]),
                         childCount: olderHistory.length,
                       ),
                     ),
@@ -191,13 +199,17 @@ class _WalksView extends StatelessWidget {
                             const Text(
                               'No walks yet.',
                               style: TextStyle(
-                                  color: Colors.grey, fontSize: 15),
+                                color: Colors.grey,
+                                fontSize: 15,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             const Text(
                               'Book a walker to get started.',
                               style: TextStyle(
-                                  color: Colors.grey, fontSize: 13),
+                                color: Colors.grey,
+                                fontSize: 13,
+                              ),
                             ),
                           ],
                         ),
@@ -238,8 +250,11 @@ class _WalksAppBar extends StatelessWidget {
                 color: AppColors.navWalks.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.directions_walk_rounded,
-                  color: AppColors.navWalks, size: 20),
+              child: const Icon(
+                Icons.directions_walk_rounded,
+                color: AppColors.navWalks,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 10),
             const Text(
@@ -310,7 +325,9 @@ class _BookingCard extends StatelessWidget {
     // Accepted + inside scheduled window.
     final now = DateTime.now();
     final window = booking.slotStart.subtract(const Duration(minutes: 5));
-    final end = booking.slotStart.add(Duration(minutes: booking.durationMinutes));
+    final end = booking.slotStart.add(
+      Duration(minutes: booking.durationMinutes),
+    );
     return now.isAfter(window) && now.isBefore(end);
   }
 
@@ -329,7 +346,10 @@ class _BookingCard extends StatelessWidget {
     final local = booking.slotStart.toLocal();
     final now = DateTime.now();
     final elapsed = inProgress
-        ? now.difference(booking.slotStart).inMinutes.clamp(0, booking.durationMinutes)
+        ? now
+              .difference(booking.slotStart)
+              .inMinutes
+              .clamp(0, booking.durationMinutes)
         : 0;
 
     return Padding(
@@ -342,28 +362,28 @@ class _BookingCard extends StatelessWidget {
         child: InkWell(
           onTap: inProgress
               ? () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => LiveWalkScreen(booking: booking),
-                    ),
-                  )
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => LiveWalkScreen(booking: booking),
+                  ),
+                )
               : booking.status == WalkBookingStatus.completed &&
-                      booking.walkSessionId != null
-                  ? () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => WalkRouteSummaryScreen(
-                            sessionId: booking.walkSessionId!,
-                            distanceKm:
-                                (booking.actualDistanceMeters ?? 0) / 1000,
-                            elapsedSeconds: booking.actualDurationSeconds ??
-                                booking.durationMinutes * 60,
-                            walkerId: booking.walkerId,
-                            walkerName: booking.walkerName,
-                          ),
-                        ),
-                      )
-                  : null,
+                    booking.walkSessionId != null
+              ? () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => WalkRouteSummaryScreen(
+                      sessionId: booking.walkSessionId!,
+                      distanceKm: (booking.actualDistanceMeters ?? 0) / 1000,
+                      elapsedSeconds:
+                          booking.actualDurationSeconds ??
+                          booking.durationMinutes * 60,
+                      walkerId: booking.walkerId,
+                      walkerName: booking.walkerName,
+                    ),
+                  ),
+                )
+              : null,
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -371,137 +391,158 @@ class _BookingCard extends StatelessWidget {
             ),
             padding: const EdgeInsets.all(16),
             child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: inProgress
-                          ? AppColors.navWalkers.withValues(alpha: 0.12)
-                          : AppColors.navWalks.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.directions_walk_rounded,
-                      color: inProgress
-                          ? AppColors.navWalkers
-                          : AppColors.navWalks,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _StatusBadge(
-                          status: booking.status,
-                          isInProgress: inProgress,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _formatSlot(local),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Color(0xFF6B7280),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Icon(Icons.schedule_outlined,
-                      size: 13, color: Colors.grey.shade500),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${booking.durationMinutes} min',
-                    style: TextStyle(
-                        fontSize: 12, color: Colors.grey.shade600),
-                  ),
-                  if (booking.totalPrice != null) ...[
-                    const SizedBox(width: 16),
-                    Icon(Icons.attach_money_rounded,
-                        size: 13, color: Colors.grey.shade500),
-                    Text(
-                      booking.totalPrice!.toStringAsFixed(2),
-                      style: TextStyle(
-                          fontSize: 12, color: Colors.grey.shade600),
-                    ),
-                  ] else if (booking.snapshotHourlyRate != null) ...[
-                    const SizedBox(width: 16),
-                    Icon(Icons.attach_money_rounded,
-                        size: 13, color: Colors.grey.shade500),
-                    Text(
-                      '${booking.snapshotHourlyRate!.toStringAsFixed(2)}/hr',
-                      style: TextStyle(
-                          fontSize: 12, color: Colors.grey.shade600),
-                    ),
-                  ],
-                ],
-              ),
-              if (booking.specialInstructions != null &&
-                  booking.specialInstructions!.isNotEmpty) ...[
-                const SizedBox(height: 8),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.notes_rounded,
-                        size: 13, color: Colors.grey.shade500),
-                    const SizedBox(width: 4),
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: inProgress
+                            ? AppColors.navWalkers.withValues(alpha: 0.12)
+                            : AppColors.navWalks.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.directions_walk_rounded,
+                        color: inProgress
+                            ? AppColors.navWalkers
+                            : AppColors.navWalks,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
-                        booking.specialInstructions!,
-                        style: TextStyle(
-                            fontSize: 12, color: Colors.grey.shade500),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _StatusBadge(
+                            status: booking.status,
+                            isInProgress: inProgress,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _formatSlot(local),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF6B7280),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ],
-              if (inProgress) ...[
                 const SizedBox(height: 12),
-                _ProgressBar(
-                    elapsed: elapsed,
-                    total: booking.durationMinutes),
-              ],
-              if (canCancel) ...[
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: context
-                            .read<MyWalksCubit>()
-                            .state
-                            .runtimeType ==
-                        MyWalksLoaded &&
-                        (context.read<MyWalksCubit>().state
-                                as MyWalksLoaded)
-                            .isPerformingAction
-                        ? null
-                        : () => _confirmCancel(context),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.alert,
-                      side: const BorderSide(color: AppColors.alert),
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 8),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.schedule_outlined,
+                      size: 13,
+                      color: Colors.grey.shade500,
                     ),
-                    child: const Text('Cancel Booking',
-                        style: TextStyle(fontSize: 13)),
-                  ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${booking.durationMinutes} min',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    if (booking.totalPrice != null) ...[
+                      const SizedBox(width: 16),
+                      Icon(
+                        Icons.attach_money_rounded,
+                        size: 13,
+                        color: Colors.grey.shade500,
+                      ),
+                      Text(
+                        booking.totalPrice!.toStringAsFixed(2),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ] else if (booking.snapshotHourlyRate != null) ...[
+                      const SizedBox(width: 16),
+                      Icon(
+                        Icons.attach_money_rounded,
+                        size: 13,
+                        color: Colors.grey.shade500,
+                      ),
+                      Text(
+                        '${booking.snapshotHourlyRate!.toStringAsFixed(2)}/hr',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
+                if (booking.specialInstructions != null &&
+                    booking.specialInstructions!.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.notes_rounded,
+                        size: 13,
+                        color: Colors.grey.shade500,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          booking.specialInstructions!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+                if (inProgress) ...[
+                  const SizedBox(height: 12),
+                  _ProgressBar(
+                    elapsed: elapsed,
+                    total: booking.durationMinutes,
+                  ),
+                ],
+                if (canCancel) ...[
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed:
+                          context.read<MyWalksCubit>().state.runtimeType ==
+                                  MyWalksLoaded &&
+                              (context.read<MyWalksCubit>().state
+                                      as MyWalksLoaded)
+                                  .isPerformingAction
+                          ? null
+                          : () => _confirmCancel(context),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.alert,
+                        side: const BorderSide(color: AppColors.alert),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        'Cancel Booking',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
         ),
       ),
     );
@@ -512,8 +553,9 @@ class _BookingCard extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Cancel booking?'),
-        content:
-            const Text('This action cannot be undone. The walker will be notified.'),
+        content: const Text(
+          'This action cannot be undone. The walker will be notified.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -521,8 +563,7 @@ class _BookingCard extends StatelessWidget {
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: TextButton.styleFrom(
-                foregroundColor: AppColors.alert),
+            style: TextButton.styleFrom(foregroundColor: AppColors.alert),
             child: const Text('Yes, cancel'),
           ),
         ],
@@ -536,8 +577,18 @@ class _BookingCard extends StatelessWidget {
   static String _formatSlot(DateTime dt) {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final day = days[dt.weekday - 1];
     final month = months[dt.month - 1];
@@ -566,7 +617,8 @@ class _ProgressBar extends StatelessWidget {
             value: progress,
             backgroundColor: const Color(0xFFE8F0F8),
             valueColor: const AlwaysStoppedAnimation<Color>(
-                AppColors.navWalkers),
+              AppColors.navWalkers,
+            ),
             minHeight: 4,
           ),
         ),
@@ -585,8 +637,7 @@ class _ProgressBar extends StatelessWidget {
 }
 
 class _StatusBadge extends StatelessWidget {
-  const _StatusBadge(
-      {required this.status, required this.isInProgress});
+  const _StatusBadge({required this.status, required this.isInProgress});
 
   final WalkBookingStatus status;
   final bool isInProgress;
@@ -602,11 +653,7 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          color: fg,
-        ),
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: fg),
       ),
     );
   }
@@ -621,36 +668,35 @@ class _StatusBadge extends StatelessWidget {
     }
     return switch (status) {
       WalkBookingStatus.pending => (
-          'Pending',
-          AppColors.alert.withValues(alpha: 0.12),
-          AppColors.alert,
-        ),
+        'Pending',
+        AppColors.alert.withValues(alpha: 0.12),
+        AppColors.alert,
+      ),
       WalkBookingStatus.accepted => (
-          'Upcoming',
-          AppColors.navWalks.withValues(alpha: 0.12),
-          AppColors.navWalks,
-        ),
+        'Upcoming',
+        AppColors.navWalks.withValues(alpha: 0.12),
+        AppColors.navWalks,
+      ),
       WalkBookingStatus.inProgress => (
-          'Live',
-          AppColors.navWalkers.withValues(alpha: 0.12),
-          AppColors.navWalkers,
-        ),
+        'Live',
+        AppColors.navWalkers.withValues(alpha: 0.12),
+        AppColors.navWalkers,
+      ),
       WalkBookingStatus.completed => (
-          'Completed',
-          const Color(0xFFF0F0F0),
-          const Color(0xFF8A95A3),
-        ),
+        'Completed',
+        const Color(0xFFF0F0F0),
+        const Color(0xFF8A95A3),
+      ),
       WalkBookingStatus.rejected => (
-          'Rejected',
-          AppColors.alert.withValues(alpha: 0.10),
-          AppColors.alert,
-        ),
-      WalkBookingStatus.walkerCancelled ||
-      WalkBookingStatus.ownerCancelled => (
-          'Cancelled',
-          const Color(0xFFF0F0F0),
-          const Color(0xFF8A95A3),
-        ),
+        'Rejected',
+        AppColors.alert.withValues(alpha: 0.10),
+        AppColors.alert,
+      ),
+      WalkBookingStatus.walkerCancelled || WalkBookingStatus.ownerCancelled => (
+        'Cancelled',
+        const Color(0xFFF0F0F0),
+        const Color(0xFF8A95A3),
+      ),
     };
   }
 }

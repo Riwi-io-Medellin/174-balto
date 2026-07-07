@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:geolocator/geolocator.dart';
-import 'package:geolocator_android/geolocator_android.dart';
 
 class WalkerLiveWalkService {
   StreamSubscription<Position>? _positionSub;
@@ -33,8 +32,9 @@ class WalkerLiveWalkService {
       );
     }
 
-    _positionSub = Geolocator.getPositionStream(locationSettings: settings)
-        .listen(_positionController.add);
+    _positionSub = Geolocator.getPositionStream(
+      locationSettings: settings,
+    ).listen(_positionController.add);
   }
 
   Future<void> stop() async {

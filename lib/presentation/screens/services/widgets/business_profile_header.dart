@@ -34,7 +34,8 @@ class BusinessProfileHeader extends StatelessWidget {
                 child: SizedBox(
                   width: 64,
                   height: 64,
-                  child: business.photoUrl != null && business.photoUrl!.isNotEmpty
+                  child:
+                      business.photoUrl != null && business.photoUrl!.isNotEmpty
                       ? Image.network(
                           business.photoUrl!,
                           fit: BoxFit.cover,
@@ -59,9 +60,12 @@ class BusinessProfileHeader extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        if (business.isVeterinary) _badge('Veterinary', AppColors.navWalkers),
-                        if (business.isVeterinary && business.isStore) const SizedBox(width: 6),
-                        if (business.isStore) _badge('Store', AppColors.navCoach),
+                        if (business.isVeterinary)
+                          _badge('Veterinary', AppColors.navWalkers),
+                        if (business.isVeterinary && business.isStore)
+                          const SizedBox(width: 6),
+                        if (business.isStore)
+                          _badge('Store', AppColors.navCoach),
                         if (business.isVerified) ...[
                           const SizedBox(width: 6),
                           _badge('Verified', const Color(0xFF34C759)),
@@ -76,11 +80,19 @@ class BusinessProfileHeader extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.star_rounded, size: 16, color: Color(0xFFFFB800)),
+              const Icon(
+                Icons.star_rounded,
+                size: 16,
+                color: Color(0xFFFFB800),
+              ),
               const SizedBox(width: 3),
               Text(
                 business.rating.toStringAsFixed(1),
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1F2937)),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1F2937),
+                ),
               ),
               Text(
                 ' (${business.reviewCount} reviews)',
@@ -91,7 +103,9 @@ class BusinessProfileHeader extends StatelessWidget {
                 width: 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: business.isOpen ? const Color(0xFF34C759) : const Color(0xFFFF3B30),
+                  color: business.isOpen
+                      ? const Color(0xFF34C759)
+                      : const Color(0xFFFF3B30),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -101,20 +115,27 @@ class BusinessProfileHeader extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: business.isOpen ? const Color(0xFF34C759) : const Color(0xFFFF3B30),
+                  color: business.isOpen
+                      ? const Color(0xFF34C759)
+                      : const Color(0xFFFF3B30),
                 ),
               ),
               if (business.distanceKm != null)
                 Text(
                   ' · ${business.distanceKm!.toStringAsFixed(1)}km away',
-                  style: const TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF8A93A0),
+                  ),
                 ),
             ],
           ),
           if (business.nit.isNotEmpty) ...[
             const SizedBox(height: 6),
-            Text('NIT: ${business.nit}',
-                style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0))),
+            Text(
+              'NIT: ${business.nit}',
+              style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0)),
+            ),
           ],
           const SizedBox(height: 16),
           Row(
@@ -128,7 +149,8 @@ class BusinessProfileHeader extends StatelessWidget {
                     onTap: () => _launch(_whatsappUrl),
                   ),
                 ),
-              if (business.instagramUrl != null && business.instagramUrl!.isNotEmpty) ...[
+              if (business.instagramUrl != null &&
+                  business.instagramUrl!.isNotEmpty) ...[
                 const SizedBox(width: 8),
                 Expanded(
                   child: _ContactButton(
@@ -139,7 +161,8 @@ class BusinessProfileHeader extends StatelessWidget {
                   ),
                 ),
               ],
-              if (business.facebookUrl != null && business.facebookUrl!.isNotEmpty) ...[
+              if (business.facebookUrl != null &&
+                  business.facebookUrl!.isNotEmpty) ...[
                 const SizedBox(width: 8),
                 Expanded(
                   child: _ContactButton(
@@ -158,15 +181,29 @@ class BusinessProfileHeader extends StatelessWidget {
   }
 
   Widget _placeholder() => Container(
-        color: const Color(0xFFE9ECF1),
-        child: const Icon(Icons.storefront_rounded, size: 28, color: Color(0xFFB6BEC9)),
-      );
+    color: const Color(0xFFE9ECF1),
+    child: const Icon(
+      Icons.storefront_rounded,
+      size: 28,
+      color: Color(0xFFB6BEC9),
+    ),
+  );
 
   Widget _badge(String label, Color color) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-        decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
-        child: Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Text(
+      label,
+      style: const TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        color: Colors.white,
+      ),
+    ),
+  );
 }
 
 class _ContactButton extends StatelessWidget {
@@ -196,7 +233,14 @@ class _ContactButton extends StatelessWidget {
           children: [
             Icon(icon, size: 18, color: color),
             const SizedBox(height: 4),
-            Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: color,
+              ),
+            ),
           ],
         ),
       ),

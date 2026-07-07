@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../domain/entities/walker.dart';
+import '../../../widgets/app_network_image.dart';
 
 class CompactWalkerCard extends StatelessWidget {
   const CompactWalkerCard({
@@ -49,7 +50,7 @@ class CompactWalkerCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        _StatusBadge(isActive: true),
+                        const _StatusBadge(isActive: true),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -96,12 +97,11 @@ class _Photo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipOval(
-      child: Image.network(
+      child: AppNetworkImage(
         imageUrl,
         width: 52,
         height: 52,
-        fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => Container(
+        errorWidget: Container(
           width: 52,
           height: 52,
           color: const Color(0xFFE8F5EE),

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:signalr_netcore/itransport.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 
 import '../config/env.dart';
@@ -17,10 +16,12 @@ const _completedMethod = 'WalkCompleted';
 class WalkTrackingService {
   HubConnection? _connection;
   final _locationController = StreamController<LatLng>.broadcast();
-  final _completedController = StreamController<Map<String, dynamic>?>.broadcast();
+  final _completedController =
+      StreamController<Map<String, dynamic>?>.broadcast();
 
   Stream<LatLng> get locationStream => _locationController.stream;
-  Stream<Map<String, dynamic>?> get walkCompletedStream => _completedController.stream;
+  Stream<Map<String, dynamic>?> get walkCompletedStream =>
+      _completedController.stream;
 
   // Error stream so the cubit can react to hub-level errors (e.g. auth failure).
   final _errorController = StreamController<String>.broadcast();

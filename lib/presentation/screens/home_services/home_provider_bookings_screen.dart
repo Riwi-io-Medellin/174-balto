@@ -135,7 +135,11 @@ class _ErrorBody extends StatelessWidget {
           children: [
             const Icon(Icons.error_outline, size: 48, color: Colors.grey),
             const SizedBox(height: 12),
-            Text(message, textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey)),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.grey),
+            ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: onRetry,
@@ -176,7 +180,10 @@ class _BookingList extends StatelessWidget {
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.5,
                   child: Center(
-                    child: Text(emptyMessage, style: const TextStyle(color: Colors.grey, fontSize: 14)),
+                    child: Text(
+                      emptyMessage,
+                      style: const TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
                   ),
                 ),
               ],
@@ -243,12 +250,19 @@ class _BookingCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.calendar_today_rounded, size: 14, color: Colors.grey),
+                const Icon(
+                  Icons.calendar_today_rounded,
+                  size: 14,
+                  color: Colors.grey,
+                ),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     dateStr,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 _StatusBadge(status: booking.status),
@@ -259,32 +273,51 @@ class _BookingCard extends StatelessWidget {
               children: [
                 const Icon(Icons.timer_rounded, size: 14, color: Colors.grey),
                 const SizedBox(width: 6),
-                Text(duration, style: const TextStyle(fontSize: 13, color: Colors.black87)),
+                Text(
+                  duration,
+                  style: const TextStyle(fontSize: 13, color: Colors.black87),
+                ),
                 if (price != null) ...[
                   const SizedBox(width: 16),
-                  const Icon(Icons.attach_money_rounded, size: 14, color: Colors.grey),
+                  const Icon(
+                    Icons.attach_money_rounded,
+                    size: 14,
+                    color: Colors.grey,
+                  ),
                   const SizedBox(width: 2),
-                  Text(price, style: const TextStyle(fontSize: 13, color: Colors.black87)),
+                  Text(
+                    price,
+                    style: const TextStyle(fontSize: 13, color: Colors.black87),
+                  ),
                 ],
               ],
             ),
-            if (booking.serviceAddress != null && booking.serviceAddress!.isNotEmpty) ...[
+            if (booking.serviceAddress != null &&
+                booking.serviceAddress!.isNotEmpty) ...[
               const SizedBox(height: 8),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.place_rounded, size: 14, color: Color(0xFF3A80C2)),
+                  const Icon(
+                    Icons.place_rounded,
+                    size: 14,
+                    color: Color(0xFF3A80C2),
+                  ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       booking.serviceAddress!,
-                      style: const TextStyle(fontSize: 12, color: Color(0xFF3A80C2)),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF3A80C2),
+                      ),
                     ),
                   ),
                 ],
               ),
             ],
-            if (booking.specialInstructions != null && booking.specialInstructions!.isNotEmpty) ...[
+            if (booking.specialInstructions != null &&
+                booking.specialInstructions!.isNotEmpty) ...[
               const SizedBox(height: 8),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,7 +327,10 @@ class _BookingCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       booking.specialInstructions!,
-                      style: const TextStyle(fontSize: 12, color: Colors.black54),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.black54,
+                      ),
                     ),
                   ),
                 ],
@@ -308,17 +344,28 @@ class _BookingCard extends StatelessWidget {
                     child: OutlinedButton(
                       onPressed: isPerformingAction
                           ? null
-                          : () => _confirmAction(context, 'Reject this booking?',
-                              'The client will be notified.', () {
-                              context.read<HomeProviderBookingCubit>().rejectBooking(booking.id);
-                            }),
+                          : () => _confirmAction(
+                              context,
+                              'Reject this booking?',
+                              'The client will be notified.',
+                              () {
+                                context
+                                    .read<HomeProviderBookingCubit>()
+                                    .rejectBooking(booking.id);
+                              },
+                            ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: _orange,
                         side: const BorderSide(color: _orange),
                         padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                      child: const Text('Reject', style: TextStyle(fontSize: 13)),
+                      child: const Text(
+                        'Reject',
+                        style: TextStyle(fontSize: 13),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -326,23 +373,37 @@ class _BookingCard extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: isPerformingAction
                           ? null
-                          : () => _confirmAction(context, 'Accept this booking?',
-                              'The client will be notified.', () {
-                              context.read<HomeProviderBookingCubit>().acceptBooking(booking.id);
-                            }),
+                          : () => _confirmAction(
+                              context,
+                              'Accept this booking?',
+                              'The client will be notified.',
+                              () {
+                                context
+                                    .read<HomeProviderBookingCubit>()
+                                    .acceptBooking(booking.id);
+                              },
+                            ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _accent,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       child: isPerformingAction
                           ? const SizedBox(
                               height: 16,
                               width: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
                             )
-                          : const Text('Accept', style: TextStyle(fontSize: 13)),
+                          : const Text(
+                              'Accept',
+                              style: TextStyle(fontSize: 13),
+                            ),
                     ),
                   ),
                 ],
@@ -356,14 +417,27 @@ class _BookingCard extends StatelessWidget {
                   child: ElevatedButton.icon(
                     onPressed: isPerformingAction
                         ? null
-                        : () => context.read<HomeProviderBookingCubit>().startService(booking.id),
-                    icon: const Icon(Icons.play_circle_outline_rounded, size: 18),
-                    label: const Text('Start Service', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                        : () => context
+                              .read<HomeProviderBookingCubit>()
+                              .startService(booking.id),
+                    icon: const Icon(
+                      Icons.play_circle_outline_rounded,
+                      size: 18,
+                    ),
+                    label: const Text(
+                      'Start Service',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _accent,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       elevation: 0,
                     ),
                   ),
@@ -375,15 +449,26 @@ class _BookingCard extends StatelessWidget {
                     onPressed: isPerformingAction
                         ? null
                         : () => context
-                            .read<HomeProviderBookingCubit>()
-                            .finishService(booking.homeServiceSessionId!),
-                    icon: const Icon(Icons.check_circle_outline_rounded, size: 18),
-                    label: const Text('Finish Service', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                              .read<HomeProviderBookingCubit>()
+                              .finishService(booking.homeServiceSessionId!),
+                    icon: const Icon(
+                      Icons.check_circle_outline_rounded,
+                      size: 18,
+                    ),
+                    label: const Text(
+                      'Finish Service',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF1565C0),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 10),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       elevation: 0,
                     ),
                   ),
@@ -395,22 +480,29 @@ class _BookingCard extends StatelessWidget {
                   onPressed: isPerformingAction
                       ? null
                       : () => _confirmAction(
-                            context,
-                            'Cancel this booking?',
-                            'The client will be notified.',
-                            () => context.read<HomeProviderBookingCubit>().cancelBooking(booking.id),
-                          ),
+                          context,
+                          'Cancel this booking?',
+                          'The client will be notified.',
+                          () => context
+                              .read<HomeProviderBookingCubit>()
+                              .cancelBooking(booking.id),
+                        ),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: _orange,
                     side: const BorderSide(color: _orange),
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   child: isPerformingAction
                       ? const SizedBox(
                           height: 16,
                           width: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: _orange),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: _orange,
+                          ),
                         )
                       : const Text('Cancel', style: TextStyle(fontSize: 13)),
                 ),
@@ -425,8 +517,18 @@ class _BookingCard extends StatelessWidget {
   static String _formatSlot(DateTime dt) {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final day = days[dt.weekday - 1];
     final month = months[dt.month - 1];
@@ -448,8 +550,14 @@ class _BookingCard extends StatelessWidget {
         title: Text(title),
         content: Text(content),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Confirm')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Confirm'),
+          ),
         ],
       ),
     );
@@ -465,10 +573,19 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, color) = switch (status) {
-      HomeServiceBookingStatus.accepted => ('Upcoming', const Color(0xFF3A80C2)),
+      HomeServiceBookingStatus.accepted => (
+        'Upcoming',
+        const Color(0xFF3A80C2),
+      ),
       HomeServiceBookingStatus.inProgress => ('Live', AppColors.homeServices),
-      HomeServiceBookingStatus.completed => ('Completed', AppColors.homeServices),
-      HomeServiceBookingStatus.rejected => ('Rejected', const Color(0xFFD05A24)),
+      HomeServiceBookingStatus.completed => (
+        'Completed',
+        AppColors.homeServices,
+      ),
+      HomeServiceBookingStatus.rejected => (
+        'Rejected',
+        const Color(0xFFD05A24),
+      ),
       HomeServiceBookingStatus.providerCancelled => ('Cancelled', Colors.grey),
       HomeServiceBookingStatus.clientCancelled => ('Cancelled', Colors.grey),
       HomeServiceBookingStatus.pending => ('Pending', const Color(0xFFF59E0B)),
@@ -482,7 +599,11 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: color),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
       ),
     );
   }

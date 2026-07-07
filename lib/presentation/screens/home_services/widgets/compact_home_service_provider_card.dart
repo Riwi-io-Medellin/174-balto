@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../domain/entities/home_service_provider.dart';
+import '../../../widgets/app_network_image.dart';
 
 class CompactHomeServiceProviderCard extends StatelessWidget {
   const CompactHomeServiceProviderCard({
@@ -55,11 +56,18 @@ class CompactHomeServiceProviderCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.star_rounded, size: 14, color: Color(0xFFF6C86A)),
+                        const Icon(
+                          Icons.star_rounded,
+                          size: 14,
+                          color: Color(0xFFF6C86A),
+                        ),
                         const SizedBox(width: 3),
                         Text(
                           '${provider.rating} $_reviewsLabel',
-                          style: const TextStyle(fontSize: 12, color: Color(0xFF5A6473)),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF5A6473),
+                          ),
                         ),
                         const SizedBox(width: 8),
                         const _ProviderBadge(),
@@ -68,7 +76,11 @@ class CompactHomeServiceProviderCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, size: 20, color: Color(0xFFB0B8C1)),
+              const Icon(
+                Icons.chevron_right,
+                size: 20,
+                color: Color(0xFFB0B8C1),
+              ),
             ],
           ),
         ),
@@ -85,12 +97,11 @@ class _Photo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipOval(
-      child: Image.network(
+      child: AppNetworkImage(
         imageUrl,
         width: 52,
         height: 52,
-        fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => Container(
+        errorWidget: Container(
           width: 52,
           height: 52,
           color: const Color(0xFFFBEAF1),

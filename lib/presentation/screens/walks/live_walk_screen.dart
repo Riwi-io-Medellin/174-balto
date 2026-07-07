@@ -126,10 +126,7 @@ class _LiveWalkViewState extends State<_LiveWalkView> {
                     onMapCreated: (c) => _mapController = c,
                   ),
                 ),
-                Expanded(
-                  flex: 6,
-                  child: _StatusPanel(state: state),
-                ),
+                Expanded(flex: 6, child: _StatusPanel(state: state)),
               ],
             );
           },
@@ -235,12 +232,7 @@ class _MapSection extends StatelessWidget {
           left: 12,
           child: const _BackButton(),
         ),
-        const Positioned(
-          top: 0,
-          right: 0,
-          left: 0,
-          child: _LiveBadge(),
-        ),
+        const Positioned(top: 0, right: 0, left: 0, child: _LiveBadge()),
       ],
     );
   }
@@ -261,8 +253,11 @@ class _BackButton extends StatelessWidget {
         onTap: () => Navigator.of(context).pop(),
         child: const Padding(
           padding: EdgeInsets.all(10),
-          child: Icon(Icons.arrow_back_rounded,
-              color: Color(0xFF1A1A2E), size: 22),
+          child: Icon(
+            Icons.arrow_back_rounded,
+            color: Color(0xFF1A1A2E),
+            size: 22,
+          ),
         ),
       ),
     );
@@ -281,8 +276,7 @@ class _LiveBadge extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(top: 12, right: 16),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -300,7 +294,7 @@ class _LiveBadge extends StatelessWidget {
                 Container(
                   width: 8,
                   height: 8,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppColors.navWalkers,
                     shape: BoxShape.circle,
                   ),
@@ -384,9 +378,12 @@ class _WaitingView extends StatelessWidget {
                     backgroundColor: AppColors.navWalkers,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 12),
+                      horizontal: 32,
+                      vertical: 12,
+                    ),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 0,
                   ),
                   child: const Text('Check now'),
@@ -424,8 +421,11 @@ class _ErrorView extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.wifi_off_rounded,
-                    size: 56, color: Colors.grey),
+                const Icon(
+                  Icons.wifi_off_rounded,
+                  size: 56,
+                  color: Colors.grey,
+                ),
                 const SizedBox(height: 16),
                 const Text(
                   'Could not connect to the walk',
@@ -440,7 +440,9 @@ class _ErrorView extends StatelessWidget {
                 Text(
                   message,
                   style: const TextStyle(
-                      fontSize: 13, color: Color(0xFF6B7280)),
+                    fontSize: 13,
+                    color: Color(0xFF6B7280),
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -450,9 +452,12 @@ class _ErrorView extends StatelessWidget {
                     backgroundColor: AppColors.navWalks,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 14),
+                      horizontal: 32,
+                      vertical: 14,
+                    ),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: const Text('Retry'),
                 ),
@@ -567,8 +572,11 @@ class _WalkerRow extends StatelessWidget {
               width: 50,
               height: 50,
               color: AppColors.navWalkers.withValues(alpha: 0.15),
-              child: const Icon(Icons.person,
-                  color: AppColors.navWalkers, size: 28),
+              child: const Icon(
+                Icons.person,
+                color: AppColors.navWalkers,
+                size: 28,
+              ),
             ),
           ),
         ),
@@ -593,8 +601,7 @@ class _WalkerRow extends StatelessWidget {
           ),
         ),
         Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             color: const Color(0xFFFFF8E6),
             borderRadius: BorderRadius.circular(20),
@@ -602,8 +609,11 @@ class _WalkerRow extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.star_rounded,
-                  color: Color(0xFFE8A84C), size: 15),
+              const Icon(
+                Icons.star_rounded,
+                color: Color(0xFFE8A84C),
+                size: 15,
+              ),
               const SizedBox(width: 3),
               Text(
                 rating.toStringAsFixed(1),
@@ -622,10 +632,7 @@ class _WalkerRow extends StatelessWidget {
 }
 
 class _StatsRow extends StatelessWidget {
-  const _StatsRow({
-    required this.elapsedSeconds,
-    required this.distanceKm,
-  });
+  const _StatsRow({required this.elapsedSeconds, required this.distanceKm});
 
   final int elapsedSeconds;
   final double distanceKm;
@@ -701,10 +708,7 @@ class _StatTile extends StatelessWidget {
           ),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFF9AA0B2),
-            ),
+            style: const TextStyle(fontSize: 12, color: Color(0xFF9AA0B2)),
           ),
         ],
       ),
@@ -728,8 +732,7 @@ class _ActionButtons extends StatelessWidget {
             icon: Icons.phone_outlined,
             bg: AppColors.navWalks,
             fg: Colors.white,
-            onTap: () =>
-                BaltoToast.info(context, 'Calling $walkerName...'),
+            onTap: () => BaltoToast.info(context, 'Calling $walkerName...'),
           ),
         ),
         const SizedBox(width: 10),
@@ -818,9 +821,7 @@ class _WellnessCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFF0FBF6),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.navWalkers.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: AppColors.navWalkers.withValues(alpha: 0.2)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -832,15 +833,18 @@ class _WellnessCard extends StatelessWidget {
               color: AppColors.navWalkers.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.verified_user_outlined,
-                color: AppColors.navWalkers, size: 20),
+            child: const Icon(
+              Icons.verified_user_outlined,
+              color: AppColors.navWalkers,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Peace of mind',
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
@@ -848,7 +852,7 @@ class _WellnessCard extends StatelessWidget {
                     color: Color(0xFF1A1A2E),
                   ),
                 ),
-                const Text(
+                Text(
                   'Live wellbeing check · All good',
                   style: TextStyle(
                     fontSize: 12,
@@ -856,8 +860,8 @@ class _WellnessCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 6),
-                const Text(
+                SizedBox(height: 6),
+                Text(
                   'Your pet is enjoying the walk and has maintained a healthy, energetic activity level during the last 20 minutes.',
                   style: TextStyle(
                     fontSize: 13,
@@ -869,10 +873,7 @@ class _WellnessCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          CustomPaint(
-            size: const Size(40, 28),
-            painter: _HeartbeatPainter(),
-          ),
+          CustomPaint(size: const Size(40, 28), painter: _HeartbeatPainter()),
         ],
       ),
     );
@@ -934,10 +935,13 @@ class _WalkMediaSectionState extends State<_WalkMediaSection> {
 
   Future<void> _fetch() async {
     try {
-      final items =
-          await sl<WalkSessionRepository>().getSessionMedia(widget.sessionId);
+      final items = await sl<WalkSessionRepository>().getSessionMedia(
+        widget.sessionId,
+      );
       // ignore: avoid_print
-      print('[MediaSection] fetched ${items.length} items for session ${widget.sessionId}');
+      print(
+        '[MediaSection] fetched ${items.length} items for session ${widget.sessionId}',
+      );
       if (mounted) setState(() => _items = items);
     } catch (e) {
       // ignore: avoid_print
@@ -1043,8 +1047,11 @@ class _OwnerMediaThumb extends StatelessWidget {
                 width: 80,
                 height: 80,
                 color: const Color(0xFF1A1A2E),
-                child: const Icon(Icons.play_circle_fill_rounded,
-                    color: Colors.white, size: 32),
+                child: const Icon(
+                  Icons.play_circle_fill_rounded,
+                  color: Colors.white,
+                  size: 32,
+                ),
               )
             : Image.network(
                 media.url,
@@ -1055,8 +1062,10 @@ class _OwnerMediaThumb extends StatelessWidget {
                   width: 80,
                   height: 80,
                   color: const Color(0xFFE0E4EC),
-                  child: const Icon(Icons.broken_image_rounded,
-                      color: Colors.grey),
+                  child: const Icon(
+                    Icons.broken_image_rounded,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
       ),

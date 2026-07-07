@@ -52,10 +52,7 @@ class QuickCareTile extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF8A93A0),
-                ),
+                style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0)),
               ),
             ],
           ),

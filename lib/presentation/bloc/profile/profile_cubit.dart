@@ -17,21 +17,14 @@ import 'profile_state.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit({
-    required UserRepository userRepository,
-    required TokenStorage tokenStorage,
-    required PetRepository petRepository,
-    required WalkBookingRepository walkBookingRepository,
-    required WalkerProfileRepository walkerProfileRepository,
-    required BusinessRepository businessRepository,
-    required NotificationRepository notificationRepository,
-  })  : _userRepository = userRepository,
-        _tokenStorage = tokenStorage,
-        _petRepository = petRepository,
-        _walkBookingRepository = walkBookingRepository,
-        _walkerProfileRepository = walkerProfileRepository,
-        _businessRepository = businessRepository,
-        _notificationRepository = notificationRepository,
-        super(const ProfileInitial());
+    required this._userRepository,
+    required this._tokenStorage,
+    required this._petRepository,
+    required this._walkBookingRepository,
+    required this._walkerProfileRepository,
+    required this._businessRepository,
+    required this._notificationRepository,
+  }) : super(const ProfileInitial());
 
   final UserRepository _userRepository;
   final TokenStorage _tokenStorage;
@@ -57,7 +50,9 @@ class ProfileCubit extends Cubit<ProfileState> {
 
       final userFuture = _userRepository.getById(userId);
       final petsFuture = _petRepository.getMyPets();
-      final bookingsFuture = _walkBookingRepository.getMyBookings(status: 'completed');
+      final bookingsFuture = _walkBookingRepository.getMyBookings(
+        status: 'completed',
+      );
       final walkerProfileFuture = _walkerProfileRepository.getMyProfile();
       final businessProfileFuture = _businessRepository.getMyBusiness();
       final unreadCountFuture = _notificationRepository.getUnreadCount();
@@ -84,14 +79,16 @@ class ProfileCubit extends Cubit<ProfileState> {
         onError: (_) => 0,
       );
 
-      emit(ProfileLoaded(
-        user: user,
-        pets: savedPets,
-        walkCount: completedBookings.length,
-        walkerProfile: walkerProfile,
-        businessProfile: businessProfile,
-        unreadNotificationCount: unreadCount,
-      ));
+      emit(
+        ProfileLoaded(
+          user: user,
+          pets: savedPets,
+          walkCount: completedBookings.length,
+          walkerProfile: walkerProfile,
+          businessProfile: businessProfile,
+          unreadNotificationCount: unreadCount,
+        ),
+      );
     } on UserFailure catch (e) {
       emit(ProfileError(e.code, e.message));
     } on FormatException catch (e) {
@@ -133,16 +130,18 @@ class ProfileCubit extends Cubit<ProfileState> {
   void _replacePet(Pet updated) {
     final current = state;
     if (current is! ProfileLoaded) return;
-    emit(ProfileLoaded(
-      user: current.user,
-      pets: [
-        for (final p in current.pets)
-          if (p.id == updated.id) updated else p,
-      ],
-      walkCount: current.walkCount,
-      walkerProfile: current.walkerProfile,
-      businessProfile: current.businessProfile,
-      unreadNotificationCount: current.unreadNotificationCount,
-    ));
+    emit(
+      ProfileLoaded(
+        user: current.user,
+        pets: [
+          for (final p in current.pets)
+            if (p.id == updated.id) updated else p,
+        ],
+        walkCount: current.walkCount,
+        walkerProfile: current.walkerProfile,
+        businessProfile: current.businessProfile,
+        unreadNotificationCount: current.unreadNotificationCount,
+      ),
+    );
   }
 }

@@ -36,9 +36,12 @@ class HomeServiceProviderSummaryDto {
       services: servicesJson == null
           ? const []
           : servicesJson
-              .map((e) =>
-                  HomeProviderServiceDto.fromJson(e as Map<String, dynamic>))
-              .toList(),
+                .map(
+                  (e) => HomeProviderServiceDto.fromJson(
+                    e as Map<String, dynamic>,
+                  ),
+                )
+                .toList(),
     );
   }
 
@@ -54,20 +57,20 @@ class HomeServiceProviderSummaryDto {
   final List<HomeProviderServiceDto> services;
 
   HomeServiceProvider toEntity() => HomeServiceProvider(
-        id: id,
-        name: fullName,
-        rating: averageRating,
-        reviews: totalReviews,
-        description: bio ?? '',
-        distance: distanceKm,
-        imageUrl: profilePhoto ?? '',
-        isVerified: true,
-        isAcceptingBookings: hasAvailability,
-        yearsOfExperience: yearsOfExperience ?? 0,
-        biography: bio,
-        avatarUrl: profilePhoto,
-        services: services.map((s) => s.toEntity()).toList(),
-      );
+    id: id,
+    name: fullName,
+    rating: averageRating,
+    reviews: totalReviews,
+    description: bio ?? '',
+    distance: distanceKm,
+    imageUrl: profilePhoto ?? '',
+    isVerified: true,
+    isAcceptingBookings: hasAvailability,
+    yearsOfExperience: yearsOfExperience ?? 0,
+    biography: bio,
+    avatarUrl: profilePhoto,
+    services: services.map((s) => s.toEntity()).toList(),
+  );
 }
 
 /// Maps backend HomeServiceProviderDetailResponse into a [HomeServiceProvider].
@@ -110,24 +113,28 @@ class HomeServiceProviderDetailDto {
       services: services == null
           ? const []
           : services
-              .map((e) =>
-                  HomeProviderServiceDto.fromJson(e as Map<String, dynamic>))
-              .toList(),
+                .map(
+                  (e) => HomeProviderServiceDto.fromJson(
+                    e as Map<String, dynamic>,
+                  ),
+                )
+                .toList(),
       specialties: specialties == null
           ? const []
           : specialties
-              .map((e) => (e as Map<String, dynamic>)['specialty'] as String)
-              .toList(),
+                .map((e) => (e as Map<String, dynamic>)['specialty'] as String)
+                .toList(),
       serviceAreas: serviceAreas == null
           ? const []
           : HomeProviderServiceAreaDto.fromJsonList(serviceAreas),
       weeklyAvailability: weekly is List
-          ? AvailabilitySlotDto.fromJsonList(weekly)
-              .map((d) => d.toEntity())
-              .toList()
+          ? AvailabilitySlotDto.fromJsonList(
+              weekly,
+            ).map((d) => d.toEntity()).toList()
           : const [],
-      availableSlots:
-          slots is List ? AvailableSlotDto.listToEntities(slots) : const [],
+      availableSlots: slots is List
+          ? AvailableSlotDto.listToEntities(slots)
+          : const [],
     );
   }
 
@@ -148,27 +155,26 @@ class HomeServiceProviderDetailDto {
   final List<AvailableSlot> availableSlots;
 
   HomeServiceProvider toEntity() => HomeServiceProvider(
-        id: id,
-        name: fullName,
-        rating: averageRating,
-        reviews: totalReviews,
-        description: bio ?? '',
-        distance: 0,
-        imageUrl: profilePhoto ?? '',
-        isVerified: true,
-        isAcceptingBookings: availableSlots.isNotEmpty,
-        yearsOfExperience: yearsOfExperience ?? 0,
-        biography: bio,
-        specialties: specialties,
-        baseLocation: baseLocation,
-        completedBookings: completedBookings,
-        avatarUrl: profilePhoto,
-        services: services.map((s) => s.toEntity()).toList(),
-        serviceAreas:
-            serviceAreas.map((a) => a.toEntity()).toList(growable: false),
-        weeklyAvailability: weeklyAvailability,
-        availableSlots: availableSlots,
-      );
+    id: id,
+    name: fullName,
+    rating: averageRating,
+    reviews: totalReviews,
+    description: bio ?? '',
+    distance: 0,
+    imageUrl: profilePhoto ?? '',
+    isVerified: true,
+    isAcceptingBookings: availableSlots.isNotEmpty,
+    yearsOfExperience: yearsOfExperience ?? 0,
+    biography: bio,
+    specialties: specialties,
+    baseLocation: baseLocation,
+    completedBookings: completedBookings,
+    avatarUrl: profilePhoto,
+    services: services.map((s) => s.toEntity()).toList(),
+    serviceAreas: serviceAreas.map((a) => a.toEntity()).toList(growable: false),
+    weeklyAvailability: weeklyAvailability,
+    availableSlots: availableSlots,
+  );
 }
 
 /// Maps backend HomeServiceProviderResponse (simple list format) into a [HomeServiceProvider].
@@ -216,17 +222,17 @@ class HomeServiceProviderListDto {
   final int totalReviews;
 
   HomeServiceProvider toEntity() => HomeServiceProvider(
-        id: id,
-        name: fullName.isNotEmpty ? fullName : 'Provider',
-        rating: averageRating,
-        reviews: totalReviews,
-        description: description ?? '',
-        distance: 0,
-        imageUrl: profilePhoto ?? '',
-        isVerified: verificationStatus == 'approved',
-        isAcceptingBookings: isAcceptingBookings,
-        biography: description,
-        baseLocation: baseLocation,
-        avatarUrl: profilePhoto,
-      );
+    id: id,
+    name: fullName.isNotEmpty ? fullName : 'Provider',
+    rating: averageRating,
+    reviews: totalReviews,
+    description: description ?? '',
+    distance: 0,
+    imageUrl: profilePhoto ?? '',
+    isVerified: verificationStatus == 'approved',
+    isAcceptingBookings: isAcceptingBookings,
+    biography: description,
+    baseLocation: baseLocation,
+    avatarUrl: profilePhoto,
+  );
 }

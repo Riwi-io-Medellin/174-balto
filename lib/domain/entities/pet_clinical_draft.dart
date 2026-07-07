@@ -1,5 +1,4 @@
 import 'pet_clinical_event.dart';
-import 'pet_clinical_medication.dart';
 
 /// Pet profile data that comes inside the AI draft
 /// and can also be edited manually (sex/color/microchip/etc).
@@ -113,8 +112,8 @@ class ClinicalExtractionDraft {
   final ClinicalEventDraft event;
 
   factory ClinicalExtractionDraft.empty() => ClinicalExtractionDraft(
-        petProfile: PetProfileDraft(),
-        clinicalRecord: ClinicalRecordDraft(),
-        event: ClinicalEventDraft.empty(),
-      );
+    petProfile: PetProfileDraft(),
+    clinicalRecord: ClinicalRecordDraft(),
+    event: ClinicalEventDraft.empty(),
+  );
 }

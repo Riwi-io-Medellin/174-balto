@@ -30,8 +30,10 @@ class HomeServiceRemoteDataSource {
 
     if (status == 200 && data is List) {
       return data
-          .map((e) =>
-              HomeServiceProviderListDto.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) =>
+                HomeServiceProviderListDto.fromJson(e as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -57,7 +59,7 @@ class HomeServiceRemoteDataSource {
       'durationMinutes': durationMinutes,
       'page': page,
       'pageSize': pageSize,
-      if (serviceTypeId != null) 'serviceTypeId': serviceTypeId,
+      'serviceTypeId': ?serviceTypeId,
     };
 
     final response = await _dio.get<dynamic>(
@@ -141,8 +143,10 @@ class HomeServiceSearchResultDto {
 
   factory HomeServiceSearchResultDto.fromJson(Map<String, dynamic> json) {
     final itemsList = (json['items'] as List)
-        .map((e) =>
-            HomeServiceProviderSummaryDto.fromJson(e as Map<String, dynamic>))
+        .map(
+          (e) =>
+              HomeServiceProviderSummaryDto.fromJson(e as Map<String, dynamic>),
+        )
         .toList();
     return HomeServiceSearchResultDto(
       items: itemsList,

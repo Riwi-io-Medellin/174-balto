@@ -10,15 +10,24 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockUploadRepository extends Mock implements UploadRepository {}
 
-class _MockVetDocumentAnalysisRepository extends Mock implements VetDocumentAnalysisRepository {}
+class _MockVetDocumentAnalysisRepository extends Mock
+    implements VetDocumentAnalysisRepository {}
 
 void main() {
   late _MockUploadRepository uploadRepository;
   late _MockVetDocumentAnalysisRepository analysisRepository;
   late VetDocumentAnalysisCubit cubit;
 
-  const petContext = PetHealthContext(petId: 'pet-1', name: 'Rocky', species: 'Dog');
-  const validFile = PickedFileInfo(path: '/tmp/report.jpg', name: 'report.jpg', sizeBytes: 1024);
+  const petContext = PetHealthContext(
+    petId: 'pet-1',
+    name: 'Rocky',
+    species: 'Dog',
+  );
+  const validFile = PickedFileInfo(
+    path: '/tmp/report.jpg',
+    name: 'report.jpg',
+    sizeBytes: 1024,
+  );
   const result = VetDocumentAnalysisResult(
     summary: 's',
     keyFindings: [],
@@ -53,61 +62,102 @@ void main() {
     expect(state.files, [validFile]);
   });
 
-  test('addFile emits an error for an unsupported file type without dropping existing files', () {
-    cubit.addFile(validFile);
-    cubit.addFile(const PickedFileInfo(path: '/tmp/doc.docx', name: 'doc.docx', sizeBytes: 100));
+  test(
+    'addFile emits an error for an unsupported file type without dropping existing files',
+    () {
+      cubit.addFile(validFile);
+      cubit.addFile(
+        const PickedFileInfo(
+          path: '/tmp/doc.docx',
+          name: 'doc.docx',
+          sizeBytes: 100,
+        ),
+      );
 
-    final state = cubit.state as VetDocumentAnalysisError;
-    expect(state.files, [validFile]);
-    expect(state.message, contains('not a supported file type'));
-  });
+      final state = cubit.state as VetDocumentAnalysisError;
+      expect(state.files, [validFile]);
+      expect(state.message, contains('not a supported file type'));
+    },
+  );
 
-  test('submit without any files emits a validation error and does not call repositories', () async {
-    await cubit.submit(petContext);
+  test(
+    'submit without any files emits a validation error and does not call repositories',
+    () async {
+      await cubit.submit(petContext);
 
-    expect(cubit.state, isA<VetDocumentAnalysisError>());
-    verifyNever(() => uploadRepository.uploadFile(any(), any()));
-    verifyNever(() => analysisRepository.analyze(context: any(named: 'context'), fileUrls: any(named: 'fileUrls')));
-  });
+      expect(cubit.state, isA<VetDocumentAnalysisError>());
+      verifyNever(() => uploadRepository.uploadFile(any(), any()));
+      verifyNever(
+        () => analysisRepository.analyze(
+          context: any(named: 'context'),
+          fileUrls: any(named: 'fileUrls'),
+        ),
+      );
+    },
+  );
 
-  test('submit uploads files then analyzes and emits Loaded on success', () async {
-    cubit.addFile(validFile);
-    when(() => uploadRepository.uploadFile(validFile.path, validFile.name))
-        .thenAnswer((_) async => 'https://cdn.example.com/report.jpg');
-    when(() => analysisRepository.analyze(context: any(named: 'context'), fileUrls: any(named: 'fileUrls')))
-        .thenAnswer((_) async => result);
+  test(
+    'submit uploads files then analyzes and emits Loaded on success',
+    () async {
+      cubit.addFile(validFile);
+      when(
+        () => uploadRepository.uploadFile(validFile.path, validFile.name),
+      ).thenAnswer((_) async => 'https://cdn.example.com/report.jpg');
+      when(
+        () => analysisRepository.analyze(
+          context: any(named: 'context'),
+          fileUrls: any(named: 'fileUrls'),
+        ),
+      ).thenAnswer((_) async => result);
 
-    final expectation = expectLater(
-      cubit.stream,
-      emitsInOrder(<VetDocumentAnalysisState>[
-        const VetDocumentAnalysisUploading(),
-        const VetDocumentAnalysisAnalyzing(),
-        const VetDocumentAnalysisLoaded(result),
-      ]),
-    );
+      final expectation = expectLater(
+        cubit.stream,
+        emitsInOrder(<VetDocumentAnalysisState>[
+          const VetDocumentAnalysisUploading(),
+          const VetDocumentAnalysisAnalyzing(),
+          const VetDocumentAnalysisLoaded(result),
+        ]),
+      );
 
-    await cubit.submit(petContext);
-    await expectation;
-  });
+      await cubit.submit(petContext);
+      await expectation;
+    },
+  );
 
-  test('submit emits an error when upload fails, preserving the file list', () async {
-    cubit.addFile(validFile);
-    when(() => uploadRepository.uploadFile(validFile.path, validFile.name))
-        .thenThrow(UploadFailure('NETWORK_ERROR', 'no connection'));
+  test(
+    'submit emits an error when upload fails, preserving the file list',
+    () async {
+      cubit.addFile(validFile);
+      when(
+        () => uploadRepository.uploadFile(validFile.path, validFile.name),
+      ).thenThrow(UploadFailure('NETWORK_ERROR', 'no connection'));
 
-    await cubit.submit(petContext);
+      await cubit.submit(petContext);
 
-    final state = cubit.state as VetDocumentAnalysisError;
-    expect(state.files, [validFile]);
-    verifyNever(() => analysisRepository.analyze(context: any(named: 'context'), fileUrls: any(named: 'fileUrls')));
-  });
+      final state = cubit.state as VetDocumentAnalysisError;
+      expect(state.files, [validFile]);
+      verifyNever(
+        () => analysisRepository.analyze(
+          context: any(named: 'context'),
+          fileUrls: any(named: 'fileUrls'),
+        ),
+      );
+    },
+  );
 
   test('submit emits the failure message when analysis fails', () async {
     cubit.addFile(validFile);
-    when(() => uploadRepository.uploadFile(validFile.path, validFile.name))
-        .thenAnswer((_) async => 'https://cdn.example.com/report.jpg');
-    when(() => analysisRepository.analyze(context: any(named: 'context'), fileUrls: any(named: 'fileUrls')))
-        .thenThrow(const VetDocumentAnalysisFailure('AI_UNAVAILABLE', 'Service is down.'));
+    when(
+      () => uploadRepository.uploadFile(validFile.path, validFile.name),
+    ).thenAnswer((_) async => 'https://cdn.example.com/report.jpg');
+    when(
+      () => analysisRepository.analyze(
+        context: any(named: 'context'),
+        fileUrls: any(named: 'fileUrls'),
+      ),
+    ).thenThrow(
+      const VetDocumentAnalysisFailure('AI_UNAVAILABLE', 'Service is down.'),
+    );
 
     await cubit.submit(petContext);
 

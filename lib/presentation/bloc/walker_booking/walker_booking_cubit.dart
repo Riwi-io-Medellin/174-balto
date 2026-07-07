@@ -16,10 +16,12 @@ class WalkerBookingCubit extends Cubit<WalkerBookingState> {
     } on WalkBookingFailure catch (e) {
       emit(WalkerBookingError(code: e.code, message: e.message));
     } catch (_) {
-      emit(const WalkerBookingError(
-        code: 'UNKNOWN',
-        message: 'An unexpected error occurred.',
-      ));
+      emit(
+        const WalkerBookingError(
+          code: 'UNKNOWN',
+          message: 'An unexpected error occurred.',
+        ),
+      );
     }
   }
 
@@ -36,10 +38,12 @@ class WalkerBookingCubit extends Cubit<WalkerBookingState> {
       }
     } catch (_) {
       if (current is WalkerBookingLoaded) {
-        emit(current.copyWith(
-          errorMessage: 'Could not refresh bookings.',
-          clearError: false,
-        ));
+        emit(
+          current.copyWith(
+            errorMessage: 'Could not refresh bookings.',
+            clearError: false,
+          ),
+        );
       }
     }
   }
@@ -85,20 +89,18 @@ class WalkerBookingCubit extends Cubit<WalkerBookingState> {
     try {
       await action();
       final bookings = await _repository.getWalkerBookings();
-      emit(WalkerBookingLoaded(
-        bookings: bookings,
-        successMessage: successMsg,
-      ));
+      emit(WalkerBookingLoaded(bookings: bookings, successMessage: successMsg));
     } on WalkBookingFailure catch (e) {
-      emit(current.copyWith(
-        isPerformingAction: false,
-        errorMessage: e.message,
-      ));
+      emit(
+        current.copyWith(isPerformingAction: false, errorMessage: e.message),
+      );
     } catch (_) {
-      emit(current.copyWith(
-        isPerformingAction: false,
-        errorMessage: 'An unexpected error occurred.',
-      ));
+      emit(
+        current.copyWith(
+          isPerformingAction: false,
+          errorMessage: 'An unexpected error occurred.',
+        ),
+      );
     }
   }
 }

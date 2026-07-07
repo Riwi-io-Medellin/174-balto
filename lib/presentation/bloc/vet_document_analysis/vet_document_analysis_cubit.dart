@@ -8,11 +8,9 @@ import 'vet_document_analysis_state.dart';
 
 class VetDocumentAnalysisCubit extends Cubit<VetDocumentAnalysisState> {
   VetDocumentAnalysisCubit({
-    required UploadRepository uploadRepository,
-    required VetDocumentAnalysisRepository analysisRepository,
-  })  : _uploadRepository = uploadRepository,
-        _analysisRepository = analysisRepository,
-        super(const VetDocumentAnalysisInitial());
+    required this._uploadRepository,
+    required this._analysisRepository,
+  }) : super(const VetDocumentAnalysisInitial());
 
   final UploadRepository _uploadRepository;
   final VetDocumentAnalysisRepository _analysisRepository;
@@ -62,18 +60,31 @@ class VetDocumentAnalysisCubit extends Cubit<VetDocumentAnalysisState> {
         fileUrls.add(url);
       }
     } catch (e) {
-      emit(VetDocumentAnalysisError('Could not upload one or more files. Please try again.', files: files));
+      emit(
+        VetDocumentAnalysisError(
+          'Could not upload one or more files. Please try again.',
+          files: files,
+        ),
+      );
       return;
     }
 
     emit(const VetDocumentAnalysisAnalyzing());
     try {
-      final result = await _analysisRepository.analyze(context: context, fileUrls: fileUrls);
+      final result = await _analysisRepository.analyze(
+        context: context,
+        fileUrls: fileUrls,
+      );
       emit(VetDocumentAnalysisLoaded(result));
     } on VetDocumentAnalysisFailure catch (e) {
       emit(VetDocumentAnalysisError(e.message, files: files));
     } catch (_) {
-      emit(VetDocumentAnalysisError('Something went wrong while analyzing the document. Please try again.', files: files));
+      emit(
+        VetDocumentAnalysisError(
+          'Something went wrong while analyzing the document. Please try again.',
+          files: files,
+        ),
+      );
     }
   }
 }

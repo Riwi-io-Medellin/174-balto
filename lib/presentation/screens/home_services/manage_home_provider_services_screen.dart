@@ -75,8 +75,9 @@ class _ManageHomeProviderServicesScreenState
             orElse: () => types.first,
           )
         : types.first;
-    final priceCtrl =
-        TextEditingController(text: existing?.price?.toStringAsFixed(0) ?? '');
+    final priceCtrl = TextEditingController(
+      text: existing?.price?.toStringAsFixed(0) ?? '',
+    );
     final descCtrl = TextEditingController(text: existing?.description ?? '');
     String priceUnit = existing?.priceUnit ?? 'flat';
     bool isActive = existing?.isActive ?? true;
@@ -112,19 +113,22 @@ class _ManageHomeProviderServicesScreenState
                   ),
                   const SizedBox(height: 18),
                   if (existing == null) ...[
-                    const Text('Service Type',
-                        style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: _textMid)),
+                    const Text(
+                      'Service Type',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: _textMid,
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<HomeServiceType>(
                       initialValue: selectedType,
                       items: types
-                          .map((t) => DropdownMenuItem(
-                                value: t,
-                                child: Text(t.name),
-                              ))
+                          .map(
+                            (t) =>
+                                DropdownMenuItem(value: t, child: Text(t.name)),
+                          )
                           .toList(),
                       onChanged: (v) => setSheetState(() => selectedType = v),
                       decoration: InputDecoration(
@@ -135,16 +139,21 @@ class _ManageHomeProviderServicesScreenState
                           borderSide: BorderSide.none,
                         ),
                         contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 10),
+                          horizontal: 14,
+                          vertical: 10,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 14),
                   ],
-                  const Text('Price',
-                      style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: _textMid)),
+                  const Text(
+                    'Price',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: _textMid,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: priceCtrl,
@@ -158,15 +167,20 @@ class _ManageHomeProviderServicesScreenState
                         borderSide: BorderSide.none,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 10),
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 14),
-                  const Text('Price Unit',
-                      style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: _textMid)),
+                  const Text(
+                    'Price Unit',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: _textMid,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
@@ -185,11 +199,14 @@ class _ManageHomeProviderServicesScreenState
                     }).toList(),
                   ),
                   const SizedBox(height: 14),
-                  const Text('Description (optional)',
-                      style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: _textMid)),
+                  const Text(
+                    'Description (optional)',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: _textMid,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: descCtrl,
@@ -203,18 +220,23 @@ class _ManageHomeProviderServicesScreenState
                         borderSide: BorderSide.none,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 10),
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
                     ),
                   ),
                   if (existing != null) ...[
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        const Text('Active',
-                            style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: _textMid)),
+                        const Text(
+                          'Active',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: _textMid,
+                          ),
+                        ),
                         const Spacer(),
                         Switch(
                           value: isActive,
@@ -257,7 +279,9 @@ class _ManageHomeProviderServicesScreenState
                           );
                         }
                       },
-                      child: Text(existing == null ? 'Add Service' : 'Save Changes'),
+                      child: Text(
+                        existing == null ? 'Add Service' : 'Save Changes',
+                      ),
                     ),
                   ),
                 ],
@@ -279,13 +303,19 @@ class _ManageHomeProviderServicesScreenState
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              size: 20, color: _textDark),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: _textDark,
+          ),
         ),
         title: const Text(
           'Manage Services',
           style: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.w700, color: _textDark),
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: _textDark,
+          ),
         ),
         centerTitle: true,
       ),
@@ -301,66 +331,81 @@ class _ManageHomeProviderServicesScreenState
           ? const Center(child: CircularProgressIndicator())
           : BlocProvider.value(
               value: _cubit,
-              child: BlocBuilder<HomeProviderServicesCubit, HomeProviderServicesState>(
-                builder: (context, state) {
-                  if (state is HomeProviderServicesLoading ||
-                      state is HomeProviderServicesInitial) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (state is HomeProviderServicesError) {
-                    return Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(32),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.error_outline_rounded,
-                                size: 48, color: Color(0xFF8A93A0)),
-                            const SizedBox(height: 16),
-                            Text(state.message,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(color: _textMid)),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                  if (state is HomeProviderServicesLoaded) {
-                    if (state.services.isEmpty) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(32),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.design_services_outlined,
-                                  size: 48, color: Color(0xFFB0B8C1)),
-                              const SizedBox(height: 16),
-                              const Text(
-                                'No services yet. Tap + to add one.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: _textMuted),
-                              ),
-                            ],
+              child:
+                  BlocBuilder<
+                    HomeProviderServicesCubit,
+                    HomeProviderServicesState
+                  >(
+                    builder: (context, state) {
+                      if (state is HomeProviderServicesLoading ||
+                          state is HomeProviderServicesInitial) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (state is HomeProviderServicesError) {
+                        return Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(32),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.error_outline_rounded,
+                                  size: 48,
+                                  color: Color(0xFF8A93A0),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  state.message,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(color: _textMid),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    }
-                    return ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-                      itemCount: state.services.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 12),
-                      itemBuilder: (_, i) => _ServiceCard(
-                        service: state.services[i],
-                        onTap: () =>
-                            _showAddOrEditSheet(existing: state.services[i]),
-                        onDelete: () => _cubit.deleteService(state.services[i].id),
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
+                        );
+                      }
+                      if (state is HomeProviderServicesLoaded) {
+                        if (state.services.isEmpty) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(32),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.design_services_outlined,
+                                    size: 48,
+                                    color: Color(0xFFB0B8C1),
+                                  ),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'No services yet. Tap + to add one.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: _textMuted),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+                        return ListView.separated(
+                          padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+                          itemCount: state.services.length,
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (_, i) => _ServiceCard(
+                            service: state.services[i],
+                            onTap: () => _showAddOrEditSheet(
+                              existing: state.services[i],
+                            ),
+                            onDelete: () =>
+                                _cubit.deleteService(state.services[i].id),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
             ),
     );
   }
@@ -399,8 +444,11 @@ class _ServiceCard extends StatelessWidget {
                 color: _accent.withValues(alpha: 0.10),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.design_services_rounded,
-                  color: _accent, size: 20),
+              child: const Icon(
+                Icons.design_services_rounded,
+                color: _accent,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -422,7 +470,9 @@ class _ServiceCard extends StatelessWidget {
                       if (!service.isActive)
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFE0E4EC),
                             borderRadius: BorderRadius.circular(20),
@@ -430,9 +480,10 @@ class _ServiceCard extends StatelessWidget {
                           child: const Text(
                             'Inactive',
                             style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF5A6473)),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF5A6473),
+                            ),
                           ),
                         ),
                     ],
@@ -458,8 +509,11 @@ class _ServiceCard extends StatelessWidget {
                   color: Color(0xFFFFF0ED),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.delete_outline_rounded,
-                    size: 16, color: Color(0xFFD05A24)),
+                child: const Icon(
+                  Icons.delete_outline_rounded,
+                  size: 16,
+                  color: Color(0xFFD05A24),
+                ),
               ),
             ),
           ],

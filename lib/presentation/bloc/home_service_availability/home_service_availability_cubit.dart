@@ -7,7 +7,7 @@ import 'home_service_availability_state.dart';
 
 class HomeServiceAvailabilityCubit extends Cubit<HomeServiceAvailabilityState> {
   HomeServiceAvailabilityCubit(this._repository)
-      : super(const HomeServiceAvailabilityInitial());
+    : super(const HomeServiceAvailabilityInitial());
 
   final HomeServiceAvailabilityRepository _repository;
 
@@ -20,10 +20,7 @@ class HomeServiceAvailabilityCubit extends Cubit<HomeServiceAvailabilityState> {
       ]);
       final slots = results[0] as List<AvailabilitySlot>;
       final exceptions = results[1] as List<AvailabilityException>;
-      emit(HomeServiceAvailabilityLoaded(
-        slots: slots,
-        exceptions: exceptions,
-      ));
+      emit(HomeServiceAvailabilityLoaded(slots: slots, exceptions: exceptions));
     } on HomeServiceAvailabilityFailure catch (e) {
       emit(HomeServiceAvailabilityError(e.code, e.message));
     } catch (e) {

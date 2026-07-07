@@ -17,19 +17,15 @@ import 'live_walk_state.dart';
 class LiveWalkCubit extends Cubit<LiveWalkState> {
   LiveWalkCubit({
     required this.booking,
-    required WalkerRepository walkerRepository,
-    required PetRepository petRepository,
-    required WalkTrackingService trackingService,
-    required TokenStorage tokenStorage,
+    required this._walkerRepository,
+    required this._petRepository,
+    required this._trackingService,
+    required this._tokenStorage,
     required WalkBookingRepository walkBookingRepository,
     required WalkSessionRepository walkSessionRepository,
-  })  : _walkerRepository = walkerRepository,
-        _petRepository = petRepository,
-        _trackingService = trackingService,
-        _tokenStorage = tokenStorage,
-        _bookingRepository = walkBookingRepository,
-        _sessionRepository = walkSessionRepository,
-        super(const LiveWalkInitial());
+  }) : _bookingRepository = walkBookingRepository,
+       _sessionRepository = walkSessionRepository,
+       super(const LiveWalkInitial());
 
   final WalkBooking booking;
   final WalkerRepository _walkerRepository;
@@ -52,6 +48,7 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
     try {
       // Always fetch fresh data — the booking passed in may be stale.
       final sid = await _fetchCurrentSessionId();
+      if (isClosed) return;
       if (sid != null) {
         await _connectToSession(sid);
       } else {
@@ -59,6 +56,7 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
         _startPolling();
       }
     } catch (e) {
+      if (isClosed) return;
       emit(LiveWalkError(e.toString()));
     }
   }
@@ -80,13 +78,17 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
 
   void _startPolling() {
     _pollTimer?.cancel();
-    _pollTimer = Timer.periodic(const Duration(seconds: 8), (_) => _checkForSession());
+    _pollTimer = Timer.periodic(
+      const Duration(seconds: 8),
+      (_) => _checkForSession(),
+    );
   }
 
   Future<void> _checkForSession() async {
     if (state is! LiveWalkWaiting) return;
     try {
       final sid = await _fetchCurrentSessionId();
+      if (isClosed) return;
       if (sid != null) {
         _pollTimer?.cancel();
         _pollTimer = null;
@@ -102,20 +104,25 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
       _walkerRepository.getWalkerDetail(booking.walkerId),
       _petRepository.getById(booking.petId),
     ).wait;
+    if (isClosed) return;
 
-    emit(LiveWalkActive(
-      walkerName: walker.name,
-      walkerAvatarUrl: walker.avatarUrl ?? walker.imageUrl ?? '',
-      walkerRating: walker.rating,
-      petName: pet.name,
-      sessionId: sessionId,
-    ));
+    emit(
+      LiveWalkActive(
+        walkerName: walker.name,
+        walkerAvatarUrl: walker.avatarUrl ?? walker.imageUrl,
+        walkerRating: walker.rating,
+        petName: pet.name,
+        sessionId: sessionId,
+      ),
+    );
     ActiveSessionTracker.enter(sessionId);
 
     final token = await _tokenStorage.readAccessToken() ?? '';
     await _trackingService.start(sessionId, token);
     _locationSub = _trackingService.locationStream.listen(_onLocation);
-    _completedSub = _trackingService.walkCompletedStream.listen(_onWalkCompleted);
+    _completedSub = _trackingService.walkCompletedStream.listen(
+      _onWalkCompleted,
+    );
     _errorSub = _trackingService.errorStream.listen((msg) {
       emit(LiveWalkError('Could not join walk group: $msg'));
     });
@@ -141,22 +148,26 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
   Future<void> _seedRouteFromHistory(String sessionId) async {
     try {
       final points = await _sessionRepository.getRoute(sessionId);
-      if (points.isEmpty) return;
+      if (points.isEmpty || isClosed) return;
       final s = state;
-      if (s is! LiveWalkActive) return; 
+      if (s is! LiveWalkActive) return;
       final last = points.last;
-      emit(s.copyWith(
-        currentPosition: last,
-        routePoints: points,
-        distanceKm: _calcDistanceKm(points),
-      ));
+      emit(
+        s.copyWith(
+          currentPosition: last,
+          routePoints: points,
+          distanceKm: _calcDistanceKm(points),
+        ),
+      );
     } catch (_) {}
   }
 
   Future<void> _pollForCompletion() async {
     if (state is! LiveWalkActive) return;
     try {
-      final bookings = await _bookingRepository.getMyBookings(status: 'completed');
+      final bookings = await _bookingRepository.getMyBookings(
+        status: 'completed',
+      );
       final finished = bookings.cast<WalkBooking?>().firstWhere(
         (b) => b?.id == booking.id,
         orElse: () => null,
@@ -174,8 +185,8 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
     } catch (_) {}
   }
 
-
   void _onWalkCompleted([Map<String, dynamic>? payload]) {
+    if (isClosed) return;
     final s = state;
     _elapsedTimer?.cancel();
     _locationSub?.cancel();
@@ -189,11 +200,13 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
       final elapsedSeconds = payload != null
           ? (payload['durationSeconds'] as int?) ?? s.elapsedSeconds
           : s.elapsedSeconds;
-      emit(LiveWalkCompleted(
-        sessionId: _resolvedSessionId ?? booking.walkSessionId ?? '',
-        distanceKm: distanceKm,
-        elapsedSeconds: elapsedSeconds,
-      ));
+      emit(
+        LiveWalkCompleted(
+          sessionId: _resolvedSessionId ?? booking.walkSessionId ?? '',
+          distanceKm: distanceKm,
+          elapsedSeconds: elapsedSeconds,
+        ),
+      );
     }
   }
 
@@ -201,12 +214,14 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
     final s = state;
     if (s is! LiveWalkActive) return;
     final updatedPoints = [...s.routePoints, position];
-    emit(s.copyWith(
-      currentPosition: position,
-      routePoints: updatedPoints,
-      distanceKm: _calcDistanceKm(updatedPoints),
-      lastUpdateAt: DateTime.now(),
-    ));
+    emit(
+      s.copyWith(
+        currentPosition: position,
+        routePoints: updatedPoints,
+        distanceKm: _calcDistanceKm(updatedPoints),
+        lastUpdateAt: DateTime.now(),
+      ),
+    );
   }
 
   double _calcDistanceKm(List<LatLng> points) {
@@ -222,7 +237,8 @@ class LiveWalkCubit extends Cubit<LiveWalkState> {
     const r = 6371000.0;
     final dLat = (b.latitude - a.latitude) * math.pi / 180;
     final dLng = (b.longitude - a.longitude) * math.pi / 180;
-    final h = math.sin(dLat / 2) * math.sin(dLat / 2) +
+    final h =
+        math.sin(dLat / 2) * math.sin(dLat / 2) +
         math.cos(a.latitude * math.pi / 180) *
             math.cos(b.latitude * math.pi / 180) *
             math.sin(dLng / 2) *

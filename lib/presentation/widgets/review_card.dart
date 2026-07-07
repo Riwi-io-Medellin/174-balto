@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/review.dart';
+import 'app_network_image.dart';
 
 class ReviewCard extends StatelessWidget {
   const ReviewCard({super.key, required this.review});
@@ -40,12 +41,11 @@ class ReviewCard extends StatelessWidget {
             children: [
               ClipOval(
                 child: review.userAvatarUrl != null
-                    ? Image.network(
+                    ? AppNetworkImage(
                         review.userAvatarUrl!,
                         width: 38,
                         height: 38,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => _placeholderAvatar(),
+                        errorWidget: _placeholderAvatar(),
                       )
                     : _placeholderAvatar(),
               ),
@@ -80,10 +80,7 @@ class ReviewCard extends StatelessWidget {
               ),
               Text(
                 _timeAgo(review.createdAt),
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: Color(0xFF8A93A0),
-                ),
+                style: const TextStyle(fontSize: 11, color: Color(0xFF8A93A0)),
               ),
             ],
           ),

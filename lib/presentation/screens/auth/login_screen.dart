@@ -58,10 +58,10 @@ class _LoginViewState extends State<_LoginView> {
   void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     context.read<AuthCubit>().login(
-          email: _emailCtrl.text.trim(),
-          password: _passwordCtrl.text,
-          rememberMe: _rememberDevice,
-        );
+      email: _emailCtrl.text.trim(),
+      password: _passwordCtrl.text,
+      rememberMe: _rememberDevice,
+    );
   }
 
   void _showSnack(String message) {
@@ -100,8 +100,10 @@ class _LoginViewState extends State<_LoginView> {
             child: AbsorbPointer(
               absorbing: isLoading,
               child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -313,8 +315,7 @@ class _LoginViewState extends State<_LoginView> {
             color: _textMuted,
             size: 20,
           ),
-          onPressed: () =>
-              setState(() => _obscurePassword = !_obscurePassword),
+          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
         ),
       ),
       validator: (v) =>
@@ -398,8 +399,8 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   Widget _orDivider() {
-    return Row(
-      children: const [
+    return const Row(
+      children: [
         Expanded(child: Divider(color: _divider, thickness: 1)),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -457,9 +458,9 @@ class _LoginViewState extends State<_LoginView> {
   Widget _createAccountRow() {
     return Center(
       child: GestureDetector(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const RegisterScreen()),
-        ),
+        onTap: () => Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const RegisterScreen())),
         child: RichText(
           text: const TextSpan(
             text: 'New to Balto? ',
@@ -521,7 +522,11 @@ class _LoginViewState extends State<_LoginView> {
 }
 
 class _SocialButton extends StatelessWidget {
-  const _SocialButton({required this.label, required this.icon, this.onPressed});
+  const _SocialButton({
+    required this.label,
+    required this.icon,
+    this.onPressed,
+  });
 
   final String label;
   final Widget icon;
@@ -533,9 +538,7 @@ class _SocialButton extends StatelessWidget {
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         side: const BorderSide(color: Color(0xFFDDE1F0), width: 1.5),
         backgroundColor: Colors.white,
       ),

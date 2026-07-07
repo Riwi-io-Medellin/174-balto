@@ -12,8 +12,8 @@ class WalkersSkeleton extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         itemCount: 3,
-        separatorBuilder: (_, __) => const SizedBox(height: 16),
-        itemBuilder: (_, __) => _WalkerCardSkeleton(),
+        separatorBuilder: (_, _) => const SizedBox(height: 16),
+        itemBuilder: (_, _) => _WalkerCardSkeleton(),
       ),
     );
   }

@@ -44,7 +44,8 @@ class _ServicesPageState extends State<ServicesPage> {
     _walkerCubit = sl<WalkerCubit>();
     _businessCubit = sl<BusinessCubit>();
     _walkerCubit.loadWalkers();
-    _businessCubit.loadUserLocation().then((_) => _businessCubit.loadBusinesses());
+    _businessCubit.loadBusinesses();
+    _businessCubit.loadUserLocation();
   }
 
   @override
@@ -65,7 +66,10 @@ class _ServicesPageState extends State<ServicesPage> {
     return [];
   }
 
-  List<Object> _buildItems(WalkerState walkerState, BusinessState businessState) {
+  List<Object> _buildItems(
+    WalkerState walkerState,
+    BusinessState businessState,
+  ) {
     final walkers = _getWalkers(walkerState);
     final businesses = _getBusinesses(businessState);
     switch (_selectedFilter) {
@@ -126,7 +130,8 @@ class _ServicesPageState extends State<ServicesPage> {
                   builder: (context, walkerState) {
                     return BlocBuilder<BusinessCubit, BusinessState>(
                       builder: (context, businessState) {
-                        final isLoading = walkerState is WalkerLoading ||
+                        final isLoading =
+                            walkerState is WalkerLoading ||
                             businessState is BusinessLoading;
                         if (isLoading) {
                           return const ServicesSkeleton();
@@ -135,8 +140,8 @@ class _ServicesPageState extends State<ServicesPage> {
                         final errorState = walkerState is WalkerError
                             ? walkerState
                             : (businessState is BusinessError
-                                ? businessState
-                                : null);
+                                  ? businessState
+                                  : null);
                         if (errorState != null) {
                           final message = errorState is WalkerError
                               ? errorState.message
@@ -147,13 +152,17 @@ class _ServicesPageState extends State<ServicesPage> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.error_outline,
-                                      size: 48, color: Colors.grey),
+                                  const Icon(
+                                    Icons.error_outline,
+                                    size: 48,
+                                    color: Colors.grey,
+                                  ),
                                   const SizedBox(height: 12),
-                                  Text(message,
-                                      textAlign: TextAlign.center,
-                                      style:
-                                          const TextStyle(color: Colors.grey)),
+                                  Text(
+                                    message,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: Colors.grey),
+                                  ),
                                   const SizedBox(height: 16),
                                   ElevatedButton(
                                     onPressed: () {
@@ -186,8 +195,7 @@ class _ServicesPageState extends State<ServicesPage> {
                         }
 
                         return ListView.separated(
-                          padding:
-                              const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
                           itemCount: items.length,
                           separatorBuilder: (_, _) =>
                               const SizedBox(height: 16),
@@ -249,14 +257,12 @@ class _ServicesPageState extends State<ServicesPage> {
         ),
         IconButton(
           onPressed: () {},
-          icon: const Icon(Icons.search_rounded,
-              color: Color(0xFF1F2937)),
+          icon: const Icon(Icons.search_rounded, color: Color(0xFF1F2937)),
           visualDensity: VisualDensity.compact,
         ),
         IconButton(
           onPressed: () {},
-          icon:
-              const Icon(Icons.tune_rounded, color: Color(0xFF1F2937)),
+          icon: const Icon(Icons.tune_rounded, color: Color(0xFF1F2937)),
           visualDensity: VisualDensity.compact,
         ),
       ],

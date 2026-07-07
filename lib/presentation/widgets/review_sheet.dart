@@ -63,7 +63,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
             comment: comment,
           );
       }
-      if (!context.mounted) return;
+      if (!mounted) return;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -73,7 +73,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
       );
     } catch (e) {
       setState(() => _isSubmitting = false);
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $e'),
@@ -119,10 +119,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
           const SizedBox(height: 4),
           Text(
             displaySubtitle,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF8A93A0),
-            ),
+            style: const TextStyle(fontSize: 14, color: Color(0xFF8A93A0)),
           ),
           const SizedBox(height: 24),
           Row(

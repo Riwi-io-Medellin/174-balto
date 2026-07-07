@@ -49,10 +49,13 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
   Future<void> _loadMedia() async {
     if (widget.sessionId.isEmpty) return;
     try {
-      final items =
-          await sl<WalkSessionRepository>().getSessionMedia(widget.sessionId);
+      final items = await sl<WalkSessionRepository>().getSessionMedia(
+        widget.sessionId,
+      );
       // ignore: avoid_print
-      print('[SummaryMedia] fetched ${items.length} items for session ${widget.sessionId}');
+      print(
+        '[SummaryMedia] fetched ${items.length} items for session ${widget.sessionId}',
+      );
       if (mounted) setState(() => _mediaItems = items);
     } catch (e) {
       // ignore: avoid_print
@@ -62,11 +65,15 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
 
   Future<void> _loadRoute() async {
     if (widget.sessionId.isEmpty) {
-      setState(() { _loading = false; });
+      setState(() {
+        _loading = false;
+      });
       return;
     }
     try {
-      final points = await sl<WalkSessionRepository>().getRoute(widget.sessionId);
+      final points = await sl<WalkSessionRepository>().getRoute(
+        widget.sessionId,
+      );
       if (mounted) {
         setState(() {
           _routePoints = points;
@@ -77,7 +84,12 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
         });
       }
     } catch (_) {
-      if (mounted) setState(() { _error = 'Could not load route'; _loading = false; });
+      if (mounted) {
+        setState(() {
+          _error = 'Could not load route';
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -93,7 +105,8 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
     const r = 6371000.0;
     final dLat = (b.latitude - a.latitude) * pi / 180;
     final dLng = (b.longitude - a.longitude) * pi / 180;
-    final h = sin(dLat / 2) * sin(dLat / 2) +
+    final h =
+        sin(dLat / 2) * sin(dLat / 2) +
         cos(a.latitude * pi / 180) *
             cos(b.latitude * pi / 180) *
             sin(dLng / 2) *
@@ -160,8 +173,9 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                   GoogleMap(
                     onMapCreated: (c) {
                       _mapController = c;
-                      WidgetsBinding.instance
-                          .addPostFrameCallback((_) => _fitRoute());
+                      WidgetsBinding.instance.addPostFrameCallback(
+                        (_) => _fitRoute(),
+                      );
                     },
                     initialCameraPosition: CameraPosition(
                       target: _center,
@@ -219,8 +233,11 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                       onTap: () => Navigator.of(context).pop(),
                       child: const Padding(
                         padding: EdgeInsets.all(10),
-                        child: Icon(Icons.arrow_back_rounded,
-                            color: Color(0xFF1A1A2E), size: 22),
+                        child: Icon(
+                          Icons.arrow_back_rounded,
+                          color: Color(0xFF1A1A2E),
+                          size: 22,
+                        ),
                       ),
                     ),
                   ),
@@ -232,7 +249,9 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                   right: 12,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.navWalkers,
                       borderRadius: BorderRadius.circular(20),
@@ -247,8 +266,11 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.check_circle_rounded,
-                            color: Colors.white, size: 14),
+                        Icon(
+                          Icons.check_circle_rounded,
+                          color: Colors.white,
+                          size: 14,
+                        ),
                         SizedBox(width: 5),
                         Text(
                           'Walk Complete',
@@ -353,7 +375,8 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                             scrollDirection: Axis.horizontal,
                             physics: const ClampingScrollPhysics(),
                             itemCount: _mediaItems.length,
-                            separatorBuilder: (_, _) => const SizedBox(width: 8),
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(width: 8),
                             itemBuilder: (_, i) =>
                                 _SummaryMediaThumb(media: _mediaItems[i]),
                           ),
@@ -400,11 +423,16 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                                   ? 'How was your walk with ${widget.walkerName}?'
                                   : 'How was your walk?',
                             ),
-                            icon: const Icon(Icons.star_outline_rounded, size: 18),
+                            icon: const Icon(
+                              Icons.star_outline_rounded,
+                              size: 18,
+                            ),
                             label: const Text('Write a Review'),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.navWalkers,
-                              side: const BorderSide(color: AppColors.navWalkers),
+                              side: const BorderSide(
+                                color: AppColors.navWalkers,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
@@ -449,7 +477,10 @@ class _MapPlaceholder extends StatelessWidget {
             const SizedBox(
               width: 24,
               height: 24,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.grey),
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.grey,
+              ),
             ),
             const SizedBox(height: 12),
             Text(message, style: const TextStyle(color: Colors.grey)),
@@ -591,8 +622,11 @@ class _SummaryMediaThumb extends StatelessWidget {
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.play_circle_fill_rounded,
-                        color: Colors.white, size: 32),
+                    Icon(
+                      Icons.play_circle_fill_rounded,
+                      color: Colors.white,
+                      size: 32,
+                    ),
                     SizedBox(height: 4),
                     Text(
                       'Video',
@@ -610,8 +644,10 @@ class _SummaryMediaThumb extends StatelessWidget {
                   width: 90,
                   height: 90,
                   color: const Color(0xFFE0E4EC),
-                  child: const Icon(Icons.broken_image_rounded,
-                      color: Colors.grey),
+                  child: const Icon(
+                    Icons.broken_image_rounded,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
       ),

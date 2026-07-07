@@ -20,12 +20,10 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
   WalkerLiveWalkCubit({
     required this.booking,
     required WalkSessionRepository walkSessionRepository,
-    required WalkerLiveWalkService liveWalkService,
-    required UploadRepository uploadRepository,
-  })  : _sessionRepository = walkSessionRepository,
-        _liveWalkService = liveWalkService,
-        _uploadRepository = uploadRepository,
-        super(const WalkerLiveWalkInitial());
+    required this._liveWalkService,
+    required this._uploadRepository,
+  }) : _sessionRepository = walkSessionRepository,
+       super(const WalkerLiveWalkInitial());
 
   final WalkBooking booking;
   final WalkSessionRepository _sessionRepository;
@@ -49,9 +47,11 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
       }
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        emit(const WalkerLiveWalkError(
-          'Location permission is required to start the walk.',
-        ));
+        emit(
+          const WalkerLiveWalkError(
+            'Location permission is required to start the walk.',
+          ),
+        );
         return;
       }
 
@@ -63,9 +63,12 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
         _sessionId = await _sessionRepository.startSession(booking.id);
       }
       // ignore: avoid_print
-      print('[WalkerLive] Session ID: $_sessionId (rejoined: ${existingId != null})');
+      print(
+        '[WalkerLive] Session ID: $_sessionId (rejoined: ${existingId != null})',
+      );
 
       await _liveWalkService.start();
+      if (isClosed) return;
 
       emit(WalkerLiveWalkActive(sessionId: _sessionId));
       if (_sessionId != null) ActiveSessionTracker.enter(_sessionId!);
@@ -79,13 +82,16 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
         }
       });
     } catch (e) {
+      if (isClosed) return;
       emit(WalkerLiveWalkError(e.toString()));
     }
   }
 
   void _onPosition(Position position) {
     // ignore: avoid_print
-    print('[WalkerLive] GPS fix: ${position.latitude}, ${position.longitude} acc=${position.accuracy}m');
+    print(
+      '[WalkerLive] GPS fix: ${position.latitude}, ${position.longitude} acc=${position.accuracy}m',
+    );
     final s = state;
     if (s is! WalkerLiveWalkActive) return;
 
@@ -97,12 +103,14 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
 
     final updatedPoints = [...s.routePoints, current];
 
-    emit(s.copyWith(
-      currentPosition: current,
-      accuracyMeters: position.accuracy,
-      routePoints: updatedPoints,
-      distanceKm: _accumulatedDistanceMeters / 1000,
-    ));
+    emit(
+      s.copyWith(
+        currentPosition: current,
+        accuracyMeters: position.accuracy,
+        routePoints: updatedPoints,
+        distanceKm: _accumulatedDistanceMeters / 1000,
+      ),
+    );
 
     final id = _sessionId;
     if (id != null) {
@@ -117,7 +125,8 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
     const r = 6371000.0;
     final dLat = (b.latitude - a.latitude) * math.pi / 180;
     final dLng = (b.longitude - a.longitude) * math.pi / 180;
-    final h = math.sin(dLat / 2) * math.sin(dLat / 2) +
+    final h =
+        math.sin(dLat / 2) * math.sin(dLat / 2) +
         math.cos(a.latitude * math.pi / 180) *
             math.cos(b.latitude * math.pi / 180) *
             math.sin(dLng / 2) *
@@ -144,7 +153,9 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
 
       if (file == null) {
         final cur = state;
-        if (cur is WalkerLiveWalkActive) emit(cur.copyWith(isUploadingMedia: false));
+        if (cur is WalkerLiveWalkActive) {
+          emit(cur.copyWith(isUploadingMedia: false));
+        }
         return;
       }
 
@@ -153,16 +164,21 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
         if (size > _maxVideoBytes) {
           final cur = state;
           if (cur is WalkerLiveWalkActive) {
-            emit(cur.copyWith(
-              isUploadingMedia: false,
-              mediaUploadError: 'Video is too large (max 50 MB). Please record a shorter clip.',
-            ));
+            emit(
+              cur.copyWith(
+                isUploadingMedia: false,
+                mediaUploadError:
+                    'Video is too large (max 50 MB). Please record a shorter clip.',
+              ),
+            );
           }
           return;
         }
       }
 
-      final filename = isVideo ? 'walk_video_${file.name}' : 'walk_photo_${file.name}';
+      final filename = isVideo
+          ? 'walk_video_${file.name}'
+          : 'walk_photo_${file.name}';
       final url = await _uploadRepository.uploadFile(file.path, filename);
       final type = isVideo ? 'video' : 'photo';
       await _sessionRepository.addMedia(_sessionId!, url, type);
@@ -174,30 +190,44 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
           type: type,
           uploadedAt: DateTime.now(),
         );
-        emit(current.copyWith(
-          mediaItems: [...current.mediaItems, newItem],
-          isUploadingMedia: false,
-        ));
+        emit(
+          current.copyWith(
+            mediaItems: [...current.mediaItems, newItem],
+            isUploadingMedia: false,
+          ),
+        );
       }
     } on UploadFailure catch (e) {
       final current = state;
       if (current is WalkerLiveWalkActive) {
-        emit(current.copyWith(isUploadingMedia: false, mediaUploadError: e.message));
+        emit(
+          current.copyWith(
+            isUploadingMedia: false,
+            mediaUploadError: e.message,
+          ),
+        );
       }
     } on UploadRemoteFailure catch (e) {
       final current = state;
       if (current is WalkerLiveWalkActive) {
-        emit(current.copyWith(isUploadingMedia: false, mediaUploadError: e.message));
+        emit(
+          current.copyWith(
+            isUploadingMedia: false,
+            mediaUploadError: e.message,
+          ),
+        );
       }
     } catch (e) {
       // ignore: avoid_print
       print('[WalkerLive] media upload error: $e');
       final current = state;
       if (current is WalkerLiveWalkActive) {
-        emit(current.copyWith(
-          isUploadingMedia: false,
-          mediaUploadError: 'Upload failed. Please try again.',
-        ));
+        emit(
+          current.copyWith(
+            isUploadingMedia: false,
+            mediaUploadError: 'Upload failed. Please try again.',
+          ),
+        );
       }
     }
   }
@@ -225,12 +255,16 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
           elapsedSeconds,
         );
       }
-      emit(WalkerLiveWalkCompleted(
-        sessionId: _sessionId ?? '',
-        distanceKm: distanceKm,
-        elapsedSeconds: elapsedSeconds,
-      ));
+      if (isClosed) return;
+      emit(
+        WalkerLiveWalkCompleted(
+          sessionId: _sessionId ?? '',
+          distanceKm: distanceKm,
+          elapsedSeconds: elapsedSeconds,
+        ),
+      );
     } catch (e) {
+      if (isClosed) return;
       emit(WalkerLiveWalkError(e.toString()));
     }
   }

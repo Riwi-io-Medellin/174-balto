@@ -55,8 +55,9 @@ class _WalkerProfilePageState extends State<WalkerProfilePage> {
       ],
       child: BlocBuilder<WalkerCubit, WalkerState>(
         builder: (context, state) {
-          final walker =
-              state is WalkerDetailLoaded ? state.walker : widget.walker;
+          final walker = state is WalkerDetailLoaded
+              ? state.walker
+              : widget.walker;
           final isLoadingDetail = state is WalkerLoading;
 
           return Scaffold(
@@ -255,10 +256,7 @@ class _ProfileHeader extends StatelessWidget {
               ),
               Text(
                 ' $_reviewsText',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF8A93A0),
-                ),
+                style: const TextStyle(fontSize: 14, color: Color(0xFF8A93A0)),
               ),
             ],
           ),
@@ -282,15 +280,15 @@ class _ProfileHeader extends StatelessWidget {
                   ),
               ],
               if (walker.isVerified)
-                Row(
+                const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.verified_rounded,
                       size: 16,
                       color: AppColors.navCoach,
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: 4),
                     Text(
                       'Verified',
                       style: TextStyle(
@@ -386,7 +384,7 @@ class _AboutCard extends StatelessWidget {
                   color: AppColors.navWalkers.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.info_outline_rounded,
                   size: 16,
                   color: AppColors.navWalkers,
@@ -577,10 +575,7 @@ class _StatTile extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             data.label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFF8A93A0),
-            ),
+            style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0)),
           ),
         ],
       ),
@@ -619,9 +614,7 @@ class _ServiceAreaCard extends StatelessWidget {
               children: [
                 Container(color: const Color(0xFFDEEBD8)),
                 // Road-like horizontal lines
-                Positioned.fill(
-                  child: CustomPaint(painter: _MapGridPainter()),
-                ),
+                Positioned.fill(child: CustomPaint(painter: _MapGridPainter())),
                 // Service radius circle
                 Container(
                   width: 120,
@@ -813,7 +806,13 @@ class _WeeklyScheduleSection extends StatelessWidget {
 
   static const _days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   static const _daysFull = [
-    'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
   ];
 
   Map<int, List<AvailabilitySlot>> _group() {
@@ -836,9 +835,10 @@ class _WeeklyScheduleSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final grouped = _group();
-    final activeDays = List.generate(7, (i) => i)
-        .where((d) => grouped.containsKey(d))
-        .toList();
+    final activeDays = List.generate(
+      7,
+      (i) => i,
+    ).where((d) => grouped.containsKey(d)).toList();
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -944,7 +944,9 @@ class _WeeklyScheduleSection extends StatelessWidget {
                             color: AppColors.navWalkers.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: AppColors.navWalkers.withValues(alpha: 0.25),
+                              color: AppColors.navWalkers.withValues(
+                                alpha: 0.25,
+                              ),
                             ),
                           ),
                           child: Text(
@@ -1079,14 +1081,14 @@ class _BookingBar extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Row(
+                const Row(
                   children: [
                     Icon(
                       Icons.bolt_rounded,
                       size: 13,
                       color: AppColors.navWalkers,
                     ),
-                    const SizedBox(width: 2),
+                    SizedBox(width: 2),
                     Text(
                       'INSTANT BOOK',
                       style: TextStyle(
@@ -1122,10 +1124,7 @@ class _BookingBar extends StatelessWidget {
               ),
               child: const Text(
                 'Book a Walk',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
               ),
             ),
           ],

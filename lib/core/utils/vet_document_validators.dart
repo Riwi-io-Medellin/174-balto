@@ -36,7 +36,8 @@ const List<String> supportedVetDocumentExtensions = [
 ];
 
 const int maxVetDocumentCount = 5;
-const int maxVetDocumentSizeBytes = 10 * 1024 * 1024; // 10 MB, matches backend /api/upload cap
+const int maxVetDocumentSizeBytes =
+    10 * 1024 * 1024; // 10 MB, matches backend /api/upload cap
 
 const List<String> knownPetSpecies = ['dog', 'cat', 'bird', 'rabbit', 'other'];
 
@@ -47,7 +48,7 @@ VetDocumentValidationResult validateFiles(List<PickedFileInfo> files) {
     );
   }
   if (files.length > maxVetDocumentCount) {
-    return VetDocumentValidationResult.invalid(
+    return const VetDocumentValidationResult.invalid(
       'You can attach up to $maxVetDocumentCount files.',
     );
   }

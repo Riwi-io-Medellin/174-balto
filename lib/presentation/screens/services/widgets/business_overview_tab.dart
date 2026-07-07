@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../domain/entities/business.dart';
 
-const _bodyStyle = TextStyle(fontSize: 13.5, color: Color(0xFF5A6473), height: 1.5);
+const _bodyStyle = TextStyle(
+  fontSize: 13.5,
+  color: Color(0xFF5A6473),
+  height: 1.5,
+);
 
 class BusinessOverviewTab extends StatelessWidget {
   const BusinessOverviewTab({super.key, required this.business});
@@ -18,10 +22,16 @@ class BusinessOverviewTab extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (business.description != null && business.description!.isNotEmpty)
-            _Section(title: 'About', child: Text(business.description!, style: _bodyStyle)),
-          if (business.address != null && business.address!.isNotEmpty) _LocationSection(business: business),
-          if (business.openingHours.isNotEmpty) _HoursSection(business: business),
-          if (business.services.isNotEmpty) _ServicesSection(business: business),
+            _Section(
+              title: 'About',
+              child: Text(business.description!, style: _bodyStyle),
+            ),
+          if (business.address != null && business.address!.isNotEmpty)
+            _LocationSection(business: business),
+          if (business.openingHours.isNotEmpty)
+            _HoursSection(business: business),
+          if (business.services.isNotEmpty)
+            _ServicesSection(business: business),
         ],
       ),
     );
@@ -41,7 +51,14 @@ class _Section extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1F2937))),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF1F2937),
+            ),
+          ),
           const SizedBox(height: 10),
           child,
         ],
@@ -62,7 +79,11 @@ class _LocationSection extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.location_on_rounded, size: 18, color: AppColors.navWalkers),
+          const Icon(
+            Icons.location_on_rounded,
+            size: 18,
+            color: AppColors.navWalkers,
+          ),
           const SizedBox(width: 8),
           Expanded(child: Text(business.address ?? '', style: _bodyStyle)),
         ],
@@ -91,14 +112,25 @@ class _HoursSection extends StatelessWidget {
               children: [
                 SizedBox(
                   width: 100,
-                  child: Text(h.dayLabel, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1F2937))),
+                  child: Text(
+                    h.dayLabel,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1F2937),
+                    ),
+                  ),
                 ),
                 Expanded(
                   child: Text(
-                    h.isActive ? '${_fmt(h.startTime)} - ${_fmt(h.endTime)}' : 'Closed',
+                    h.isActive
+                        ? '${_fmt(h.startTime)} - ${_fmt(h.endTime)}'
+                        : 'Closed',
                     style: TextStyle(
                       fontSize: 13,
-                      color: h.isActive ? const Color(0xFF5A6473) : const Color(0xFFB6BEC9),
+                      color: h.isActive
+                          ? const Color(0xFF5A6473)
+                          : const Color(0xFFB6BEC9),
                     ),
                   ),
                 ),
@@ -137,14 +169,33 @@ class _ServicesSection extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(s.serviceType, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: Color(0xFF1F2937))),
+                      Text(
+                        s.serviceType,
+                        style: const TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF1F2937),
+                        ),
+                      ),
                       if (s.description != null && s.description!.isNotEmpty)
-                        Text(s.description!, style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0))),
+                        Text(
+                          s.description!,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF8A93A0),
+                          ),
+                        ),
                     ],
                   ),
                 ),
-                Text('\$${s.price.toStringAsFixed(2)}',
-                    style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: AppColors.navWalkers)),
+                Text(
+                  '\$${s.price.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.navWalkers,
+                  ),
+                ),
               ],
             ),
           );

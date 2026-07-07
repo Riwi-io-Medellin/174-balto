@@ -5,7 +5,8 @@ import '../../../domain/repositories/auth_repository.dart';
 import 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit(this._repository, this._pushNotificationService) : super(const AuthInitial());
+  AuthCubit(this._repository, this._pushNotificationService)
+    : super(const AuthInitial());
 
   final AuthRepository _repository;
   final PushNotificationService _pushNotificationService;

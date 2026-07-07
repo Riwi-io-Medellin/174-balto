@@ -16,62 +16,62 @@ import '../../bloc/profile/profile_state.dart';
 
 // Antioquia municipalities with approximate lat/lng for GPS city detection
 const _antioquiaCities = <String, (double, double)>{
-  'Medellín':          (6.2442,  -75.5812),
-  'Bello':             (6.3367,  -75.5553),
-  'Itagüí':           (6.1849,  -75.5990),
-  'Envigado':          (6.1738,  -75.5905),
-  'Sabaneta':          (6.1508,  -75.6172),
-  'La Estrella':       (6.1567,  -75.6439),
-  'Caldas':            (6.0941,  -75.6373),
-  'Copacabana':        (6.3499,  -75.5055),
-  'Girardota':         (6.3779,  -75.4467),
-  'Barbosa':           (6.4364,  -75.3309),
-  'Rionegro':          (6.1543,  -75.3740),
-  'Marinilla':         (6.1762,  -75.3312),
+  'Medellín': (6.2442, -75.5812),
+  'Bello': (6.3367, -75.5553),
+  'Itagüí': (6.1849, -75.5990),
+  'Envigado': (6.1738, -75.5905),
+  'Sabaneta': (6.1508, -75.6172),
+  'La Estrella': (6.1567, -75.6439),
+  'Caldas': (6.0941, -75.6373),
+  'Copacabana': (6.3499, -75.5055),
+  'Girardota': (6.3779, -75.4467),
+  'Barbosa': (6.4364, -75.3309),
+  'Rionegro': (6.1543, -75.3740),
+  'Marinilla': (6.1762, -75.3312),
   'El Carmen de Viboral': (6.0879, -75.3418),
-  'Guarne':            (6.2789,  -75.4421),
-  'La Ceja':           (6.0299,  -75.4380),
-  'La Unión':          (5.9759,  -75.3646),
-  'El Retiro':         (6.0606,  -75.5085),
-  'El Santuario':      (6.1363,  -75.2715),
-  'El Peñol':          (6.2124,  -75.2364),
-  'Guatapé':           (6.2327,  -75.1582),
-  'Apartadó':          (7.8822,  -76.6283),
-  'Turbo':             (8.0977,  -76.7325),
-  'Carepa':            (7.7591,  -76.6565),
-  'Chigorodó':         (7.6710,  -76.6826),
-  'Necoclí':           (8.4224,  -76.7863),
-  'Arboletes':         (8.8510,  -76.4270),
-  'San Juan de Urabá': (8.7602,  -76.5300),
-  'Caucasia':          (7.9893,  -75.1966),
-  'El Bagre':          (7.5905,  -74.8098),
-  'Nechí':             (8.0965,  -74.7729),
-  'Zaragoza':          (7.4905,  -74.8700),
-  'Yarumal':           (7.0009,  -75.4167),
+  'Guarne': (6.2789, -75.4421),
+  'La Ceja': (6.0299, -75.4380),
+  'La Unión': (5.9759, -75.3646),
+  'El Retiro': (6.0606, -75.5085),
+  'El Santuario': (6.1363, -75.2715),
+  'El Peñol': (6.2124, -75.2364),
+  'Guatapé': (6.2327, -75.1582),
+  'Apartadó': (7.8822, -76.6283),
+  'Turbo': (8.0977, -76.7325),
+  'Carepa': (7.7591, -76.6565),
+  'Chigorodó': (7.6710, -76.6826),
+  'Necoclí': (8.4224, -76.7863),
+  'Arboletes': (8.8510, -76.4270),
+  'San Juan de Urabá': (8.7602, -76.5300),
+  'Caucasia': (7.9893, -75.1966),
+  'El Bagre': (7.5905, -74.8098),
+  'Nechí': (8.0965, -74.7729),
+  'Zaragoza': (7.4905, -74.8700),
+  'Yarumal': (7.0009, -75.4167),
   'Santa Rosa de Osos': (6.6462, -75.4639),
-  'Don Matías':        (6.4981,  -75.4228),
-  'Entrerríos':        (6.5547,  -75.4699),
+  'Don Matías': (6.4981, -75.4228),
+  'Entrerríos': (6.5547, -75.4699),
   'San Pedro de los Milagros': (6.4773, -75.5755),
-  'Angostura':         (6.8974,  -75.3485),
-  'Valdivia':          (7.1874,  -75.4484),
-  'Ituango':           (7.1670,  -75.7635),
-  'Tarazá':            (7.5765,  -75.4030),
+  'Angostura': (6.8974, -75.3485),
+  'Valdivia': (7.1874, -75.4484),
+  'Ituango': (7.1670, -75.7635),
+  'Tarazá': (7.5765, -75.4030),
   'Santa Fe de Antioquia': (6.5544, -75.8290),
-  'Sopetrán':          (6.5015,  -75.7468),
-  'San Jerónimo':      (6.4757,  -75.7204),
-  'Andes':             (5.6573,  -75.8797),
-  'Jardín':            (5.5990,  -75.8202),
-  'Jericó':            (5.7898,  -75.7880),
-  'Ciudad Bolívar':    (5.8563,  -76.0177),
-  'Urrao':             (6.3229,  -76.1323),
-  'Puerto Berrío':     (6.4893,  -74.4028),
-  'Puerto Triunfo':    (5.8724,  -74.5742),
-  'Sonsón':            (5.7124,  -75.2981),
-  'Amalfi':            (6.9157,  -75.0742),
-  'Segovia':           (7.0783,  -74.7040),
-  'Remedios':          (7.0259,  -74.6932),
-  'Yolombó':           (6.5988,  -75.0165),
-  'Maceo':             (6.5472,  -74.7777),
+  'Sopetrán': (6.5015, -75.7468),
+  'San Jerónimo': (6.4757, -75.7204),
+  'Andes': (5.6573, -75.8797),
+  'Jardín': (5.5990, -75.8202),
+  'Jericó': (5.7898, -75.7880),
+  'Ciudad Bolívar': (5.8563, -76.0177),
+  'Urrao': (6.3229, -76.1323),
+  'Puerto Berrío': (6.4893, -74.4028),
+  'Puerto Triunfo': (5.8724, -74.5742),
+  'Sonsón': (5.7124, -75.2981),
+  'Amalfi': (6.9157, -75.0742),
+  'Segovia': (7.0783, -74.7040),
+  'Remedios': (7.0259, -74.6932),
+  'Yolombó': (6.5988, -75.0165),
+  'Maceo': (6.5472, -74.7777),
 };
 
 class EditProfileScreen extends StatefulWidget {
@@ -150,20 +150,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
         if (mounted) {
-          BaltoToast.error(context, 'Location permission is required to detect your city.');
+          BaltoToast.error(
+            context,
+            'Location permission is required to detect your city.',
+          );
         }
         return;
       }
 
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.low),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+        ),
       );
 
       final nearest = _findNearestCity(position.latitude, position.longitude);
       if (mounted) setState(() => _selectedCity = nearest);
     } catch (e) {
       if (mounted) {
-        BaltoToast.error(context, 'Could not detect location. Please select your city manually.');
+        BaltoToast.error(
+          context,
+          'Could not detect location. Please select your city manually.',
+        );
       }
     } finally {
       if (mounted) setState(() => _detectingCity = false);
@@ -190,10 +198,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return dLat * dLat + dLng * dLng;
   }
 
-  InputDecoration _decoration({
-    required String hint,
-    required IconData icon,
-  }) {
+  InputDecoration _decoration({required String hint, required IconData icon}) {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(color: _textMuted, fontSize: 14),
@@ -228,7 +233,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: _primary, width: 1.5),
+        borderSide: const BorderSide(color: _primary, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
@@ -335,12 +340,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                Center(child: _AvatarPicker(
-                  pickedImage: _pickedImage,
-                  photoUrl: currentPhotoUrl,
-                  onTap: _pickImage,
-                  primary: _primary,
-                )),
+                Center(
+                  child: _AvatarPicker(
+                    pickedImage: _pickedImage,
+                    photoUrl: currentPhotoUrl,
+                    onTap: _pickImage,
+                    primary: _primary,
+                  ),
+                ),
                 const SizedBox(height: 28),
                 _fieldLabel('First Name'),
                 const SizedBox(height: 8),
@@ -405,12 +412,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.directions_walk, size: 16, color: Color(0xFF3A80C2)),
+                      Icon(
+                        Icons.directions_walk,
+                        size: 16,
+                        color: Color(0xFF3A80C2),
+                      ),
                       SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Your address and city are shown to the walker as your dog\'s pickup location.',
-                          style: TextStyle(fontSize: 12, color: Color(0xFF3A80C2)),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF3A80C2),
+                          ),
                         ),
                       ),
                     ],
@@ -434,25 +448,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     GestureDetector(
                       onTap: _detectingCity ? null : _detectCity,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
                         decoration: BoxDecoration(
                           color: _primary.withValues(alpha: 0.10),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: _detectingCity
-                            ? SizedBox(
+                            ? const SizedBox(
                                 width: 14,
                                 height: 14,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(_primary),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    _primary,
+                                  ),
                                 ),
                               )
-                            : Row(
+                            : const Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.my_location, size: 13, color: _primary),
-                                  const SizedBox(width: 4),
+                                  Icon(
+                                    Icons.my_location,
+                                    size: 13,
+                                    color: _primary,
+                                  ),
+                                  SizedBox(width: 4),
                                   Text(
                                     'Detect',
                                     style: TextStyle(
@@ -469,7 +492,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: _selectedCity,
+                  initialValue: _selectedCity,
                   isExpanded: true,
                   decoration: _dropdownDecoration(
                     hint: 'Select your city',
@@ -581,7 +604,11 @@ class _AvatarPicker extends StatelessWidget {
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2),
               ),
-              child: const Icon(Icons.camera_alt, size: 14, color: Colors.white),
+              child: const Icon(
+                Icons.camera_alt,
+                size: 14,
+                color: Colors.white,
+              ),
             ),
           ),
         ],

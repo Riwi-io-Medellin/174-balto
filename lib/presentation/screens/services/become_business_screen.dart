@@ -33,7 +33,13 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
   final _addressCtrl = TextEditingController();
 
   String _type = 'veterinary';
-  static const _types = ['veterinary', 'grooming', 'shelter', 'petshop', 'other'];
+  static const _types = [
+    'veterinary',
+    'grooming',
+    'shelter',
+    'petshop',
+    'other',
+  ];
 
   static const Color _green = AppColors.navWalkers;
   static const Color _bg = Color(0xFFF5F6FA);
@@ -83,8 +89,12 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
         phone: phone,
         documentImagePath: _pickedDocument!.path,
         type: _type,
-        location: _locationCtrl.text.trim().isEmpty ? null : _locationCtrl.text.trim(),
-        address: _addressCtrl.text.trim().isEmpty ? null : _addressCtrl.text.trim(),
+        location: _locationCtrl.text.trim().isEmpty
+            ? null
+            : _locationCtrl.text.trim(),
+        address: _addressCtrl.text.trim().isEmpty
+            ? null
+            : _addressCtrl.text.trim(),
       );
 
       if (!mounted) return;
@@ -114,7 +124,11 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textDark),
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: _textDark,
+        ),
       ),
     );
   }
@@ -151,11 +165,19 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: _textDark),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: _textDark,
+          ),
         ),
         title: Text(
           widget.isReapply ? 'Re-submit Application' : 'Register a Business',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _textDark),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: _textDark,
+          ),
         ),
         centerTitle: true,
       ),
@@ -172,22 +194,43 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
             _buildTypeSelector(),
             const SizedBox(height: 16),
             _fieldLabel('Business Name *'),
-            TextField(controller: _nameCtrl, decoration: _inputDecoration(hint: 'e.g. Happy Paws Vet Clinic')),
+            TextField(
+              controller: _nameCtrl,
+              decoration: _inputDecoration(hint: 'e.g. Happy Paws Vet Clinic'),
+            ),
             const SizedBox(height: 16),
             _fieldLabel('NIT *'),
-            TextField(controller: _nitCtrl, keyboardType: TextInputType.number, decoration: _inputDecoration(hint: '900123456-7')),
+            TextField(
+              controller: _nitCtrl,
+              keyboardType: TextInputType.number,
+              decoration: _inputDecoration(hint: '900123456-7'),
+            ),
             const SizedBox(height: 16),
             _fieldLabel('Email *'),
-            TextField(controller: _emailCtrl, keyboardType: TextInputType.emailAddress, decoration: _inputDecoration(hint: 'contact@business.com')),
+            TextField(
+              controller: _emailCtrl,
+              keyboardType: TextInputType.emailAddress,
+              decoration: _inputDecoration(hint: 'contact@business.com'),
+            ),
             const SizedBox(height: 16),
             _fieldLabel('Phone *'),
-            TextField(controller: _phoneCtrl, keyboardType: TextInputType.phone, decoration: _inputDecoration(hint: '3001234567')),
+            TextField(
+              controller: _phoneCtrl,
+              keyboardType: TextInputType.phone,
+              decoration: _inputDecoration(hint: '3001234567'),
+            ),
             const SizedBox(height: 16),
             _fieldLabel('Location (optional)'),
-            TextField(controller: _locationCtrl, decoration: _inputDecoration(hint: 'e.g. Medellín')),
+            TextField(
+              controller: _locationCtrl,
+              decoration: _inputDecoration(hint: 'e.g. Medellín'),
+            ),
             const SizedBox(height: 16),
             _fieldLabel('Address (optional)'),
-            TextField(controller: _addressCtrl, decoration: _inputDecoration(hint: 'Street and number')),
+            TextField(
+              controller: _addressCtrl,
+              decoration: _inputDecoration(hint: 'Street and number'),
+            ),
             const SizedBox(height: 28),
             _buildSectionTitle('NIT Document'),
             const SizedBox(height: 6),
@@ -212,20 +255,39 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 14, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
           Container(
             width: 64,
             height: 64,
-            decoration: BoxDecoration(color: _green.withValues(alpha: 0.12), shape: BoxShape.circle),
-            child: const Icon(Icons.storefront_rounded, size: 32, color: _green),
+            decoration: BoxDecoration(
+              color: _green.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.storefront_rounded,
+              size: 32,
+              color: _green,
+            ),
           ),
           const SizedBox(height: 14),
           Text(
-            widget.isReapply ? 'Re-submit Your Document' : 'List Your Business on Balto',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: _textDark),
+            widget.isReapply
+                ? 'Re-submit Your Document'
+                : 'List Your Business on Balto',
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: _textDark,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 6),
@@ -240,7 +302,14 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
   }
 
   Widget _buildSectionTitle(String title) {
-    return Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: _textDark));
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w800,
+        color: _textDark,
+      ),
+    );
   }
 
   Widget _buildTypeSelector() {
@@ -256,7 +325,9 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
             decoration: BoxDecoration(
               color: selected ? _green : Colors.white,
               borderRadius: BorderRadius.circular(99),
-              border: Border.all(color: selected ? _green : const Color(0xFFE0E4EC)),
+              border: Border.all(
+                color: selected ? _green : const Color(0xFFE0E4EC),
+              ),
             ),
             child: Text(
               t[0].toUpperCase() + t.substring(1),
@@ -290,13 +361,30 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
             Container(
               width: 52,
               height: 52,
-              decoration: BoxDecoration(color: _green.withValues(alpha: 0.10), shape: BoxShape.circle),
-              child: const Icon(Icons.upload_file_rounded, size: 26, color: _green),
+              decoration: BoxDecoration(
+                color: _green.withValues(alpha: 0.10),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.upload_file_rounded,
+                size: 26,
+                color: _green,
+              ),
             ),
             const SizedBox(height: 14),
-            const Text('Tap to select document', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: _textDark)),
+            const Text(
+              'Tap to select document',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: _textDark,
+              ),
+            ),
             const SizedBox(height: 4),
-            const Text('JPG, PNG — max 10 MB', style: TextStyle(fontSize: 12, color: _textMuted)),
+            const Text(
+              'JPG, PNG — max 10 MB',
+              style: TextStyle(fontSize: 12, color: _textMuted),
+            ),
           ],
         ),
       ),
@@ -308,7 +396,12 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: Image.file(File(_pickedDocument!.path), width: double.infinity, height: 220, fit: BoxFit.cover),
+          child: Image.file(
+            File(_pickedDocument!.path),
+            width: double.infinity,
+            height: 220,
+            fit: BoxFit.cover,
+          ),
         ),
         Positioned(
           top: 10,
@@ -317,13 +410,23 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
             onTap: _submitting ? null : _pickDocument,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-              decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.55), borderRadius: BorderRadius.circular(99)),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.55),
+                borderRadius: BorderRadius.circular(99),
+              ),
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.edit_rounded, size: 14, color: Colors.white),
                   SizedBox(width: 6),
-                  Text('Change', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white)),
+                  Text(
+                    'Change',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -343,18 +446,26 @@ class _BecomeBusinessScreenState extends State<BecomeBusinessScreen> {
           backgroundColor: _green,
           foregroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
           disabledBackgroundColor: _green.withValues(alpha: 0.45),
         ),
         child: _submitting
             ? const SizedBox(
                 width: 22,
                 height: 22,
-                child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
               )
             : Text(
                 widget.isReapply ? 'Re-submit Document' : 'Submit Registration',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
       ),
     );

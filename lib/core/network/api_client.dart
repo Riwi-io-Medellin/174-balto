@@ -3,12 +3,12 @@ import 'package:dio/dio.dart';
 import '../config/env.dart';
 import '../storage/token_storage.dart';
 import 'auth_interceptor.dart';
+import 'retry_interceptor.dart';
 
 class ApiClient {
   ApiClient(TokenStorage tokenStorage) : dio = _build() {
-    dio.interceptors.add(
-      AuthInterceptor(tokenStorage: tokenStorage, dio: dio),
-    );
+    dio.interceptors.add(AuthInterceptor(tokenStorage: tokenStorage, dio: dio));
+    dio.interceptors.add(RetryInterceptor(dio));
   }
 
   final Dio dio;
@@ -19,9 +19,11 @@ class ApiClient {
         baseUrl: Env.apiBaseUrl,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10),
         contentType: 'application/json',
         responseType: ResponseType.json,
-        validateStatus: (status) => status != null && status != 401 && status < 600,
+        validateStatus: (status) =>
+            status != null && status != 401 && status < 600,
       ),
     );
   }

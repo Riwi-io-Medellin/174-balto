@@ -65,8 +65,7 @@ class _CoachViewState extends State<_CoachView> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('New session'),
-        content:
-            const Text('Clear this conversation\'s history?'),
+        content: const Text('Clear this conversation\'s history?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -74,10 +73,7 @@ class _CoachViewState extends State<_CoachView> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text(
-              'Clear',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Clear', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -90,16 +86,16 @@ class _CoachViewState extends State<_CoachView> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<CoachCubit, CoachState>(
-      listenWhen: (_, curr) =>
-          curr is CoachLoaded && curr.sendError != null,
+      listenWhen: (_, curr) => curr is CoachLoaded && curr.sendError != null,
       listener: (ctx, state) {
         if (state is CoachLoaded && state.sendError != null) {
           BaltoToast.error(ctx, state.sendError!);
         }
       },
       builder: (ctx, state) {
-        final messages =
-            state is CoachLoaded ? state.messages : <CoachMessage>[];
+        final messages = state is CoachLoaded
+            ? state.messages
+            : <CoachMessage>[];
         final isTyping = state is CoachLoaded && state.isTyping;
 
         return Scaffold(
@@ -163,13 +159,15 @@ class _CoachViewState extends State<_CoachView> {
                         itemCount: messages.length + (isTyping ? 1 : 0),
                         itemBuilder: (_, i) {
                           if (isTyping && i == messages.length) {
-                            WidgetsBinding.instance
-                                .addPostFrameCallback((_) => _scrollToBottom());
+                            WidgetsBinding.instance.addPostFrameCallback(
+                              (_) => _scrollToBottom(),
+                            );
                             return const TypingIndicator();
                           }
                           if (i == messages.length - 1) {
-                            WidgetsBinding.instance
-                                .addPostFrameCallback((_) => _scrollToBottom());
+                            WidgetsBinding.instance.addPostFrameCallback(
+                              (_) => _scrollToBottom(),
+                            );
                           }
                           return MessageBubble(message: messages[i]);
                         },
@@ -257,9 +255,7 @@ class _InputBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        border: const Border(
-          top: BorderSide(color: Color(0xFFE5E7EB)),
-        ),
+        border: const Border(top: BorderSide(color: Color(0xFFE5E7EB))),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -305,8 +301,7 @@ class _InputBar extends StatelessWidget {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(22),
-                  borderSide:
-                      const BorderSide(color: AppColors.navCoach),
+                  borderSide: const BorderSide(color: AppColors.navCoach),
                 ),
               ),
               onSubmitted: (_) => onSend(),

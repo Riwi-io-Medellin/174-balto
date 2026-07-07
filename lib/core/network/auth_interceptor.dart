@@ -5,23 +5,28 @@ import '../storage/token_storage.dart';
 
 class AuthInterceptor extends QueuedInterceptorsWrapper {
   AuthInterceptor({required this.tokenStorage, required Dio dio})
-      // ignore: prefer_initializing_formals
-      : _dio = dio,
-        _refreshDio = Dio(
-          // separate instance — no auth interceptor, prevents refresh loop
-          BaseOptions(
-            baseUrl: Env.apiBaseUrl,
-            connectTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 10),
-            contentType: 'application/json',
-            responseType: ResponseType.json,
-            validateStatus: (status) => status != null && status < 500,
-          ),
-        );
+    // ignore: prefer_initializing_formals
+    : _dio = dio,
+      _refreshDio = Dio(
+        // separate instance — no auth interceptor, prevents refresh loop
+        BaseOptions(
+          baseUrl: Env.apiBaseUrl,
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+          contentType: 'application/json',
+          responseType: ResponseType.json,
+          validateStatus: (status) => status != null && status < 500,
+        ),
+      );
 
   final TokenStorage tokenStorage;
   final Dio _dio;
   final Dio _refreshDio;
+
+  // Shared across concurrent 401s so a token expiry doesn't trigger one
+  // /auth/refresh call per in-flight request — everyone awaits the same
+  // refresh instead of serializing N separate round trips through the queue.
+  Future<String?>? _refreshFuture;
 
   @override
   void onRequest(
@@ -44,8 +49,7 @@ class AuthInterceptor extends QueuedInterceptorsWrapper {
 
     final opts = err.requestOptions;
 
-    if (opts.path.contains('/auth/refresh') ||
-        opts.extra['_retried'] == true) {
+    if (opts.path.contains('/auth/refresh') || opts.extra['_retried'] == true) {
       await tokenStorage.clear();
       handler.next(err);
       return;
@@ -58,6 +62,25 @@ class AuthInterceptor extends QueuedInterceptorsWrapper {
       return;
     }
 
+    final newAccessToken = await (_refreshFuture ??= _refreshAccessToken(
+      refreshToken,
+    ).whenComplete(() => _refreshFuture = null));
+
+    if (newAccessToken != null) {
+      opts.headers['Authorization'] = 'Bearer $newAccessToken';
+      opts.extra['_retried'] = true;
+      try {
+        final retryResponse = await _dio.fetch<dynamic>(opts);
+        handler.resolve(retryResponse);
+        return;
+      } catch (_) {}
+    }
+
+    await tokenStorage.clear();
+    handler.next(err);
+  }
+
+  Future<String?> _refreshAccessToken(String refreshToken) async {
     try {
       final refreshResponse = await _refreshDio.post<Map<String, dynamic>>(
         '/auth/refresh',
@@ -72,15 +95,9 @@ class AuthInterceptor extends QueuedInterceptorsWrapper {
           accessToken: newAccessToken,
           refreshToken: newRefreshToken,
         );
-        opts.headers['Authorization'] = 'Bearer $newAccessToken';
-        opts.extra['_retried'] = true;
-        final retryResponse = await _dio.fetch<dynamic>(opts);
-        handler.resolve(retryResponse);
-        return;
+        return newAccessToken;
       }
     } catch (_) {}
-
-    await tokenStorage.clear();
-    handler.next(err);
+    return null;
   }
 }

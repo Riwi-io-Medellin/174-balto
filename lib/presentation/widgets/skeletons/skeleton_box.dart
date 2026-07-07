@@ -22,12 +22,7 @@ class SkeletonShimmer extends StatelessWidget {
 
 /// Grey rounded rectangle — place inside [SkeletonShimmer].
 class SkeletonBox extends StatelessWidget {
-  const SkeletonBox({
-    super.key,
-    this.width,
-    this.height = 14,
-    this.radius = 8,
-  });
+  const SkeletonBox({super.key, this.width, this.height = 14, this.radius = 8});
 
   final double? width;
   final double height;

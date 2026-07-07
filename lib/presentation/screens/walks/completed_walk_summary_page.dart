@@ -116,8 +116,11 @@ class _CompletedBanner extends StatelessWidget {
               color: Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.check_circle_outline_rounded,
-                color: Colors.white, size: 32),
+            child: const Icon(
+              Icons.check_circle_outline_rounded,
+              color: Colors.white,
+              size: 32,
+            ),
           ),
           const SizedBox(height: 12),
           const Text(
@@ -141,7 +144,9 @@ class _CompletedBanner extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _BannerStat(
-                  value: '${walk.elapsedMinutes} min', label: 'Duration'),
+                value: '${walk.elapsedMinutes} min',
+                label: 'Duration',
+              ),
               _BannerDivider(),
               _BannerStat(
                 value: walk.distanceKm != null
@@ -165,20 +170,20 @@ class _CompletedBanner extends StatelessWidget {
   }
 
   String _month(int m) => const [
-        '',
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ][m];
+    '',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ][m];
 }
 
 class _BannerStat extends StatelessWidget {
@@ -263,7 +268,10 @@ class _RoutePreviewCard extends StatelessWidget {
               top: 10,
               left: 10,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.9),
                   borderRadius: BorderRadius.circular(20),
@@ -271,8 +279,11 @@ class _RoutePreviewCard extends StatelessWidget {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.route_outlined,
-                        color: AppColors.navWalks, size: 13),
+                    Icon(
+                      Icons.route_outlined,
+                      color: AppColors.navWalks,
+                      size: 13,
+                    ),
                     SizedBox(width: 5),
                     Text(
                       'Route Preview',
@@ -296,7 +307,10 @@ class _RoutePreviewCard extends StatelessWidget {
 class _MiniMapPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFFE8EEE4));
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFFE8EEE4),
+    );
     final road = Paint()
       ..color = Colors.white
       ..strokeWidth = 10;
@@ -343,14 +357,20 @@ class _MiniRoutePainter extends CustomPainter {
     final path = Path();
     path.moveTo(size.width * 0.15, size.height * 0.8);
     path.cubicTo(
-      size.width * 0.15, size.height * 0.4,
-      size.width * 0.45, size.height * 0.4,
-      size.width * 0.45, size.height * 0.25,
+      size.width * 0.15,
+      size.height * 0.4,
+      size.width * 0.45,
+      size.height * 0.4,
+      size.width * 0.45,
+      size.height * 0.25,
     );
     path.cubicTo(
-      size.width * 0.45, size.height * 0.1,
-      size.width * 0.75, size.height * 0.1,
-      size.width * 0.8, size.height * 0.3,
+      size.width * 0.45,
+      size.height * 0.1,
+      size.width * 0.75,
+      size.height * 0.1,
+      size.width * 0.8,
+      size.height * 0.3,
     );
 
     canvas.drawPath(
@@ -457,10 +477,7 @@ class _GridTile extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-          ),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8),
         ],
       ),
       child: Column(
@@ -481,10 +498,7 @@ class _GridTile extends StatelessWidget {
               ),
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: Color(0xFF9AA0B2),
-                ),
+                style: const TextStyle(fontSize: 11, color: Color(0xFF9AA0B2)),
               ),
             ],
           ),
@@ -526,8 +540,11 @@ class _WalkerCard extends StatelessWidget {
                 width: 48,
                 height: 48,
                 color: AppColors.navWalkers.withValues(alpha: 0.15),
-                child: const Icon(Icons.person,
-                    color: AppColors.navWalkers, size: 24),
+                child: const Icon(
+                  Icons.person,
+                  color: AppColors.navWalkers,
+                  size: 24,
+                ),
               ),
             ),
           ),
@@ -547,8 +564,11 @@ class _WalkerCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 5),
-                    const Icon(Icons.verified_rounded,
-                        color: AppColors.navWalks, size: 15),
+                    const Icon(
+                      Icons.verified_rounded,
+                      color: AppColors.navWalks,
+                      size: 15,
+                    ),
                   ],
                 ),
                 const Text(
@@ -560,8 +580,11 @@ class _WalkerCard extends StatelessWidget {
           ),
           Row(
             children: [
-              const Icon(Icons.star_rounded,
-                  color: Color(0xFFE8A84C), size: 15),
+              const Icon(
+                Icons.star_rounded,
+                color: Color(0xFFE8A84C),
+                size: 15,
+              ),
               const SizedBox(width: 3),
               Text(
                 walk.walkerRating.toStringAsFixed(1),
@@ -605,8 +628,11 @@ class _RatingCard extends StatelessWidget {
         children: [
           const Row(
             children: [
-              Icon(Icons.star_outline_rounded,
-                  color: Color(0xFFE8A84C), size: 18),
+              Icon(
+                Icons.star_outline_rounded,
+                color: Color(0xFFE8A84C),
+                size: 18,
+              ),
               SizedBox(width: 8),
               Text(
                 'Your Rating',
@@ -645,12 +671,12 @@ class _RatingCard extends StatelessWidget {
   }
 
   String _ratingLabel(int r) => switch (r) {
-        5 => 'Excellent!',
-        4 => 'Good',
-        3 => 'Average',
-        2 => 'Below expectations',
-        _ => 'Needs improvement',
-      };
+    5 => 'Excellent!',
+    4 => 'Good',
+    3 => 'Average',
+    2 => 'Below expectations',
+    _ => 'Needs improvement',
+  };
 }
 
 class _RateWalkButton extends StatelessWidget {
@@ -678,8 +704,11 @@ class _RateWalkButton extends StatelessWidget {
         children: [
           const Row(
             children: [
-              Icon(Icons.star_outline_rounded,
-                  color: Color(0xFFE8A84C), size: 18),
+              Icon(
+                Icons.star_outline_rounded,
+                color: Color(0xFFE8A84C),
+                size: 18,
+              ),
               SizedBox(width: 8),
               Text(
                 'Rate this walk',
@@ -720,10 +749,7 @@ class _RateWalkButton extends StatelessWidget {
               ),
               child: const Text(
                 'Write a Review',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
               ),
             ),
           ),

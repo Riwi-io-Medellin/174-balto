@@ -80,20 +80,23 @@ class _RegisterViewState extends State<_RegisterView> {
 
   void _submit() {
     if (!_acceptTerms) {
-      BaltoToast.warning(context, 'You must accept the Terms and Privacy Policy.');
+      BaltoToast.warning(
+        context,
+        'You must accept the Terms and Privacy Policy.',
+      );
       return;
     }
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     context.read<AuthCubit>().register(
-          firstName: _firstNameCtrl.text.trim(),
-          lastName: _lastNameCtrl.text.trim(),
-          email: _emailCtrl.text.trim(),
-          password: _passwordCtrl.text,
-          idNumber: _idNumberCtrl.text.trim(),
-          idType: _selectedIdType,
-          phone: _phoneCtrl.text.trim(),
-        );
+      firstName: _firstNameCtrl.text.trim(),
+      lastName: _lastNameCtrl.text.trim(),
+      email: _emailCtrl.text.trim(),
+      password: _passwordCtrl.text,
+      idNumber: _idNumberCtrl.text.trim(),
+      idType: _selectedIdType,
+      phone: _phoneCtrl.text.trim(),
+    );
   }
 
   void _showSnack(String message, {bool isSuccess = false}) {
@@ -141,8 +144,10 @@ class _RegisterViewState extends State<_RegisterView> {
             child: AbsorbPointer(
               absorbing: isLoading,
               child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -351,8 +356,7 @@ class _RegisterViewState extends State<_RegisterView> {
       onFieldSubmitted: (_) => _lastNameFocus.requestFocus(),
       style: const TextStyle(fontSize: 14, color: _textDark),
       decoration: _decoration(hint: 'First', icon: Icons.person_outline),
-      validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'Required.' : null,
+      validator: (v) => (v == null || v.trim().isEmpty) ? 'Required.' : null,
     );
   }
 
@@ -366,8 +370,7 @@ class _RegisterViewState extends State<_RegisterView> {
       onFieldSubmitted: (_) => _emailFocus.requestFocus(),
       style: const TextStyle(fontSize: 14, color: _textDark),
       decoration: _decoration(hint: 'Last', icon: Icons.person_outline),
-      validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'Required.' : null,
+      validator: (v) => (v == null || v.trim().isEmpty) ? 'Required.' : null,
     );
   }
 
@@ -381,8 +384,7 @@ class _RegisterViewState extends State<_RegisterView> {
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (_) => _passwordFocus.requestFocus(),
       style: const TextStyle(fontSize: 14, color: _textDark),
-      decoration:
-          _decoration(hint: 'name@email.com', icon: Icons.mail_outline),
+      decoration: _decoration(hint: 'name@email.com', icon: Icons.mail_outline),
       validator: (v) {
         final value = v?.trim() ?? '';
         if (value.isEmpty) return 'Enter your email.';
@@ -413,8 +415,7 @@ class _RegisterViewState extends State<_RegisterView> {
             color: _textMuted,
             size: 20,
           ),
-          onPressed: () =>
-              setState(() => _obscurePassword = !_obscurePassword),
+          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
         ),
       ),
       validator: (v) {
@@ -456,8 +457,7 @@ class _RegisterViewState extends State<_RegisterView> {
             color: _textMuted,
             size: 20,
           ),
-          onPressed: () =>
-              setState(() => _obscureConfirm = !_obscureConfirm),
+          onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
         ),
       ),
       validator: (v) =>
@@ -504,10 +504,8 @@ class _RegisterViewState extends State<_RegisterView> {
       textInputAction: TextInputAction.next,
       onFieldSubmitted: (_) => _phoneFocus.requestFocus(),
       style: const TextStyle(fontSize: 14, color: _textDark),
-      decoration:
-          _decoration(hint: '1234567890', icon: Icons.badge_outlined),
-      validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'Required.' : null,
+      decoration: _decoration(hint: '1234567890', icon: Icons.badge_outlined),
+      validator: (v) => (v == null || v.trim().isEmpty) ? 'Required.' : null,
     );
   }
 
@@ -519,10 +517,8 @@ class _RegisterViewState extends State<_RegisterView> {
       textInputAction: TextInputAction.done,
       onFieldSubmitted: (_) => _submit(),
       style: const TextStyle(fontSize: 14, color: _textDark),
-      decoration:
-          _decoration(hint: '3001234567', icon: Icons.phone_outlined),
-      validator: (v) =>
-          (v == null || v.trim().isEmpty) ? 'Required.' : null,
+      decoration: _decoration(hint: '3001234567', icon: Icons.phone_outlined),
+      validator: (v) => (v == null || v.trim().isEmpty) ? 'Required.' : null,
     );
   }
 
@@ -624,8 +620,8 @@ class _RegisterViewState extends State<_RegisterView> {
   }
 
   Widget _orDivider() {
-    return Row(
-      children: const [
+    return const Row(
+      children: [
         Expanded(child: Divider(color: _divider, thickness: 1)),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -745,7 +741,11 @@ class _RegisterViewState extends State<_RegisterView> {
 }
 
 class _SocialButton extends StatelessWidget {
-  const _SocialButton({required this.label, required this.icon, this.onPressed});
+  const _SocialButton({
+    required this.label,
+    required this.icon,
+    this.onPressed,
+  });
 
   final String label;
   final Widget icon;
@@ -757,9 +757,7 @@ class _SocialButton extends StatelessWidget {
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         side: const BorderSide(color: Color(0xFFDDE1F0), width: 1.5),
         backgroundColor: Colors.white,
       ),

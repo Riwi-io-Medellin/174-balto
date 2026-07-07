@@ -18,7 +18,8 @@ class HomeServiceBookingScreen extends StatefulWidget {
   final HomeServiceProvider provider;
 
   @override
-  State<HomeServiceBookingScreen> createState() => _HomeServiceBookingScreenState();
+  State<HomeServiceBookingScreen> createState() =>
+      _HomeServiceBookingScreenState();
 }
 
 class _HomeServiceBookingScreenState extends State<HomeServiceBookingScreen> {
@@ -55,7 +56,10 @@ class _HomeServiceBookingScreenState extends State<HomeServiceBookingScreen> {
           } else if (state is HomeServiceBookingError) {
             BaltoToast.error(context, state.message);
           } else if (state is HomeServiceBookingForm && state.hadConflict) {
-            BaltoToast.warning(context, 'That slot was just booked. Please choose another.');
+            BaltoToast.warning(
+              context,
+              'That slot was just booked. Please choose another.',
+            );
           }
         },
         builder: (context, state) {
@@ -68,10 +72,16 @@ class _HomeServiceBookingScreenState extends State<HomeServiceBookingScreen> {
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Book a Service', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                  const Text(
+                    'Book a Service',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                  ),
                   Text(
                     'with ${widget.provider.name}',
-                    style: const TextStyle(fontSize: 12, color: Color(0xFFB0B8C1)),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFFB0B8C1),
+                    ),
                   ),
                 ],
               ),
@@ -91,7 +101,8 @@ class _HomeServiceBookingScreenState extends State<HomeServiceBookingScreen> {
   }
 
   Widget _buildBody(BuildContext context, HomeServiceBookingState state) {
-    if (state is HomeServiceBookingLoading || state is HomeServiceBookingInitial) {
+    if (state is HomeServiceBookingLoading ||
+        state is HomeServiceBookingInitial) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -99,7 +110,12 @@ class _HomeServiceBookingScreenState extends State<HomeServiceBookingScreen> {
       return _NoPetsView(
         onAddPet: () => Navigator.of(context)
             .push(MaterialPageRoute(builder: (_) => const CreatePetScreen()))
-            .then((_) => _cubit.initialize(widget.provider.id, widget.provider.services)),
+            .then(
+              (_) => _cubit.initialize(
+                widget.provider.id,
+                widget.provider.services,
+              ),
+            ),
       );
     }
 
@@ -110,7 +126,10 @@ class _HomeServiceBookingScreenState extends State<HomeServiceBookingScreen> {
           children: [
             CircularProgressIndicator(color: _accent),
             SizedBox(height: 16),
-            Text('Confirming your booking…', style: TextStyle(color: Color(0xFF5A6473))),
+            Text(
+              'Confirming your booking…',
+              style: TextStyle(color: Color(0xFF5A6473)),
+            ),
           ],
         ),
       );
@@ -123,12 +142,23 @@ class _HomeServiceBookingScreenState extends State<HomeServiceBookingScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline_rounded, size: 48, color: Color(0xFFB0B8C1)),
+              const Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: Color(0xFFB0B8C1),
+              ),
               const SizedBox(height: 16),
-              Text(state.message, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF5A6473))),
+              Text(
+                state.message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Color(0xFF5A6473)),
+              ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () => _cubit.initialize(widget.provider.id, widget.provider.services),
+                onPressed: () => _cubit.initialize(
+                  widget.provider.id,
+                  widget.provider.services,
+                ),
                 child: const Text('Try again'),
               ),
             ],
@@ -145,7 +175,12 @@ class _HomeServiceBookingScreenState extends State<HomeServiceBookingScreen> {
         cubit: _cubit,
         onAddPet: () => Navigator.of(context)
             .push(MaterialPageRoute(builder: (_) => const CreatePetScreen()))
-            .then((_) => _cubit.initialize(widget.provider.id, widget.provider.services)),
+            .then(
+              (_) => _cubit.initialize(
+                widget.provider.id,
+                widget.provider.services,
+              ),
+            ),
       );
     }
 
@@ -177,7 +212,10 @@ class _FormBody extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
       children: [
-        const _SectionTitle(title: 'Service', subtitle: 'Which service would you like?'),
+        const _SectionTitle(
+          title: 'Service',
+          subtitle: 'Which service would you like?',
+        ),
         const SizedBox(height: 12),
         _ServiceSelector(
           services: form.services,
@@ -185,21 +223,42 @@ class _FormBody extends StatelessWidget {
           onSelect: cubit.selectService,
         ),
         const SizedBox(height: 24),
-        const _SectionTitle(title: 'Your Pet', subtitle: 'Who is this service for?'),
+        const _SectionTitle(
+          title: 'Your Pet',
+          subtitle: 'Who is this service for?',
+        ),
         const SizedBox(height: 12),
-        _PetSelector(pets: form.pets, selected: form.selectedPet, onSelect: cubit.selectPet, onAddPet: onAddPet),
+        _PetSelector(
+          pets: form.pets,
+          selected: form.selectedPet,
+          onSelect: cubit.selectPet,
+          onAddPet: onAddPet,
+        ),
         const SizedBox(height: 24),
         const _SectionTitle(title: 'Service Details'),
         const SizedBox(height: 12),
-        _DurationSelector(selected: form.selectedDuration, onSelect: cubit.selectDuration),
+        _DurationSelector(
+          selected: form.selectedDuration,
+          onSelect: cubit.selectDuration,
+        ),
         const SizedBox(height: 12),
         _DateSelector(selected: form.selectedDate, onSelect: cubit.selectDate),
         const SizedBox(height: 24),
-        const _SectionTitle(title: 'Available Slots', subtitle: 'Pick a start time'),
+        const _SectionTitle(
+          title: 'Available Slots',
+          subtitle: 'Pick a start time',
+        ),
         const SizedBox(height: 12),
-        _SlotSelector(form: form, onSelect: cubit.selectSlot, onRefresh: cubit.refreshSlots),
+        _SlotSelector(
+          form: form,
+          onSelect: cubit.selectSlot,
+          onRefresh: cubit.refreshSlots,
+        ),
         const SizedBox(height: 24),
-        const _SectionTitle(title: 'Service Address', subtitle: 'Where should the provider go?'),
+        const _SectionTitle(
+          title: 'Service Address',
+          subtitle: 'Where should the provider go?',
+        ),
         const SizedBox(height: 12),
         TextField(
           controller: addressCtrl,
@@ -224,7 +283,10 @@ class _FormBody extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const _SectionTitle(title: 'Special Instructions', subtitle: 'Optional'),
+        const _SectionTitle(
+          title: 'Special Instructions',
+          subtitle: 'Optional',
+        ),
         const SizedBox(height: 12),
         TextField(
           controller: instructionsCtrl,
@@ -258,7 +320,11 @@ class _FormBody extends StatelessWidget {
 // ─── Service Selector ─────────────────────────────────────────────────────────
 
 class _ServiceSelector extends StatelessWidget {
-  const _ServiceSelector({required this.services, required this.selected, required this.onSelect});
+  const _ServiceSelector({
+    required this.services,
+    required this.selected,
+    required this.onSelect,
+  });
 
   final List<HomeProviderServiceItem> services;
   final HomeProviderServiceItem? selected;
@@ -269,7 +335,10 @@ class _ServiceSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (services.isEmpty) {
-      return const Text('This provider has no active services.', style: TextStyle(color: Color(0xFF8A93A0)));
+      return const Text(
+        'This provider has no active services.',
+        style: TextStyle(color: Color(0xFF8A93A0)),
+      );
     }
     return Column(
       children: services.map((s) {
@@ -280,9 +349,14 @@ class _ServiceSelector extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: isSelected ? _accent.withValues(alpha: 0.08) : Colors.white,
+              color: isSelected
+                  ? _accent.withValues(alpha: 0.08)
+                  : Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: isSelected ? _accent : const Color(0xFFE0E4EC), width: isSelected ? 2 : 1),
+              border: Border.all(
+                color: isSelected ? _accent : const Color(0xFFE0E4EC),
+                width: isSelected ? 2 : 1,
+              ),
             ),
             child: Row(
               children: [
@@ -298,7 +372,11 @@ class _ServiceSelector extends StatelessWidget {
                 ),
                 Text(
                   s.priceLabel,
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: isSelected ? _accent : const Color(0xFF5A6473)),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: isSelected ? _accent : const Color(0xFF5A6473),
+                  ),
                 ),
               ],
             ),
@@ -322,10 +400,20 @@ class _SectionTitle extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF1F2937))),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF1F2937),
+          ),
+        ),
         if (subtitle != null) ...[
           const SizedBox(height: 2),
-          Text(subtitle!, style: const TextStyle(fontSize: 13, color: Color(0xFF8A93A0))),
+          Text(
+            subtitle!,
+            style: const TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
+          ),
         ],
       ],
     );
@@ -335,7 +423,12 @@ class _SectionTitle extends StatelessWidget {
 // ─── Pet Selector ─────────────────────────────────────────────────────────────
 
 class _PetSelector extends StatelessWidget {
-  const _PetSelector({required this.pets, required this.selected, required this.onSelect, required this.onAddPet});
+  const _PetSelector({
+    required this.pets,
+    required this.selected,
+    required this.onSelect,
+    required this.onAddPet,
+  });
 
   final List<Pet> pets;
   final Pet? selected;
@@ -353,7 +446,11 @@ class _PetSelector extends StatelessWidget {
         itemBuilder: (_, i) {
           if (i == pets.length) return _AddPetCard(onTap: onAddPet);
           final pet = pets[i];
-          return _PetCard(pet: pet, isSelected: selected?.id == pet.id, onTap: () => onSelect(pet));
+          return _PetCard(
+            pet: pet,
+            isSelected: selected?.id == pet.id,
+            onTap: () => onSelect(pet),
+          );
         },
       ),
     );
@@ -361,7 +458,11 @@ class _PetSelector extends StatelessWidget {
 }
 
 class _PetCard extends StatelessWidget {
-  const _PetCard({required this.pet, required this.isSelected, required this.onTap});
+  const _PetCard({
+    required this.pet,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   final Pet pet;
   final bool isSelected;
@@ -379,9 +480,16 @@ class _PetCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected ? _accent.withValues(alpha: 0.08) : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: isSelected ? _accent : const Color(0xFFE0E4EC), width: isSelected ? 2 : 1),
+          border: Border.all(
+            color: isSelected ? _accent : const Color(0xFFE0E4EC),
+            width: isSelected ? 2 : 1,
+          ),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8, offset: const Offset(0, 2)),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
         child: Column(
@@ -391,7 +499,11 @@ class _PetCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               pet.name,
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: isSelected ? _accent : const Color(0xFF1F2937)),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? _accent : const Color(0xFF1F2937),
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -412,18 +524,27 @@ class _PetAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (photoUrl != null && photoUrl!.isNotEmpty) {
       return ClipOval(
-        child: Image.network(photoUrl!, width: size, height: size, fit: BoxFit.cover, errorBuilder: (_, _, _) => _fallback(size)),
+        child: Image.network(
+          photoUrl!,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => _fallback(size),
+        ),
       );
     }
     return _fallback(size);
   }
 
   Widget _fallback(double s) => Container(
-        width: s,
-        height: s,
-        decoration: const BoxDecoration(color: Color(0xFFFBEAF1), shape: BoxShape.circle),
-        child: const Icon(Icons.pets_rounded, size: 22, color: Color(0xFFB0B8C1)),
-      );
+    width: s,
+    height: s,
+    decoration: const BoxDecoration(
+      color: Color(0xFFFBEAF1),
+      shape: BoxShape.circle,
+    ),
+    child: const Icon(Icons.pets_rounded, size: 22, color: Color(0xFFB0B8C1)),
+  );
 }
 
 class _AddPetCard extends StatelessWidget {
@@ -437,13 +558,28 @@ class _AddPetCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: 80,
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFE0E4EC))),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE0E4EC)),
+        ),
         child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.add_circle_outline_rounded, size: 28, color: Color(0xFFB0B8C1)),
+            Icon(
+              Icons.add_circle_outline_rounded,
+              size: 28,
+              color: Color(0xFFB0B8C1),
+            ),
             SizedBox(height: 6),
-            Text('Add pet', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Color(0xFF8A93A0))),
+            Text(
+              'Add pet',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF8A93A0),
+              ),
+            ),
           ],
         ),
       ),
@@ -478,12 +614,20 @@ class _DurationSelector extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isSelected ? _accent : Colors.white,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: isSelected ? _accent : const Color(0xFFE0E4EC)),
+                  border: Border.all(
+                    color: isSelected ? _accent : const Color(0xFFE0E4EC),
+                  ),
                 ),
                 child: Center(
                   child: Text(
                     '$min min',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: isSelected ? Colors.white : const Color(0xFF5A6473)),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: isSelected
+                          ? Colors.white
+                          : const Color(0xFF5A6473),
+                    ),
                   ),
                 ),
               ),
@@ -512,7 +656,20 @@ class _DateSelector extends StatelessWidget {
     final d = DateTime(selected!.year, selected!.month, selected!.day);
     if (d == today) return 'Today';
     if (d == today.add(const Duration(days: 1))) return 'Tomorrow';
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return '${months[selected!.month - 1]} ${selected!.day}, ${selected!.year}';
   }
 
@@ -527,7 +684,9 @@ class _DateSelector extends StatelessWidget {
           firstDate: now,
           lastDate: now.add(const Duration(days: 60)),
           builder: (ctx, child) => Theme(
-            data: Theme.of(ctx).copyWith(colorScheme: const ColorScheme.light(primary: _accent)),
+            data: Theme.of(
+              ctx,
+            ).copyWith(colorScheme: const ColorScheme.light(primary: _accent)),
             child: child!,
           ),
         );
@@ -536,12 +695,23 @@ class _DateSelector extends StatelessWidget {
       child: Container(
         height: 50,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE0E4EC))),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE0E4EC)),
+        ),
         child: Row(
           children: [
             const Icon(Icons.calendar_today_rounded, size: 18, color: _accent),
             const SizedBox(width: 12),
-            Text(_label(), style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF1F2937))),
+            Text(
+              _label(),
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1F2937),
+              ),
+            ),
             const Spacer(),
             const Icon(Icons.chevron_right_rounded, color: Color(0xFFB0B8C1)),
           ],
@@ -554,7 +724,11 @@ class _DateSelector extends StatelessWidget {
 // ─── Slot Selector ────────────────────────────────────────────────────────────
 
 class _SlotSelector extends StatelessWidget {
-  const _SlotSelector({required this.form, required this.onSelect, required this.onRefresh});
+  const _SlotSelector({
+    required this.form,
+    required this.onSelect,
+    required this.onRefresh,
+  });
 
   final HomeServiceBookingForm form;
   final ValueChanged<AvailableSlot> onSelect;
@@ -567,19 +741,34 @@ class _SlotSelector extends StatelessWidget {
     if (form.isLoadingSlots) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 24),
-        child: Center(child: CircularProgressIndicator(strokeWidth: 2, color: _accent)),
+        child: Center(
+          child: CircularProgressIndicator(strokeWidth: 2, color: _accent),
+        ),
       );
     }
 
     if (form.slotsError != null) {
       return Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE0E4EC))),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE0E4EC)),
+        ),
         child: Row(
           children: [
-            const Icon(Icons.warning_amber_rounded, color: AppColors.alert, size: 20),
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: AppColors.alert,
+              size: 20,
+            ),
             const SizedBox(width: 10),
-            Expanded(child: Text(form.slotsError!, style: const TextStyle(fontSize: 13, color: Color(0xFF5A6473)))),
+            Expanded(
+              child: Text(
+                form.slotsError!,
+                style: const TextStyle(fontSize: 13, color: Color(0xFF5A6473)),
+              ),
+            ),
             TextButton(onPressed: onRefresh, child: const Text('Retry')),
           ],
         ),
@@ -589,14 +778,28 @@ class _SlotSelector extends StatelessWidget {
     if (form.availableSlots.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE0E4EC))),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE0E4EC)),
+        ),
         child: const Column(
           children: [
             Icon(Icons.event_busy_rounded, size: 36, color: Color(0xFFB0B8C1)),
             SizedBox(height: 10),
-            Text('No slots available for this date.', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF5A6473))),
+            Text(
+              'No slots available for this date.',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF5A6473),
+              ),
+            ),
             SizedBox(height: 4),
-            Text('Try another date or duration.', style: TextStyle(fontSize: 13, color: Color(0xFF8A93A0))),
+            Text(
+              'Try another date or duration.',
+              style: TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
+            ),
           ],
         ),
       );
@@ -615,12 +818,25 @@ class _SlotSelector extends StatelessWidget {
             decoration: BoxDecoration(
               color: isSelected ? _accent : Colors.white,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: isSelected ? _accent : const Color(0xFFE0E4EC), width: isSelected ? 2 : 1),
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 2))],
+              border: Border.all(
+                color: isSelected ? _accent : const Color(0xFFE0E4EC),
+                width: isSelected ? 2 : 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Text(
               _formatTime(slot.start),
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isSelected ? Colors.white : const Color(0xFF1F2937)),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : const Color(0xFF1F2937),
+              ),
             ),
           ),
         );
@@ -657,7 +873,13 @@ class _BookingFooter extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 16, offset: const Offset(0, -4))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, -4),
+            ),
+          ],
         ),
         child: Row(
           children: [
@@ -666,8 +888,21 @@ class _BookingFooter extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(price, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1F2937))),
-                  Text('est. ${form.selectedDuration} min', style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0))),
+                  Text(
+                    price,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1F2937),
+                    ),
+                  ),
+                  Text(
+                    'est. ${form.selectedDuration} min',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF8A93A0),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(width: 16),
@@ -681,11 +916,18 @@ class _BookingFooter extends StatelessWidget {
                   foregroundColor: Colors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
                 child: Text(
-                  form.canConfirm ? 'Confirm Booking' : 'Select a service, pet and slot',
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                  form.canConfirm
+                      ? 'Confirm Booking'
+                      : 'Select a service, pet and slot',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
@@ -716,13 +958,31 @@ class _NoPetsView extends StatelessWidget {
             Container(
               width: 80,
               height: 80,
-              decoration: BoxDecoration(color: _accent.withValues(alpha: 0.1), shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: _accent.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
               child: const Icon(Icons.pets_rounded, size: 40, color: _accent),
             ),
             const SizedBox(height: 20),
-            const Text('No pets yet', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1F2937))),
+            const Text(
+              'No pets yet',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF1F2937),
+              ),
+            ),
             const SizedBox(height: 8),
-            const Text('Add your first pet to start booking services.', textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Color(0xFF8A93A0), height: 1.5)),
+            const Text(
+              'Add your first pet to start booking services.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF8A93A0),
+                height: 1.5,
+              ),
+            ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: onAddPet,
@@ -730,11 +990,19 @@ class _NoPetsView extends StatelessWidget {
                 backgroundColor: _accent,
                 foregroundColor: Colors.white,
                 elevation: 0,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               icon: const Icon(Icons.add_rounded),
-              label: const Text('Add a Pet', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+              label: const Text(
+                'Add a Pet',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+              ),
             ),
           ],
         ),

@@ -57,18 +57,16 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
             return;
           }
           _bioCtrl.text = wp.bio ?? '';
-          _priceCtrl.text =
-              wp.hourlyRate != null ? wp.hourlyRate!.toStringAsFixed(0) : '';
-          _yearsCtrl.text =
-              wp.yearsOfExperience != null
-                  ? wp.yearsOfExperience.toString()
-                  : '';
-          _radiusCtrl.text =
-              wp.serviceRadiusKm != null
-                  ? wp.serviceRadiusKm.toString()
-                  : '';
-          _maxDogsCtrl.text =
-              wp.maxDogs != null ? wp.maxDogs.toString() : '';
+          _priceCtrl.text = wp.hourlyRate != null
+              ? wp.hourlyRate!.toStringAsFixed(0)
+              : '';
+          _yearsCtrl.text = wp.yearsOfExperience != null
+              ? wp.yearsOfExperience.toString()
+              : '';
+          _radiusCtrl.text = wp.serviceRadiusKm != null
+              ? wp.serviceRadiusKm.toString()
+              : '';
+          _maxDogsCtrl.text = wp.maxDogs != null ? wp.maxDogs.toString() : '';
           _isAcceptingBookings = wp.isAcceptingBookings;
           setState(() => _initialized = true);
         }
@@ -154,8 +152,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color:
-                    _saving ? _textMuted : _green,
+                color: _saving ? _textMuted : _green,
               ),
             ),
           ),
@@ -204,17 +201,13 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
               color: _green.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.person_rounded,
-              size: 48,
-              color: _green,
-            ),
+            child: const Icon(Icons.person_rounded, size: 48, color: _green),
           ),
         ),
         const SizedBox(height: 10),
-        Text(
+        const Text(
           'Edit your walker profile details below',
-          style: const TextStyle(fontSize: 13, color: _textMuted),
+          style: TextStyle(fontSize: 13, color: _textMuted),
         ),
       ],
     );
@@ -246,8 +239,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
           minLines: 4,
           maxLines: 6,
           decoration: _inputDecoration(
-            hint:
-                'Experienced dog walker with a passion for large breeds...',
+            hint: 'Experienced dog walker with a passion for large breeds...',
           ),
         ),
       ],
@@ -323,9 +315,9 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
         const SizedBox(height: 16),
         _fieldLabel('Max Dogs per Walk'),
         const SizedBox(height: 4),
-        Text(
+        const Text(
           'Owners booking with a priority (solo) walk will be charged a 50% surcharge.',
-          style: const TextStyle(fontSize: 12, color: _textMuted),
+          style: TextStyle(fontSize: 12, color: _textMuted),
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -362,11 +354,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
               color: _green.withValues(alpha: 0.10),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.schedule_rounded,
-              size: 20,
-              color: _green,
-            ),
+            child: const Icon(Icons.schedule_rounded, size: 20, color: _green),
           ),
           const SizedBox(width: 12),
           const Expanded(
@@ -463,7 +451,7 @@ class _EditWalkerProfileScreenState extends State<EditWalkerProfileScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: _green, width: 1.5),
+        borderSide: const BorderSide(color: _green, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../widgets/app_network_image.dart';
+
 class WalkEntry {
   const WalkEntry({
     required this.title,
@@ -41,76 +43,76 @@ class WalkCard extends StatelessWidget {
     return GestureDetector(
       onTap: entry.isActive ? onTap : null,
       child: Container(
-          decoration: BoxDecoration(
-            color: _cardBg,
-            borderRadius: BorderRadius.circular(14),
-            border: entry.statusColor != null
-                ? Border.all(
-                    color: entry.statusColor!.withValues(alpha: 0.20),
-                    width: 1,
-                  )
-                : Border.all(color: const Color(0xFFE8EDF5), width: 1),
-            boxShadow: [
-              BoxShadow(
-                color: _shadowColor,
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-                spreadRadius: -1,
+        decoration: BoxDecoration(
+          color: _cardBg,
+          borderRadius: BorderRadius.circular(14),
+          border: entry.statusColor != null
+              ? Border.all(
+                  color: entry.statusColor!.withValues(alpha: 0.20),
+                  width: 1,
+                )
+              : Border.all(color: const Color(0xFFE8EDF5), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: _shadowColor,
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+              spreadRadius: -1,
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              if (entry.statusColor != null) ...[
+                Container(
+                  width: 3,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: entry.statusColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 10),
+              ],
+              _WalkThumbnail(
+                imageUrl: entry.imageUrl,
+                accentColor: entry.statusColor,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      entry.title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1F2937),
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      entry.subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF8A93A0),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right,
+                size: 20,
+                color: entry.statusColor ?? const Color(0xFF8A93A0),
               ),
             ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                if (entry.statusColor != null) ...[
-                  Container(
-                    width: 3,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: entry.statusColor,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                ],
-                _WalkThumbnail(
-                  imageUrl: entry.imageUrl,
-                  accentColor: entry.statusColor,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        entry.title,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF1F2937),
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        entry.subtitle,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF8A93A0),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.chevron_right,
-                  size: 20,
-                  color: entry.statusColor ?? const Color(0xFF8A93A0),
-                ),
-              ],
-            ),
-          ),
         ),
+      ),
     );
   }
 }
@@ -126,12 +128,11 @@ class _WalkThumbnail extends StatelessWidget {
     if (imageUrl != null && imageUrl!.isNotEmpty) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: Image.network(
+        child: AppNetworkImage(
           imageUrl!,
           width: 48,
           height: 48,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _placeholder(),
+          errorWidget: _placeholder(),
         ),
       );
     }

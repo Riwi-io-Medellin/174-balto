@@ -52,27 +52,27 @@ class WalkerSummaryDto {
   final int? maxDogs;
 
   Walker toEntity() => Walker(
-        id: id,
-        name: fullName,
-        rating: averageRating,
-        reviews: totalReviews,
-        description: bio ?? '',
-        distance: distanceKm,
-        imageUrl: profilePhoto ?? '',
-        priceLabel: hourlyRate != null ? '\$${hourlyRate!.round()}/hr' : '',
-        topRated: averageRating >= 4.8,
-        isVerified: true,
-        isAcceptingBookings: hasAvailability,
-        yearsOfExperience: yearsOfExperience ?? 0,
-        biography: bio,
-        specialties: const [],
-        galleryImages: const [],
-        pricePerWalk: hourlyRate,
-        serviceArea: '',
-        maxDogs: maxDogs,
-        completedWalks: null,
-        avatarUrl: profilePhoto,
-      );
+    id: id,
+    name: fullName,
+    rating: averageRating,
+    reviews: totalReviews,
+    description: bio ?? '',
+    distance: distanceKm,
+    imageUrl: profilePhoto ?? '',
+    priceLabel: hourlyRate != null ? '\$${hourlyRate!.round()}/hr' : '',
+    topRated: averageRating >= 4.8,
+    isVerified: true,
+    isAcceptingBookings: hasAvailability,
+    yearsOfExperience: yearsOfExperience ?? 0,
+    biography: bio,
+    specialties: const [],
+    galleryImages: const [],
+    pricePerWalk: hourlyRate,
+    serviceArea: '',
+    maxDogs: maxDogs,
+    completedWalks: null,
+    avatarUrl: profilePhoto,
+  );
 }
 
 /// Maps backend WalkerDetailResponse into a [Walker] entity.
@@ -113,9 +113,9 @@ class WalkerDetailDto {
       completedWalks: json['completedWalks'] as int,
       maxDogs: json['maxDogs'] as int?,
       weeklyAvailability: weekly is List
-          ? AvailabilitySlotDto.fromJsonList(weekly)
-              .map((d) => d.toEntity())
-              .toList()
+          ? AvailabilitySlotDto.fromJsonList(
+              weekly,
+            ).map((d) => d.toEntity()).toList()
           : const [],
       availableSlots: slots is List
           ? AvailableSlotDto.listToEntities(slots)
@@ -140,30 +140,30 @@ class WalkerDetailDto {
   final List<AvailableSlot> availableSlots;
 
   Walker toEntity() => Walker(
-        id: id,
-        name: fullName,
-        rating: averageRating,
-        reviews: totalReviews,
-        description: bio ?? '',
-        distance: 0,
-        imageUrl: profilePhoto ?? '',
-        priceLabel: hourlyRate != null ? '\$${hourlyRate!.round()}/hr' : '',
-        topRated: averageRating >= 4.8,
-        isVerified: true,
-        isAcceptingBookings: availableSlots.isNotEmpty,
-        yearsOfExperience: yearsOfExperience ?? 0,
-        biography: bio,
-        specialties: const [],
-        galleryImages: const [],
-        pricePerWalk: hourlyRate,
-        serviceArea: workLocation,
-        serviceRadiusKm: serviceRadiusKm,
-        maxDogs: maxDogs,
-        completedWalks: completedWalks,
-        avatarUrl: profilePhoto,
-        weeklyAvailability: weeklyAvailability,
-        availableSlots: availableSlots,
-      );
+    id: id,
+    name: fullName,
+    rating: averageRating,
+    reviews: totalReviews,
+    description: bio ?? '',
+    distance: 0,
+    imageUrl: profilePhoto ?? '',
+    priceLabel: hourlyRate != null ? '\$${hourlyRate!.round()}/hr' : '',
+    topRated: averageRating >= 4.8,
+    isVerified: true,
+    isAcceptingBookings: availableSlots.isNotEmpty,
+    yearsOfExperience: yearsOfExperience ?? 0,
+    biography: bio,
+    specialties: const [],
+    galleryImages: const [],
+    pricePerWalk: hourlyRate,
+    serviceArea: workLocation,
+    serviceRadiusKm: serviceRadiusKm,
+    maxDogs: maxDogs,
+    completedWalks: completedWalks,
+    avatarUrl: profilePhoto,
+    weeklyAvailability: weeklyAvailability,
+    availableSlots: availableSlots,
+  );
 }
 
 /// Maps backend WalkerResponse (simple list format) into a [Walker] entity.
@@ -216,26 +216,26 @@ class WalkerListDto {
   final int totalReviews;
 
   Walker toEntity() => Walker(
-        id: id,
-        name: fullName.isNotEmpty ? fullName : 'Walker',
-        rating: averageRating,
-        reviews: totalReviews,
-        description: description ?? '',
-        distance: 0,
-        imageUrl: profilePhoto ?? '',
-        priceLabel: '',
-        topRated: false,
-        isVerified: verificationStatus == 'approved',
-        isAcceptingBookings: available,
-        yearsOfExperience: 0,
-        biography: description,
-        specialties: const [],
-        galleryImages: const [],
-        pricePerWalk: null,
-        serviceArea: workLocation,
-        serviceRadiusKm: null,
-        maxDogs: null,
-        completedWalks: null,
-        avatarUrl: profilePhoto,
-      );
+    id: id,
+    name: fullName.isNotEmpty ? fullName : 'Walker',
+    rating: averageRating,
+    reviews: totalReviews,
+    description: description ?? '',
+    distance: 0,
+    imageUrl: profilePhoto ?? '',
+    priceLabel: '',
+    topRated: false,
+    isVerified: verificationStatus == 'approved',
+    isAcceptingBookings: available,
+    yearsOfExperience: 0,
+    biography: description,
+    specialties: const [],
+    galleryImages: const [],
+    pricePerWalk: null,
+    serviceArea: workLocation,
+    serviceRadiusKm: null,
+    maxDogs: null,
+    completedWalks: null,
+    avatarUrl: profilePhoto,
+  );
 }

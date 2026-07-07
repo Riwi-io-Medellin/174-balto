@@ -12,13 +12,10 @@ import 'walk_chat_state.dart';
 class WalkChatCubit extends Cubit<WalkChatState> {
   WalkChatCubit({
     required this.sessionId,
-    required WalkSessionRepository sessionRepository,
-    required WalkChatService chatService,
-    required TokenStorage tokenStorage,
-  })  : _sessionRepository = sessionRepository,
-        _chatService = chatService,
-        _tokenStorage = tokenStorage,
-        super(const WalkChatInitial());
+    required this._sessionRepository,
+    required this._chatService,
+    required this._tokenStorage,
+  }) : super(const WalkChatInitial());
 
   final String sessionId;
   final WalkSessionRepository _sessionRepository;
@@ -34,15 +31,18 @@ class WalkChatCubit extends Cubit<WalkChatState> {
       final currentUserId = JwtDecoder.extractUserId(token) ?? '';
 
       final history = await _sessionRepository.getChatMessages(sessionId);
+      if (isClosed) return;
       emit(WalkChatLoaded(currentUserId: currentUserId, messages: history));
 
       await _chatService.start(sessionId, token);
+      if (isClosed) return;
       _messageSub = _chatService.messageStream.listen(_onMessage);
       _errorSub = _chatService.errorStream.listen((msg) {
         final s = state;
         if (s is WalkChatLoaded) emit(s.copyWith(sendError: msg));
       });
     } catch (e) {
+      if (isClosed) return;
       emit(WalkChatError(e.toString()));
     }
   }
@@ -59,6 +59,7 @@ class WalkChatCubit extends Cubit<WalkChatState> {
     try {
       await _sessionRepository.sendChatMessage(sessionId, text.trim());
     } catch (e) {
+      if (isClosed) return;
       final s = state;
       if (s is WalkChatLoaded) emit(s.copyWith(sendError: e.toString()));
     }

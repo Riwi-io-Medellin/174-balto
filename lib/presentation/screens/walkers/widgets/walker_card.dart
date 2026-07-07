@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../domain/entities/walker.dart';
+import '../../../widgets/app_network_image.dart';
 
 class WalkerCard extends StatelessWidget {
   const WalkerCard({
@@ -76,10 +77,10 @@ class WalkerCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
+            AppNetworkImage(
               walker.imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => Container(
+              height: 180,
+              errorWidget: Container(
                 color: const Color(0xFFE8F5EE),
                 child: const Icon(
                   Icons.person_rounded,
@@ -87,26 +88,25 @@ class WalkerCard extends StatelessWidget {
                   color: Color(0xFFB0B8C1),
                 ),
               ),
-              loadingBuilder: (_, child, progress) {
-                if (progress == null) return child;
-                return const ColoredBox(
-                  color: Color(0xFFF0F2F5),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.navWalkers,
-                    ),
+              placeholder: const ColoredBox(
+                color: Color(0xFFF0F2F5),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.navWalkers,
                   ),
-                );
-              },
+                ),
+              ),
             ),
             if (walker.topRated)
               Positioned(
                 top: 12,
                 right: 12,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.navWalkers,
                     borderRadius: BorderRadius.circular(99),
@@ -127,8 +127,10 @@ class WalkerCard extends StatelessWidget {
                 bottom: 12,
                 left: 12,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1BAA71),
                     borderRadius: BorderRadius.circular(99),

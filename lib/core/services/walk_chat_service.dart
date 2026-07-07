@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:signalr_netcore/itransport.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 
 import '../../domain/entities/chat_message.dart';
@@ -46,20 +45,29 @@ class WalkChatService {
         if (args == null || args.isEmpty) return;
         final raw = Map<String, dynamic>.from(args[0] as Map);
         final id = (raw['id'] ?? raw['Id']) as String?;
-        final walkSessionId = (raw['walkSessionId'] ?? raw['WalkSessionId']) as String?;
-        final senderUserId = (raw['senderUserId'] ?? raw['SenderUserId']) as String?;
+        final walkSessionId =
+            (raw['walkSessionId'] ?? raw['WalkSessionId']) as String?;
+        final senderUserId =
+            (raw['senderUserId'] ?? raw['SenderUserId']) as String?;
         final text = (raw['text'] ?? raw['Text']) as String?;
         final createdAtRaw = (raw['createdAt'] ?? raw['CreatedAt']) as String?;
-        if (id == null || walkSessionId == null || senderUserId == null || text == null) {
+        if (id == null ||
+            walkSessionId == null ||
+            senderUserId == null ||
+            text == null) {
           return;
         }
-        _messageController.add(ChatMessage(
-          id: id,
-          walkSessionId: walkSessionId,
-          senderUserId: senderUserId,
-          text: text,
-          createdAt: createdAtRaw != null ? DateTime.parse(createdAtRaw) : DateTime.now(),
-        ));
+        _messageController.add(
+          ChatMessage(
+            id: id,
+            walkSessionId: walkSessionId,
+            senderUserId: senderUserId,
+            text: text,
+            createdAt: createdAtRaw != null
+                ? DateTime.parse(createdAtRaw)
+                : DateTime.now(),
+          ),
+        );
       } catch (e) {
         // ignore: avoid_print
         print('[WalkChat] ChatMessageReceived error: $e');

@@ -30,7 +30,8 @@ class _WalkersPageState extends State<WalkersPage> {
     super.initState();
     _cubit = sl<WalkerCubit>();
     _scrollController.addListener(_onScroll);
-    _initLocationAndLoad();
+    _cubit.loadWalkers();
+    _initLocation();
   }
 
   void _onScroll() {
@@ -40,20 +41,25 @@ class _WalkersPageState extends State<WalkersPage> {
     }
   }
 
-  Future<void> _initLocationAndLoad() async {
+  // Fire-and-forget: only feeds later pagination/search, must not block the
+  // initial list (GPS can be slow or never resolve).
+  Future<void> _initLocation() async {
     final hasPermission = await _requestLocationPermission();
-    if (hasPermission) {
+    if (!hasPermission) return;
+    try {
       final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 6),
         ),
       );
       _cubit.setLocation(
         latitude: position.latitude,
         longitude: position.longitude,
       );
+    } catch (_) {
+      // Location unavailable — proceed with the default location.
     }
-    _cubit.loadWalkers();
   }
 
   Future<bool> _requestLocationPermission() async {
@@ -81,11 +87,9 @@ class _WalkersPageState extends State<WalkersPage> {
       child: Scaffold(
         backgroundColor: const Color(0xFFF5F6FA),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => const BecomeWalkerScreen(),
-            ),
-          ),
+          onPressed: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const BecomeWalkerScreen())),
           backgroundColor: AppColors.navWalkers,
           foregroundColor: Colors.white,
           elevation: 4,
@@ -236,9 +240,7 @@ class _WalkersPageState extends State<WalkersPage> {
                 ),
                 onBookWalk: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Booking coming soon!'),
-                    ),
+                    const SnackBar(content: Text('Booking coming soon!')),
                   );
                 },
               );
@@ -297,8 +299,8 @@ class _WalkersPageState extends State<WalkersPage> {
         final selected = state is WalkerListLoaded
             ? state.selectedFilter
             : state is WalkerLoadingMore
-                ? state.selectedFilter
-                : 0;
+            ? state.selectedFilter
+            : 0;
         return SizedBox(
           height: 38,
           child: ListView.separated(

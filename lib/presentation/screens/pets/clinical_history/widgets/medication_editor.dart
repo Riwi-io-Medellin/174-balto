@@ -25,20 +25,20 @@ class _MedicationEditorState extends State<MedicationEditor> {
   static const _textMuted = Color(0xFF6B7280);
   static const _inputFill = Color(0xFFEEF3F3);
 
-  late List<ClinicalMedicationDraft> _items = List.of(widget.medications);
+  late final List<ClinicalMedicationDraft> _items = List.of(widget.medications);
 
   InputDecoration _decoration(String hint) => InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: _textMuted, fontSize: 13),
-        filled: true,
-        fillColor: _inputFill,
-        isDense: true,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
-        ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-      );
+    hintText: hint,
+    hintStyle: const TextStyle(color: _textMuted, fontSize: 13),
+    filled: true,
+    fillColor: _inputFill,
+    isDense: true,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide.none,
+    ),
+    contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+  );
 
   void _add() {
     setState(() => _items.add(ClinicalMedicationDraft.empty()));
@@ -56,11 +56,11 @@ class _MedicationEditorState extends State<MedicationEditor> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (_items.isEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
             child: Text(
               'No medications added.',
-              style: const TextStyle(fontSize: 13, color: _textMuted),
+              style: TextStyle(fontSize: 13, color: _textMuted),
             ),
           ),
         for (var i = 0; i < _items.length; i++) ...[
@@ -96,7 +96,11 @@ class _MedicationEditorState extends State<MedicationEditor> {
                           color: Color(0xFFFFF0ED),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.close_rounded, size: 14, color: Color(0xFFD05A24)),
+                        child: const Icon(
+                          Icons.close_rounded,
+                          size: 14,
+                          color: Color(0xFFD05A24),
+                        ),
                       ),
                     ),
                   ],
@@ -156,10 +160,15 @@ class _MedicationEditorState extends State<MedicationEditor> {
         OutlinedButton.icon(
           onPressed: _add,
           icon: Icon(Icons.add_rounded, size: 18, color: widget.accentColor),
-          label: Text('Add medication', style: TextStyle(color: widget.accentColor)),
+          label: Text(
+            'Add medication',
+            style: TextStyle(color: widget.accentColor),
+          ),
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: widget.accentColor),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             padding: const EdgeInsets.symmetric(vertical: 10),
           ),
         ),

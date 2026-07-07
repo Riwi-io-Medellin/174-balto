@@ -6,13 +6,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/entities/walk_booking.dart';
+import '../../../domain/repositories/notification_repository.dart';
 import '../../bloc/my_walks/my_walks_cubit.dart';
 import '../../bloc/my_walks/my_walks_state.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
+import '../notifications/notifications_screen.dart';
 import '../pets/manage_pets_screen.dart';
 import '../walks/live_walk_screen.dart';
-import '../../widgets/alerts/lost_pet_alert_banner.dart';
 import '../../widgets/skeletons/home_skeleton.dart';
 import 'widgets/daily_tip_card.dart';
 import 'widgets/greeting_header.dart';
@@ -28,12 +29,8 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<ProfileCubit>(
-          create: (_) => sl<ProfileCubit>()..load(),
-        ),
-        BlocProvider<MyWalksCubit>(
-          create: (_) => sl<MyWalksCubit>()..load(),
-        ),
+        BlocProvider<ProfileCubit>(create: (_) => sl<ProfileCubit>()..load()),
+        BlocProvider<MyWalksCubit>(create: (_) => sl<MyWalksCubit>()..load()),
       ],
       child: _HomeView(onOpenServices: onOpenServices),
     );
@@ -96,64 +93,145 @@ class _HomeViewState extends State<_HomeView>
         backgroundColor: const Color(0xFFF5F6FA),
         body: SafeArea(
           child: BlocBuilder<ProfileCubit, ProfileState>(
+            buildWhen: _shouldRebuildOnProfileState,
             builder: (context, state) {
               if (state is ProfileLoading) return const HomeSkeleton();
 
-              final firstName =
-                  state is ProfileLoaded ? state.user.firstName : 'there';
-              final photoUrl =
-                  state is ProfileLoaded ? state.user.photoUrl : null;
-              final pets =
-                  state is ProfileLoaded ? state.pets : <Pet>[];
+              final firstName = state is ProfileLoaded
+                  ? state.user.firstName
+                  : 'there';
+              final photoUrl = state is ProfileLoaded
+                  ? state.user.photoUrl
+                  : null;
+              final pets = state is ProfileLoaded ? state.pets : <Pet>[];
 
               return RefreshIndicator(
                 onRefresh: () => context.read<MyWalksCubit>().refresh(),
                 child: CustomScrollView(
-                slivers: [
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate([
-                        const LostPetAlertBanner(),
-                        GreetingHeader(
-                          firstName: firstName,
-                          photoUrl: photoUrl,
-                          onNotificationTap: () {},
-                        ),
-                        const SizedBox(height: 20),
-                        PetHeroCard(pets: pets, onTap: () {}),
-                        const SizedBox(height: 16),
-                        const _DailyTipFromState(),
-                        const SizedBox(height: 26),
-                        const _SectionTitle('Walks'),
-                        const SizedBox(height: 12),
-                        const _WalksSection(),
-                        const SizedBox(height: 26),
-                        const _SectionTitle('Quick care'),
-                        const SizedBox(height: 12),
-                        QuickCareGrid(
-                          onClinicTap: () => _openServices(2),
-                          onWalkerTap: () => _openServices(1),
-                          onStoreTap:  () => _openServices(3),
-                          onPetsTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => BlocProvider.value(
-                                value: context.read<ProfileCubit>(),
-                                child: const ManagePetsScreen(),
+                  slivers: [
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+                      sliver: SliverList(
+                        delegate: SliverChildListDelegate([
+                          _HomeGreeting(
+                            firstName: firstName,
+                            photoUrl: photoUrl,
+                          ),
+                          const SizedBox(height: 20),
+                          PetHeroCard(pets: pets, onTap: () {}),
+                          const SizedBox(height: 16),
+                          const _DailyTipFromState(),
+                          const SizedBox(height: 26),
+                          const _SectionTitle('Walks'),
+                          const SizedBox(height: 12),
+                          const _WalksSection(),
+                          const SizedBox(height: 26),
+                          const _SectionTitle('Quick care'),
+                          const SizedBox(height: 12),
+                          QuickCareGrid(
+                            onClinicTap: () => _openServices(2),
+                            onWalkerTap: () => _openServices(1),
+                            onStoreTap: () => _openServices(3),
+                            onPetsTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => BlocProvider.value(
+                                  value: context.read<ProfileCubit>(),
+                                  child: const ManagePetsScreen(),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ]),
+                        ]),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
               );
             },
           ),
         ),
       ),
+    );
+  }
+
+  bool _shouldRebuildOnProfileState(
+    ProfileState previous,
+    ProfileState current,
+  ) {
+    if (previous.runtimeType != current.runtimeType) return true;
+    if (previous is ProfileLoaded && current is ProfileLoaded) {
+      if (previous.user != current.user) return true;
+      if (previous.pets.length != current.pets.length) return true;
+      for (var i = 0; i < previous.pets.length; i++) {
+        if (previous.pets[i] != current.pets[i]) return true;
+      }
+      return false;
+    }
+    return true;
+  }
+}
+
+// ── Greeting + notification bell ────────────────────────────────────────────────
+//
+// Owns the unread-notification badge state on its own so refreshing it (on
+// init, app resume, and after returning from the notifications screen)
+// doesn't rebuild the rest of Home.
+
+class _HomeGreeting extends StatefulWidget {
+  const _HomeGreeting({required this.firstName, required this.photoUrl});
+
+  final String firstName;
+  final String? photoUrl;
+
+  @override
+  State<_HomeGreeting> createState() => _HomeGreetingState();
+}
+
+class _HomeGreetingState extends State<_HomeGreeting>
+    with WidgetsBindingObserver {
+  bool _hasUnread = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _refreshUnread();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refreshUnread();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  Future<void> _refreshUnread() async {
+    try {
+      final count = await sl<NotificationRepository>().getUnreadCount();
+      if (mounted) setState(() => _hasUnread = count > 0);
+    } catch (_) {
+      // Best-effort: leave the previous badge state on failure.
+    }
+  }
+
+  Future<void> _openNotifications() async {
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const NotificationsScreen()));
+    _refreshUnread();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GreetingHeader(
+      firstName: widget.firstName,
+      photoUrl: widget.photoUrl,
+      hasUnreadNotifications: _hasUnread,
+      onNotificationTap: _openNotifications,
     );
   }
 }
@@ -250,10 +328,10 @@ class _LiveWalkCard extends StatelessWidget {
     return GestureDetector(
       onTap: hasSession
           ? () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => LiveWalkScreen(booking: booking),
-                ),
-              )
+              MaterialPageRoute(
+                builder: (_) => LiveWalkScreen(booking: booking),
+              ),
+            )
           : null,
       child: Container(
         padding: const EdgeInsets.all(14),
@@ -315,7 +393,9 @@ class _LiveWalkCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: hasSession ? Colors.white : const Color(0xFF1F2937),
+                          color: hasSession
+                              ? Colors.white
+                              : const Color(0xFF1F2937),
                         ),
                       ),
                     ],
@@ -403,7 +483,10 @@ class _UpcomingWalkCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   _formatSlot(booking.slotStart, booking.durationMinutes),
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0)),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF8A93A0),
+                  ),
                 ),
               ],
             ),
@@ -417,22 +500,24 @@ class _UpcomingWalkCard extends StatelessWidget {
     final local = dt.toLocal();
     final now = DateTime.now();
     final isToday =
-        local.year == now.year && local.month == now.month && local.day == now.day;
-    final isTomorrow = local.difference(DateTime(now.year, now.month, now.day)).inDays == 1;
+        local.year == now.year &&
+        local.month == now.month &&
+        local.day == now.day;
+    final isTomorrow =
+        local.difference(DateTime(now.year, now.month, now.day)).inDays == 1;
     final dayLabel = isToday
         ? 'Today'
         : isTomorrow
-            ? 'Tomorrow'
-            : '${_weekday(local.weekday)}, ${local.day}/${local.month}';
+        ? 'Tomorrow'
+        : '${_weekday(local.weekday)}, ${local.day}/${local.month}';
     final h = local.hour % 12 == 0 ? 12 : local.hour % 12;
     final m = local.minute.toString().padLeft(2, '0');
     final ampm = local.hour < 12 ? 'AM' : 'PM';
     return '$dayLabel, $h:$m $ampm · $durationMinutes min';
   }
 
-  String _weekday(int w) => const [
-        '', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
-      ][w];
+  String _weekday(int w) =>
+      const ['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][w];
 }
 
 // ── Empty / loading states ─────────────────────────────────────────────────────

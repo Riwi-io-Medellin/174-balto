@@ -67,20 +67,21 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
       final schedule = <int, List<_TimeRange>>{};
       for (final slot in state.slots) {
         schedule.putIfAbsent(slot.dayOfWeek, () => []);
-        schedule[slot.dayOfWeek]!.add(_TimeRange(
-          startTime: slot.startTime,
-          endTime: slot.endTime,
-        ));
+        schedule[slot.dayOfWeek]!.add(
+          _TimeRange(startTime: slot.startTime, endTime: slot.endTime),
+        );
       }
       setState(() {
         _weeklySchedule = schedule;
         _exceptions = state.exceptions
-            .map((e) => _ExceptionEntry(
-                  date: e.date,
-                  isUnavailable: e.isUnavailable,
-                  startTime: e.startTime,
-                  endTime: e.endTime,
-                ))
+            .map(
+              (e) => _ExceptionEntry(
+                date: e.date,
+                isUnavailable: e.isUnavailable,
+                startTime: e.startTime,
+                endTime: e.endTime,
+              ),
+            )
             .toList();
         _initialized = true;
       });
@@ -97,19 +98,20 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
       for (final entry in _weeklySchedule.entries) {
         for (final interval in entry.value) {
           if (interval.startTime.isEmpty || interval.endTime.isEmpty) continue;
-          slots.add(AvailabilitySlot(
-            dayOfWeek: entry.key,
-            startTime: interval.startTime,
-            endTime: interval.endTime,
-          ));
+          slots.add(
+            AvailabilitySlot(
+              dayOfWeek: entry.key,
+              startTime: interval.startTime,
+              endTime: interval.endTime,
+            ),
+          );
         }
       }
 
       // Validate and build exceptions
       final exceptions = <AvailabilityException>[];
       for (final ex in _exceptions) {
-        if (!ex.isUnavailable &&
-            (ex.startTime == null || ex.endTime == null)) {
+        if (!ex.isUnavailable && (ex.startTime == null || ex.endTime == null)) {
           if (!mounted) return;
           BaltoToast.warning(
             context,
@@ -118,12 +120,14 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
           setState(() => _saving = false);
           return;
         }
-        exceptions.add(AvailabilityException(
-          date: ex.date,
-          isUnavailable: ex.isUnavailable,
-          startTime: ex.startTime,
-          endTime: ex.endTime,
-        ));
+        exceptions.add(
+          AvailabilityException(
+            date: ex.date,
+            isUnavailable: ex.isUnavailable,
+            startTime: ex.startTime,
+            endTime: ex.endTime,
+          ),
+        );
       }
 
       await sl<WalkerAvailabilityRepository>().replaceMyAvailability(slots);
@@ -170,9 +174,7 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
     }
   }
 
-  Future<void> _pickDate({
-    required ValueChanged<String> onPicked,
-  }) async {
+  Future<void> _pickDate({required ValueChanged<String> onPicked}) async {
     final picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now().add(const Duration(days: 1)),
@@ -190,10 +192,9 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
   void _addInterval(int dayOfWeek) {
     setState(() {
       _weeklySchedule.putIfAbsent(dayOfWeek, () => []);
-      _weeklySchedule[dayOfWeek]!.add(_TimeRange(
-        startTime: '09:00',
-        endTime: '17:00',
-      ));
+      _weeklySchedule[dayOfWeek]!.add(
+        _TimeRange(startTime: '09:00', endTime: '17:00'),
+      );
     });
   }
 
@@ -214,10 +215,7 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
           return;
         }
         setState(() {
-          _exceptions.add(_ExceptionEntry(
-            date: date,
-            isUnavailable: true,
-          ));
+          _exceptions.add(_ExceptionEntry(date: date, isUnavailable: true));
         });
       },
     );
@@ -233,8 +231,18 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
     final month = int.tryParse(parts[1]) ?? 1;
     final day = int.tryParse(parts[2]) ?? 1;
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[month - 1]} $day, ${parts[0]}';
   }
@@ -273,7 +281,7 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : Text(
+                : const Text(
                     'Save',
                     style: TextStyle(
                       fontSize: 15,
@@ -353,18 +361,15 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
             padding: EdgeInsets.only(bottom: 12),
             child: Text(
               'Override your regular schedule for specific dates.',
-              style: TextStyle(
-                fontSize: 13,
-                color: Color(0xFF5A6473),
-              ),
+              style: TextStyle(fontSize: 13, color: Color(0xFF5A6473)),
             ),
           ),
           if (_exceptions.isEmpty)
             _buildEmptyExceptions()
           else
             ..._exceptions.asMap().entries.map(
-                  (entry) => _buildExceptionCard(entry.key, entry.value),
-                ),
+              (entry) => _buildExceptionCard(entry.key, entry.value),
+            ),
           const SizedBox(height: 12),
           _buildAddExceptionButton(),
         ],
@@ -442,21 +447,21 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
             ],
           ),
           if (intervals.isEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
+            const Padding(
+              padding: EdgeInsets.only(top: 12),
               child: Text(
                 'No hours set',
                 style: TextStyle(
                   fontSize: 13,
-                  color: const Color(0xFF8A93A0),
+                  color: Color(0xFF8A93A0),
                   fontStyle: FontStyle.italic,
                 ),
               ),
             )
           else
             ...intervals.asMap().entries.map(
-                  (entry) => _buildIntervalRow(dayOfWeek, entry.key, entry.value),
-                ),
+              (entry) => _buildIntervalRow(dayOfWeek, entry.key, entry.value),
+            ),
           const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
@@ -527,8 +532,8 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
             child: Container(
               width: 32,
               height: 32,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF0ED),
+              decoration: const BoxDecoration(
+                color: Color(0xFFFFF0ED),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -543,10 +548,7 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
     );
   }
 
-  Widget _buildTimeChip({
-    required String label,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildTimeChip({required String label, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -592,18 +594,11 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
       ),
       child: const Column(
         children: [
-          Icon(
-            Icons.event_busy_rounded,
-            size: 36,
-            color: Color(0xFFB0B8C1),
-          ),
+          Icon(Icons.event_busy_rounded, size: 36, color: Color(0xFFB0B8C1)),
           SizedBox(height: 8),
           Text(
             'No exceptions yet',
-            style: TextStyle(
-              fontSize: 13,
-              color: Color(0xFF8A93A0),
-            ),
+            style: TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
           ),
         ],
       ),
@@ -659,8 +654,8 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
                 child: Container(
                   width: 28,
                   height: 28,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF0ED),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFF0ED),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -754,9 +749,7 @@ class _WalkerAvailabilityScreenState extends State<WalkerAvailabilityScreen> {
         label: const Text('Add Exception'),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.navWalkers,
-          side: BorderSide(
-            color: AppColors.navWalkers.withValues(alpha: 0.30),
-          ),
+          side: BorderSide(color: AppColors.navWalkers.withValues(alpha: 0.30)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),

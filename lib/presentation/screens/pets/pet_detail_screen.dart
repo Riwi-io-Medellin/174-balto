@@ -117,6 +117,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
 
     try {
       await sl<PetRepository>().delete(pet.id);
+      if (!context.mounted) return;
       await context.read<ProfileCubit>().load();
       if (!context.mounted) return;
       BaltoToast.success(context, '${pet.name} removed.');
@@ -158,27 +159,39 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
       }
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        if (mounted) {
-          BaltoToast.error(context, 'Location permission is required to report a lost pet.');
+        if (context.mounted) {
+          BaltoToast.error(
+            context,
+            'Location permission is required to report a lost pet.',
+          );
         }
         return;
       }
 
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
 
+      if (!context.mounted) return;
       await context.read<ProfileCubit>().reportLost(
-            petId: pet.id,
-            lostLatitude: position.latitude,
-            lostLongitude: position.longitude,
-          );
+        petId: pet.id,
+        lostLatitude: position.latitude,
+        lostLongitude: position.longitude,
+      );
 
       if (!context.mounted) return;
-      BaltoToast.success(context, '${pet.name} was reported lost. Nearby users have been alerted.');
+      BaltoToast.success(
+        context,
+        '${pet.name} was reported lost. Nearby users have been alerted.',
+      );
     } catch (e) {
       if (!context.mounted) return;
-      BaltoToast.error(context, 'Could not report ${pet.name} as lost. ${e.toString()}');
+      BaltoToast.error(
+        context,
+        'Could not report ${pet.name} as lost. ${e.toString()}',
+      );
     } finally {
       if (mounted) setState(() => _lostActionLoading = false);
     }
@@ -192,7 +205,10 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
       BaltoToast.success(context, '${pet.name} is marked as found.');
     } catch (e) {
       if (!context.mounted) return;
-      BaltoToast.error(context, 'Could not update ${pet.name}. ${e.toString()}');
+      BaltoToast.error(
+        context,
+        'Could not update ${pet.name}. ${e.toString()}',
+      );
     } finally {
       if (mounted) setState(() => _lostActionLoading = false);
     }
@@ -216,7 +232,9 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
             foregroundColor: const Color(0xFF1BAA71),
             side: const BorderSide(color: Color(0xFF1BAA71)),
             padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
           ),
         ),
       );
@@ -237,7 +255,9 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
           foregroundColor: _orange,
           side: const BorderSide(color: _orange),
           padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
       ),
     );
@@ -380,7 +400,11 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.warning_amber_rounded, color: _orange, size: 18),
+                  const Icon(
+                    Icons.warning_amber_rounded,
+                    color: _orange,
+                    size: 18,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -512,7 +536,11 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                 color: const Color(0xFF1BAA71).withValues(alpha: 0.10),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.folder_shared_outlined, color: Color(0xFF1BAA71), size: 20),
+              child: const Icon(
+                Icons.folder_shared_outlined,
+                color: Color(0xFF1BAA71),
+                size: 20,
+              ),
             ),
             const SizedBox(width: 12),
             const Expanded(
@@ -521,7 +549,11 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                 children: [
                   Text(
                     'Clinical History Log',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textDark),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: _textDark,
+                    ),
                   ),
                   SizedBox(height: 2),
                   Text(
@@ -547,7 +579,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
           width: 160,
           height: 160,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _buildAvatar(pet),
+          errorBuilder: (_, _, _) => _buildAvatar(pet),
           loadingBuilder: (_, child, progress) {
             if (progress == null) return child;
             return _buildAvatar(pet);

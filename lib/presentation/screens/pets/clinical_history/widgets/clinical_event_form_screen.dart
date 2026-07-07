@@ -23,7 +23,8 @@ class ClinicalEventFormScreen extends StatefulWidget {
   final ClinicalExtractionDraft draft;
 
   @override
-  State<ClinicalEventFormScreen> createState() => _ClinicalEventFormScreenState();
+  State<ClinicalEventFormScreen> createState() =>
+      _ClinicalEventFormScreenState();
 }
 
 class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
@@ -37,46 +38,88 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
   bool _saving = false;
 
   // Pet profile
-  late final _sexCtrl = TextEditingController(text: _draft.petProfile.sex ?? '');
-  late final _colorCtrl = TextEditingController(text: _draft.petProfile.color ?? '');
-  late final _idCtrl = TextEditingController(text: _draft.petProfile.identificationNumber ?? '');
-  late final _microchipCtrl = TextEditingController(text: _draft.petProfile.microchipNumber ?? '');
-  late final _profileWeightCtrl =
-      TextEditingController(text: _draft.petProfile.weight?.toString() ?? '');
+  late final _sexCtrl = TextEditingController(
+    text: _draft.petProfile.sex ?? '',
+  );
+  late final _colorCtrl = TextEditingController(
+    text: _draft.petProfile.color ?? '',
+  );
+  late final _idCtrl = TextEditingController(
+    text: _draft.petProfile.identificationNumber ?? '',
+  );
+  late final _microchipCtrl = TextEditingController(
+    text: _draft.petProfile.microchipNumber ?? '',
+  );
+  late final _profileWeightCtrl = TextEditingController(
+    text: _draft.petProfile.weight?.toString() ?? '',
+  );
 
   // History
-  late final _allergiesCtrl = TextEditingController(text: _draft.clinicalRecord.allergies ?? '');
-  late final _chronicCtrl =
-      TextEditingController(text: _draft.clinicalRecord.chronicConditions ?? '');
-  late final _dietCtrl =
-      TextEditingController(text: _draft.clinicalRecord.dietaryRestrictions ?? '');
+  late final _allergiesCtrl = TextEditingController(
+    text: _draft.clinicalRecord.allergies ?? '',
+  );
+  late final _chronicCtrl = TextEditingController(
+    text: _draft.clinicalRecord.chronicConditions ?? '',
+  );
+  late final _dietCtrl = TextEditingController(
+    text: _draft.clinicalRecord.dietaryRestrictions ?? '',
+  );
 
   // Visit / event
-  late final _clinicCtrl = TextEditingController(text: _draft.event.clinicName ?? '');
-  late final _vetCtrl = TextEditingController(text: _draft.event.veterinarianName ?? '');
-  late final _reasonCtrl = TextEditingController(text: _draft.event.reason ?? '');
+  late final _clinicCtrl = TextEditingController(
+    text: _draft.event.clinicName ?? '',
+  );
+  late final _vetCtrl = TextEditingController(
+    text: _draft.event.veterinarianName ?? '',
+  );
+  late final _reasonCtrl = TextEditingController(
+    text: _draft.event.reason ?? '',
+  );
 
   // Clinical exam
-  late final _signsCtrl = TextEditingController(text: _draft.event.clinicalSigns ?? '');
-  late final _tempCtrl = TextEditingController(text: _draft.event.temperature?.toString() ?? '');
-  late final _hrCtrl = TextEditingController(text: _draft.event.heartRate?.toString() ?? '');
-  late final _rrCtrl = TextEditingController(text: _draft.event.respiratoryRate?.toString() ?? '');
-  late final _eventWeightCtrl =
-      TextEditingController(text: _draft.event.weight?.toString() ?? '');
-  late final _bodyConditionCtrl =
-      TextEditingController(text: _draft.event.bodyCondition ?? '');
-  late final _findingsCtrl = TextEditingController(text: _draft.event.findings ?? '');
+  late final _signsCtrl = TextEditingController(
+    text: _draft.event.clinicalSigns ?? '',
+  );
+  late final _tempCtrl = TextEditingController(
+    text: _draft.event.temperature?.toString() ?? '',
+  );
+  late final _hrCtrl = TextEditingController(
+    text: _draft.event.heartRate?.toString() ?? '',
+  );
+  late final _rrCtrl = TextEditingController(
+    text: _draft.event.respiratoryRate?.toString() ?? '',
+  );
+  late final _eventWeightCtrl = TextEditingController(
+    text: _draft.event.weight?.toString() ?? '',
+  );
+  late final _bodyConditionCtrl = TextEditingController(
+    text: _draft.event.bodyCondition ?? '',
+  );
+  late final _findingsCtrl = TextEditingController(
+    text: _draft.event.findings ?? '',
+  );
 
   // Diagnosis and exams
-  late final _diagnosisCtrl = TextEditingController(text: _draft.event.diagnosis ?? '');
-  late final _examsCtrl = TextEditingController(text: _draft.event.examsPerformed ?? '');
-  late final _examResultsCtrl = TextEditingController(text: _draft.event.examResults ?? '');
+  late final _diagnosisCtrl = TextEditingController(
+    text: _draft.event.diagnosis ?? '',
+  );
+  late final _examsCtrl = TextEditingController(
+    text: _draft.event.examsPerformed ?? '',
+  );
+  late final _examResultsCtrl = TextEditingController(
+    text: _draft.event.examResults ?? '',
+  );
 
   // Treatment and follow-up
-  late final _proceduresCtrl = TextEditingController(text: _draft.event.procedures ?? '');
-  late final _recommendationsCtrl =
-      TextEditingController(text: _draft.event.recommendations ?? '');
-  late final _observationsCtrl = TextEditingController(text: _draft.event.observations ?? '');
+  late final _proceduresCtrl = TextEditingController(
+    text: _draft.event.procedures ?? '',
+  );
+  late final _recommendationsCtrl = TextEditingController(
+    text: _draft.event.recommendations ?? '',
+  );
+  late final _observationsCtrl = TextEditingController(
+    text: _draft.event.observations ?? '',
+  );
 
   @override
   void initState() {
@@ -87,12 +130,30 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
   @override
   void dispose() {
     for (final c in [
-      _sexCtrl, _colorCtrl, _idCtrl, _microchipCtrl, _profileWeightCtrl,
-      _allergiesCtrl, _chronicCtrl, _dietCtrl,
-      _clinicCtrl, _vetCtrl, _reasonCtrl,
-      _signsCtrl, _tempCtrl, _hrCtrl, _rrCtrl, _eventWeightCtrl, _bodyConditionCtrl, _findingsCtrl,
-      _diagnosisCtrl, _examsCtrl, _examResultsCtrl,
-      _proceduresCtrl, _recommendationsCtrl, _observationsCtrl,
+      _sexCtrl,
+      _colorCtrl,
+      _idCtrl,
+      _microchipCtrl,
+      _profileWeightCtrl,
+      _allergiesCtrl,
+      _chronicCtrl,
+      _dietCtrl,
+      _clinicCtrl,
+      _vetCtrl,
+      _reasonCtrl,
+      _signsCtrl,
+      _tempCtrl,
+      _hrCtrl,
+      _rrCtrl,
+      _eventWeightCtrl,
+      _bodyConditionCtrl,
+      _findingsCtrl,
+      _diagnosisCtrl,
+      _examsCtrl,
+      _examResultsCtrl,
+      _proceduresCtrl,
+      _recommendationsCtrl,
+      _observationsCtrl,
     ]) {
       c.dispose();
     }
@@ -103,33 +164,66 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
     _draft.petProfile
       ..sex = _sexCtrl.text.trim().isEmpty ? null : _sexCtrl.text.trim()
       ..color = _colorCtrl.text.trim().isEmpty ? null : _colorCtrl.text.trim()
-      ..identificationNumber = _idCtrl.text.trim().isEmpty ? null : _idCtrl.text.trim()
-      ..microchipNumber = _microchipCtrl.text.trim().isEmpty ? null : _microchipCtrl.text.trim()
+      ..identificationNumber = _idCtrl.text.trim().isEmpty
+          ? null
+          : _idCtrl.text.trim()
+      ..microchipNumber = _microchipCtrl.text.trim().isEmpty
+          ? null
+          : _microchipCtrl.text.trim()
       ..weight = double.tryParse(_profileWeightCtrl.text.trim());
 
     _draft.clinicalRecord
-      ..allergies = _allergiesCtrl.text.trim().isEmpty ? null : _allergiesCtrl.text.trim()
-      ..chronicConditions = _chronicCtrl.text.trim().isEmpty ? null : _chronicCtrl.text.trim()
-      ..dietaryRestrictions = _dietCtrl.text.trim().isEmpty ? null : _dietCtrl.text.trim();
+      ..allergies = _allergiesCtrl.text.trim().isEmpty
+          ? null
+          : _allergiesCtrl.text.trim()
+      ..chronicConditions = _chronicCtrl.text.trim().isEmpty
+          ? null
+          : _chronicCtrl.text.trim()
+      ..dietaryRestrictions = _dietCtrl.text.trim().isEmpty
+          ? null
+          : _dietCtrl.text.trim();
 
     _draft.event
-      ..clinicName = _clinicCtrl.text.trim().isEmpty ? null : _clinicCtrl.text.trim()
-      ..veterinarianName = _vetCtrl.text.trim().isEmpty ? null : _vetCtrl.text.trim()
-      ..reason = _reasonCtrl.text.trim().isEmpty ? null : _reasonCtrl.text.trim()
-      ..clinicalSigns = _signsCtrl.text.trim().isEmpty ? null : _signsCtrl.text.trim()
+      ..clinicName = _clinicCtrl.text.trim().isEmpty
+          ? null
+          : _clinicCtrl.text.trim()
+      ..veterinarianName = _vetCtrl.text.trim().isEmpty
+          ? null
+          : _vetCtrl.text.trim()
+      ..reason = _reasonCtrl.text.trim().isEmpty
+          ? null
+          : _reasonCtrl.text.trim()
+      ..clinicalSigns = _signsCtrl.text.trim().isEmpty
+          ? null
+          : _signsCtrl.text.trim()
       ..temperature = double.tryParse(_tempCtrl.text.trim())
       ..heartRate = int.tryParse(_hrCtrl.text.trim())
       ..respiratoryRate = int.tryParse(_rrCtrl.text.trim())
       ..weight = double.tryParse(_eventWeightCtrl.text.trim())
-      ..bodyCondition = _bodyConditionCtrl.text.trim().isEmpty ? null : _bodyConditionCtrl.text.trim()
-      ..findings = _findingsCtrl.text.trim().isEmpty ? null : _findingsCtrl.text.trim()
-      ..diagnosis = _diagnosisCtrl.text.trim().isEmpty ? null : _diagnosisCtrl.text.trim()
-      ..examsPerformed = _examsCtrl.text.trim().isEmpty ? null : _examsCtrl.text.trim()
-      ..examResults = _examResultsCtrl.text.trim().isEmpty ? null : _examResultsCtrl.text.trim()
-      ..procedures = _proceduresCtrl.text.trim().isEmpty ? null : _proceduresCtrl.text.trim()
-      ..recommendations =
-          _recommendationsCtrl.text.trim().isEmpty ? null : _recommendationsCtrl.text.trim()
-      ..observations = _observationsCtrl.text.trim().isEmpty ? null : _observationsCtrl.text.trim();
+      ..bodyCondition = _bodyConditionCtrl.text.trim().isEmpty
+          ? null
+          : _bodyConditionCtrl.text.trim()
+      ..findings = _findingsCtrl.text.trim().isEmpty
+          ? null
+          : _findingsCtrl.text.trim()
+      ..diagnosis = _diagnosisCtrl.text.trim().isEmpty
+          ? null
+          : _diagnosisCtrl.text.trim()
+      ..examsPerformed = _examsCtrl.text.trim().isEmpty
+          ? null
+          : _examsCtrl.text.trim()
+      ..examResults = _examResultsCtrl.text.trim().isEmpty
+          ? null
+          : _examResultsCtrl.text.trim()
+      ..procedures = _proceduresCtrl.text.trim().isEmpty
+          ? null
+          : _proceduresCtrl.text.trim()
+      ..recommendations = _recommendationsCtrl.text.trim().isEmpty
+          ? null
+          : _recommendationsCtrl.text.trim()
+      ..observations = _observationsCtrl.text.trim().isEmpty
+          ? null
+          : _observationsCtrl.text.trim();
   }
 
   Future<void> _pickEventDate() async {
@@ -145,7 +239,9 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
   Future<void> _pickNextControlDate() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _draft.event.nextControlDate ?? DateTime.now().add(const Duration(days: 30)),
+      initialDate:
+          _draft.event.nextControlDate ??
+          DateTime.now().add(const Duration(days: 30)),
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
     );
@@ -156,7 +252,10 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
     _syncControllersIntoDraft();
     setState(() => _saving = true);
     try {
-      await sl<PetClinicalRepository>().confirmEvent(petId: widget.pet.id, draft: _draft);
+      await sl<PetClinicalRepository>().confirmEvent(
+        petId: widget.pet.id,
+        draft: _draft,
+      );
       if (!mounted) return;
       BaltoToast.success(context, 'Clinical history saved.');
       Navigator.of(context).pop(true);
@@ -178,10 +277,15 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
         title: const Text('Discard changes?'),
         content: const Text('The reviewed information will not be saved.'),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Keep editing')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Keep editing'),
+          ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: TextButton.styleFrom(foregroundColor: const Color(0xFFD05A24)),
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFFD05A24),
+            ),
             child: const Text('Discard'),
           ),
         ],
@@ -198,12 +302,22 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
       filled: true,
       fillColor: _inputFill,
       isDense: true,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide.none,
+      ),
       contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
     );
   }
 
-  Widget _field(TextEditingController ctrl, String label, {IconData? icon, int maxLines = 1, TextInputType? keyboardType, List<TextInputFormatter>? formatters}) {
+  Widget _field(
+    TextEditingController ctrl,
+    String label, {
+    IconData? icon,
+    int maxLines = 1,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? formatters,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
@@ -232,7 +346,9 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
             readOnly: true,
             style: const TextStyle(fontSize: 14, color: _textDark),
             decoration: _decoration(
-              value != null ? '${value.day}/${value.month}/${value.year}' : label,
+              value != null
+                  ? '${value.day}/${value.month}/${value.year}'
+                  : label,
               icon: icon,
             ),
           ),
@@ -241,14 +357,23 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
     );
   }
 
-  Widget _section({required String title, required IconData icon, required List<Widget> children, bool initiallyExpanded = false}) {
+  Widget _section({
+    required String title,
+    required IconData icon,
+    required List<Widget> children,
+    bool initiallyExpanded = false,
+  }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 3)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: Theme(
@@ -256,14 +381,26 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
         child: ExpansionTile(
           initiallyExpanded: initiallyExpanded,
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          collapsedShape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          collapsedShape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+          ),
           leading: Container(
             width: 36,
             height: 36,
-            decoration: BoxDecoration(color: _accent.withValues(alpha: 0.10), shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: _accent.withValues(alpha: 0.10),
+              shape: BoxShape.circle,
+            ),
             child: Icon(icon, size: 18, color: _accent),
           ),
-          title: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textDark)),
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: _textDark,
+            ),
+          ),
           childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           children: children,
         ),
@@ -299,7 +436,11 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                   Expanded(
                     child: Text(
                       'Review and edit everything before saving. No field is locked.',
-                      style: TextStyle(fontSize: 12, color: _accent, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: _accent,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
@@ -318,9 +459,18 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                       _field(_colorCtrl, 'Color'),
                       _field(_idCtrl, 'Identification number'),
                       _field(_microchipCtrl, 'Microchip'),
-                      _field(_profileWeightCtrl, 'Weight (kg)',
-                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                          formatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))]),
+                      _field(
+                        _profileWeightCtrl,
+                        'Weight (kg)',
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        formatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d{0,2}'),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                   _section(
@@ -344,8 +494,16 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                         value: _draft.event.eventDate,
                         onTap: _pickEventDate,
                       ),
-                      _field(_clinicCtrl, 'Clinic', icon: Icons.local_hospital_outlined),
-                      _field(_vetCtrl, 'Veterinarian', icon: Icons.badge_outlined),
+                      _field(
+                        _clinicCtrl,
+                        'Clinic',
+                        icon: Icons.local_hospital_outlined,
+                      ),
+                      _field(
+                        _vetCtrl,
+                        'Veterinarian',
+                        icon: Icons.badge_outlined,
+                      ),
                       _field(_reasonCtrl, 'Reason for the visit', maxLines: 2),
                     ],
                   ),
@@ -354,28 +512,66 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                     icon: Icons.monitor_heart_outlined,
                     children: [
                       _field(_signsCtrl, 'Clinical signs', maxLines: 2),
-                      Row(children: [
-                        Expanded(
-                            child: _field(_tempCtrl, 'Temperature (°C)',
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                formatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,1}'))])),
-                        const SizedBox(width: 10),
-                        Expanded(
-                            child: _field(_hrCtrl, 'Heart rate',
-                                keyboardType: TextInputType.number,
-                                formatters: [FilteringTextInputFormatter.digitsOnly])),
-                      ]),
-                      Row(children: [
-                        Expanded(
-                            child: _field(_rrCtrl, 'Respiratory rate',
-                                keyboardType: TextInputType.number,
-                                formatters: [FilteringTextInputFormatter.digitsOnly])),
-                        const SizedBox(width: 10),
-                        Expanded(
-                            child: _field(_eventWeightCtrl, 'Current weight (kg)',
-                                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                formatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))])),
-                      ]),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _field(
+                              _tempCtrl,
+                              'Temperature (°C)',
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
+                              formatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,1}'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _field(
+                              _hrCtrl,
+                              'Heart rate',
+                              keyboardType: TextInputType.number,
+                              formatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _field(
+                              _rrCtrl,
+                              'Respiratory rate',
+                              keyboardType: TextInputType.number,
+                              formatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _field(
+                              _eventWeightCtrl,
+                              'Current weight (kg)',
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    decimal: true,
+                                  ),
+                              formatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'^\d*\.?\d{0,2}'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                       _field(_bodyConditionCtrl, 'Body condition'),
                       _field(_findingsCtrl, 'Relevant findings', maxLines: 2),
                     ],
@@ -406,7 +602,11 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                     title: 'Recommendations and follow-up',
                     icon: Icons.checklist_rtl_rounded,
                     children: [
-                      _field(_recommendationsCtrl, 'Recommendations', maxLines: 2),
+                      _field(
+                        _recommendationsCtrl,
+                        'Recommendations',
+                        maxLines: 2,
+                      ),
                       _field(_observationsCtrl, 'Observations', maxLines: 2),
                       _dateField(
                         label: 'Next check-up',
@@ -423,7 +623,13 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
               decoration: BoxDecoration(
                 color: Colors.white,
-                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 12, offset: const Offset(0, -2))],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 12,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
@@ -434,7 +640,9 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                         foregroundColor: _textMuted,
                         side: const BorderSide(color: Color(0xFFE0E4EC)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
                       child: const Text('Cancel'),
                     ),
@@ -448,14 +656,26 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                         backgroundColor: _accent,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                         elevation: 0,
                       ),
                       child: _saving
                           ? const SizedBox(
-                              width: 20, height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation(Colors.white)))
-                          : const Text('Save clinical history', style: TextStyle(fontWeight: FontWeight.w700)),
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                          : const Text(
+                              'Save clinical history',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
                     ),
                   ),
                 ],
@@ -469,14 +689,19 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
 
   Widget _eventTypeDropdown() {
     return DropdownButtonFormField<String>(
-      value: _draft.event.eventType,
+      initialValue: _draft.event.eventType,
       isExpanded: true,
       decoration: _decoration('Event type', icon: Icons.category_outlined),
       style: const TextStyle(fontSize: 14, color: _textDark),
       dropdownColor: Colors.white,
       borderRadius: BorderRadius.circular(12),
       items: PetClinicalEventType.values
-          .map((v) => DropdownMenuItem(value: v, child: Text(PetClinicalEventType.label(v))))
+          .map(
+            (v) => DropdownMenuItem(
+              value: v,
+              child: Text(PetClinicalEventType.label(v)),
+            ),
+          )
           .toList(),
       onChanged: (v) {
         if (v != null) setState(() => _draft.event.eventType = v);

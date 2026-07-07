@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../domain/entities/pet.dart';
 import '../../../../domain/entities/vet_document_analysis.dart';
+import '../../../widgets/app_network_image.dart';
 
 class PetHeroCard extends StatefulWidget {
   const PetHeroCard({super.key, required this.pets, required this.onTap});
@@ -79,8 +80,9 @@ class _PetCard extends StatelessWidget {
   String get _subtitle {
     if (pet == null) return 'Tap to get started';
     final parts = <String>[];
-    if (pet?.species != null && pet!.species!.isNotEmpty)
+    if (pet?.species != null && pet!.species!.isNotEmpty) {
       parts.add(pet!.species!);
+    }
     if (pet?.breed != null && pet!.breed!.isNotEmpty) parts.add(pet!.breed!);
     if (pet?.birthDate != null) {
       final age = DateTime.now().year - pet!.birthDate!.year;
@@ -137,10 +139,10 @@ class _PetCard extends StatelessWidget {
   Widget _background() {
     final photoUrl = pet?.photoUrl;
     if (photoUrl != null && photoUrl.isNotEmpty) {
-      return Image.network(
+      return AppNetworkImage(
         photoUrl,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _defaultBackground(),
+        height: 220,
+        errorWidget: _defaultBackground(),
       );
     }
     return _defaultBackground();
@@ -232,7 +234,7 @@ class _PetCard extends StatelessWidget {
           if (pet?.species != null && pet!.species!.isNotEmpty)
             _GlassChip(label: pet!.species!)
           else if (pet == null)
-            _GlassChip(label: 'Balto')
+            const _GlassChip(label: 'Balto')
           else
             const SizedBox.shrink(),
           if (total > 1) _GlassChip(label: '${index + 1} / $total'),

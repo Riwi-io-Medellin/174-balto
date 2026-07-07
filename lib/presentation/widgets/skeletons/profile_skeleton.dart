@@ -19,14 +19,14 @@ class ProfileSkeleton extends StatelessWidget {
             const SizedBox(height: 24),
 
             // ── Identity row: avatar + name + email ─────────────
-            Center(
+            const Center(
               child: Column(
                 children: [
-                  const SkeletonCircle(size: 80),
-                  const SizedBox(height: 12),
-                  const SkeletonBox(width: 150, height: 18),
-                  const SizedBox(height: 6),
-                  const SkeletonBox(width: 110, height: 14),
+                  SkeletonCircle(size: 80),
+                  SizedBox(height: 12),
+                  SkeletonBox(width: 150, height: 18),
+                  SizedBox(height: 6),
+                  SkeletonBox(width: 110, height: 14),
                 ],
               ),
             ),
@@ -41,11 +41,7 @@ class ProfileSkeleton extends StatelessWidget {
               padding: const EdgeInsets.all(20),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _StatBox(),
-                  _StatBox(),
-                  _StatBox(),
-                ],
+                children: [_StatBox(), _StatBox(), _StatBox()],
               ),
             ),
             const SizedBox(height: 18),
@@ -77,9 +73,7 @@ class ProfileSkeleton extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Column(
-                children: List.generate(2, (i) => _petRow(i)),
-              ),
+              child: Column(children: List.generate(2, (i) => _petRow(i))),
             ),
             const SizedBox(height: 18),
 
@@ -91,9 +85,7 @@ class ProfileSkeleton extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Column(
-                children: List.generate(3, (i) => _infoRow(i)),
-              ),
+              child: Column(children: List.generate(3, (i) => _infoRow(i))),
             ),
           ],
         ),
@@ -107,9 +99,7 @@ class ProfileSkeleton extends StatelessWidget {
       decoration: index == 0
           ? null
           : const BoxDecoration(
-              border: Border(
-                top: BorderSide(color: Color(0xFFF0F0F0)),
-              ),
+              border: Border(top: BorderSide(color: Color(0xFFF0F0F0))),
             ),
       child: const Row(
         children: [
@@ -137,9 +127,7 @@ class ProfileSkeleton extends StatelessWidget {
       decoration: index == 0
           ? null
           : const BoxDecoration(
-              border: Border(
-                top: BorderSide(color: Color(0xFFF0F0F0)),
-              ),
+              border: Border(top: BorderSide(color: Color(0xFFF0F0F0))),
             ),
       child: const Row(
         children: [

@@ -23,6 +23,11 @@ class BusinessCubit extends Cubit<BusinessState> {
   /// Requests the device's current GPS position, same pattern as
   /// WalkersPage. Silently no-ops if permission/service is unavailable —
   /// businesses just render without a distance badge in that case.
+  ///
+  /// Independent of [loadBusinesses] — callers should fire both concurrently
+  /// rather than awaiting this first, since GPS can be slow/unbounded and
+  /// the business list shouldn't wait on it. If the list is already loaded
+  /// by the time the position arrives, patch distances into it in place.
   Future<void> loadUserLocation() async {
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -38,9 +43,20 @@ class BusinessCubit extends Cubit<BusinessState> {
       }
 
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 6),
+        ),
       );
-      setUserLocation(latitude: position.latitude, longitude: position.longitude);
+      setUserLocation(
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
+
+      final current = state;
+      if (current is BusinessListLoaded) {
+        emit(BusinessListLoaded(_withDistances(current.businesses)));
+      }
     } catch (_) {
       // Location unavailable — proceed without distances.
     }
@@ -49,8 +65,10 @@ class BusinessCubit extends Cubit<BusinessState> {
   Future<void> loadBusinesses({String? type, String? location}) async {
     emit(const BusinessLoading());
     try {
-      final businesses =
-          await _repository.getBusinesses(type: type, location: location);
+      final businesses = await _repository.getBusinesses(
+        type: type,
+        location: location,
+      );
       emit(BusinessListLoaded(_withDistances(businesses)));
     } on BusinessFailure catch (e) {
       emit(BusinessError(e.code, e.message));
@@ -90,7 +108,8 @@ class BusinessCubit extends Cubit<BusinessState> {
     const earthRadiusKm = 6371.0;
     final dLat = _degToRad(lat2 - lat1);
     final dLon = _degToRad(lon2 - lon1);
-    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+    final a =
+        math.sin(dLat / 2) * math.sin(dLat / 2) +
         math.cos(_degToRad(lat1)) *
             math.cos(_degToRad(lat2)) *
             math.sin(dLon / 2) *

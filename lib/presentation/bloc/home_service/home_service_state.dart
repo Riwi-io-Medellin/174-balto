@@ -18,7 +18,10 @@ class HomeServiceLoading extends HomeServiceState {
 }
 
 class HomeServiceLoadingMore extends HomeServiceState {
-  const HomeServiceLoadingMore({required this.providers, this.selectedFilter = 0});
+  const HomeServiceLoadingMore({
+    required this.providers,
+    this.selectedFilter = 0,
+  });
 
   final List<HomeServiceProvider> providers;
   final int selectedFilter;

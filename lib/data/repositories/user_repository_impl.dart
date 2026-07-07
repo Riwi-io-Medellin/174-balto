@@ -46,12 +46,12 @@ class UserRepositoryImpl implements UserRepository {
         'idNumber': idNumber,
         'idType': idType,
         'phone': phone,
-        if (phoneExtra case final v?) 'phoneExtra': v,
-        if (location case final v?) 'location': v,
-        if (address case final v?) 'address': v,
-        if (photoUrl case final v?) 'photoUrl': v,
-        if (latitude case final v?) 'latitude': v,
-        if (longitude case final v?) 'longitude': v,
+        'phoneExtra': ?phoneExtra,
+        'location': ?location,
+        'address': ?address,
+        'photoUrl': ?photoUrl,
+        'latitude': ?latitude,
+        'longitude': ?longitude,
       };
       final dto = await _remote.update(id, data);
       return dto.toEntity();

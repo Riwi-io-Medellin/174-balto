@@ -137,7 +137,7 @@ class ManagePetsScreen extends StatelessWidget {
     final chips = <String>[
       if (pet.species != null) pet.species!,
       if (pet.breed != null) pet.breed!,
-      if (age != null) age,
+      ?age,
       if (pet.weight != null) '${pet.weight!.toStringAsFixed(1)} kg',
     ];
     final healthIndicator = _healthIndicator(pet);
@@ -250,7 +250,7 @@ class ManagePetsScreen extends StatelessWidget {
           width: 48,
           height: 48,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _buildInitialsAvatar(pet.name),
+          errorBuilder: (_, _, _) => _buildInitialsAvatar(pet.name),
         ),
       );
     }

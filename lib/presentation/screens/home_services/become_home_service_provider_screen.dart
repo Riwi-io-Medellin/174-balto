@@ -97,10 +97,7 @@ class _BecomeHomeServiceProviderScreenState
       BaltoToast.error(context, e.message);
     } catch (e) {
       if (!mounted) return;
-      BaltoToast.error(
-        context,
-        'Something went wrong. Please try again.',
-      );
+      BaltoToast.error(context, 'Something went wrong. Please try again.');
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -182,9 +179,7 @@ class _BecomeHomeServiceProviderScreenState
             _fieldLabel('Base Location *'),
             TextField(
               controller: _baseLocationCtrl,
-              decoration: _inputDecoration(
-                hint: 'e.g. Downtown, Westside',
-              ),
+              decoration: _inputDecoration(hint: 'e.g. Downtown, Westside'),
             ),
             const SizedBox(height: 16),
             _fieldLabel('Experience *'),
@@ -275,11 +270,7 @@ class _BecomeHomeServiceProviderScreenState
             widget.isReapply
                 ? 'Your previous document was not accepted. Upload a new, clear photo to try again.'
                 : 'Offer vet, grooming, sitting, training and more — directly at your clients\' homes.',
-            style: const TextStyle(
-              fontSize: 13,
-              color: _textMid,
-              height: 1.55,
-            ),
+            style: const TextStyle(fontSize: 13, color: _textMid, height: 1.55),
             textAlign: TextAlign.center,
           ),
           if (!widget.isReapply) ...[
@@ -419,10 +410,7 @@ class _BecomeHomeServiceProviderScreenState
           child: GestureDetector(
             onTap: _submitting ? null : _pickDocument,
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 7,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
               decoration: BoxDecoration(
                 color: Colors.black.withValues(alpha: 0.55),
                 borderRadius: BorderRadius.circular(99),
@@ -457,11 +445,7 @@ class _BecomeHomeServiceProviderScreenState
             child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.check_circle_rounded,
-                  size: 13,
-                  color: Colors.white,
-                ),
+                Icon(Icons.check_circle_rounded, size: 13, color: Colors.white),
                 SizedBox(width: 5),
                 Text(
                   'Document selected',
@@ -487,11 +471,11 @@ class _BecomeHomeServiceProviderScreenState
       (Icons.crop_free_rounded, 'All four corners of the ID must be visible'),
       (
         Icons.person_rounded,
-        'Name and photo on the ID must match your profile'
+        'Name and photo on the ID must match your profile',
       ),
       (
         Icons.security_rounded,
-        'Document will only be used for identity verification'
+        'Document will only be used for identity verification',
       ),
     ];
 
@@ -585,9 +569,7 @@ class _BecomeHomeServiceProviderScreenState
                 ),
               )
             : Text(
-                widget.isReapply
-                    ? 'Re-submit Document'
-                    : 'Submit Application',
+                widget.isReapply ? 'Re-submit Document' : 'Submit Application',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,

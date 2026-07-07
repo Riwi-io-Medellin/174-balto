@@ -15,7 +15,12 @@ class HomeProviderServiceAreasScreen extends StatefulWidget {
 }
 
 class _AreaEntry {
-  _AreaEntry({this.label, required this.latitude, required this.longitude, required this.radiusKm});
+  _AreaEntry({
+    this.label,
+    required this.latitude,
+    required this.longitude,
+    required this.radiusKm,
+  });
   String? label;
   double latitude;
   double longitude;
@@ -41,16 +46,18 @@ class _HomeProviderServiceAreasScreenState
 
   Future<void> _load() async {
     try {
-      final areas =
-          await sl<HomeProviderServiceAreaRepository>().getMyServiceAreas();
+      final areas = await sl<HomeProviderServiceAreaRepository>()
+          .getMyServiceAreas();
       setState(() {
         _areas = areas
-            .map((a) => _AreaEntry(
-                  label: a.label,
-                  latitude: a.latitude,
-                  longitude: a.longitude,
-                  radiusKm: a.radiusKm,
-                ))
+            .map(
+              (a) => _AreaEntry(
+                label: a.label,
+                latitude: a.latitude,
+                longitude: a.longitude,
+                radiusKm: a.radiusKm,
+              ),
+            )
             .toList();
         _loading = false;
       });
@@ -63,7 +70,9 @@ class _HomeProviderServiceAreasScreenState
 
   void _addArea() {
     setState(() {
-      _areas.add(_AreaEntry(latitude: 4.7110, longitude: -74.0721, radiusKm: 10));
+      _areas.add(
+        _AreaEntry(latitude: 4.7110, longitude: -74.0721, radiusKm: 10),
+      );
     });
   }
 
@@ -75,14 +84,18 @@ class _HomeProviderServiceAreasScreenState
     setState(() => _saving = true);
     try {
       final areas = _areas
-          .map((a) => HomeProviderServiceArea(
-                label: a.label,
-                latitude: a.latitude,
-                longitude: a.longitude,
-                radiusKm: a.radiusKm,
-              ))
+          .map(
+            (a) => HomeProviderServiceArea(
+              label: a.label,
+              latitude: a.latitude,
+              longitude: a.longitude,
+              radiusKm: a.radiusKm,
+            ),
+          )
           .toList();
-      await sl<HomeProviderServiceAreaRepository>().replaceMyServiceAreas(areas);
+      await sl<HomeProviderServiceAreaRepository>().replaceMyServiceAreas(
+        areas,
+      );
       if (!mounted) return;
       BaltoToast.success(context, 'Service areas saved successfully.');
       Navigator.of(context).pop();
@@ -107,11 +120,19 @@ class _HomeProviderServiceAreasScreenState
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: _textDark),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: _textDark,
+          ),
         ),
         title: const Text(
           'Service Areas',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _textDark),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: _textDark,
+          ),
         ),
         centerTitle: true,
         actions: [
@@ -138,7 +159,11 @@ class _HomeProviderServiceAreasScreenState
                 children: [
                   const Text(
                     'Add the zones you travel to. Clients within these areas will see you in search results.',
-                    style: TextStyle(fontSize: 13, color: _textMid, height: 1.5),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: _textMid,
+                      height: 1.5,
+                    ),
                   ),
                   const SizedBox(height: 20),
                   if (_areas.isEmpty)
@@ -152,16 +177,23 @@ class _HomeProviderServiceAreasScreenState
                       ),
                       child: const Column(
                         children: [
-                          Icon(Icons.map_outlined, size: 36, color: Color(0xFFB0B8C1)),
+                          Icon(
+                            Icons.map_outlined,
+                            size: 36,
+                            color: Color(0xFFB0B8C1),
+                          ),
                           SizedBox(height: 8),
-                          Text('No service areas yet', style: TextStyle(fontSize: 13, color: _textMuted)),
+                          Text(
+                            'No service areas yet',
+                            style: TextStyle(fontSize: 13, color: _textMuted),
+                          ),
                         ],
                       ),
                     )
                   else
                     ..._areas.asMap().entries.map(
-                          (entry) => _buildAreaCard(entry.key, entry.value),
-                        ),
+                      (entry) => _buildAreaCard(entry.key, entry.value),
+                    ),
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
@@ -171,8 +203,12 @@ class _HomeProviderServiceAreasScreenState
                       label: const Text('Add Area'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: _accent,
-                        side: BorderSide(color: _accent.withValues(alpha: 0.30)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(
+                          color: _accent.withValues(alpha: 0.30),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
@@ -204,7 +240,11 @@ class _HomeProviderServiceAreasScreenState
                   color: _accent.withValues(alpha: 0.10),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.place_rounded, size: 18, color: _accent),
+                child: const Icon(
+                  Icons.place_rounded,
+                  size: 18,
+                  color: _accent,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -215,7 +255,11 @@ class _HomeProviderServiceAreasScreenState
                     isDense: true,
                     border: InputBorder.none,
                   ),
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textDark),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: _textDark,
+                  ),
                   onChanged: (v) => area.label = v,
                 ),
               ),
@@ -224,8 +268,15 @@ class _HomeProviderServiceAreasScreenState
                 child: Container(
                   width: 28,
                   height: 28,
-                  decoration: const BoxDecoration(color: Color(0xFFFFF0ED), shape: BoxShape.circle),
-                  child: const Icon(Icons.close_rounded, size: 14, color: Color(0xFFD05A24)),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFF0ED),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.close_rounded,
+                    size: 14,
+                    color: Color(0xFFD05A24),
+                  ),
                 ),
               ),
             ],
@@ -237,7 +288,8 @@ class _HomeProviderServiceAreasScreenState
                 child: _numberField(
                   label: 'Latitude',
                   initial: area.latitude.toString(),
-                  onChanged: (v) => area.latitude = double.tryParse(v) ?? area.latitude,
+                  onChanged: (v) =>
+                      area.latitude = double.tryParse(v) ?? area.latitude,
                 ),
               ),
               const SizedBox(width: 8),
@@ -245,7 +297,8 @@ class _HomeProviderServiceAreasScreenState
                 child: _numberField(
                   label: 'Longitude',
                   initial: area.longitude.toString(),
-                  onChanged: (v) => area.longitude = double.tryParse(v) ?? area.longitude,
+                  onChanged: (v) =>
+                      area.longitude = double.tryParse(v) ?? area.longitude,
                 ),
               ),
             ],
@@ -254,7 +307,8 @@ class _HomeProviderServiceAreasScreenState
           _numberField(
             label: 'Radius (km)',
             initial: area.radiusKm.toString(),
-            onChanged: (v) => area.radiusKm = double.tryParse(v) ?? area.radiusKm,
+            onChanged: (v) =>
+                area.radiusKm = double.tryParse(v) ?? area.radiusKm,
           ),
         ],
       ),
@@ -268,7 +322,10 @@ class _HomeProviderServiceAreasScreenState
   }) {
     return TextFormField(
       initialValue: initial,
-      keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+      keyboardType: const TextInputType.numberWithOptions(
+        decimal: true,
+        signed: true,
+      ),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(fontSize: 12, color: _textMuted),
@@ -279,7 +336,10 @@ class _HomeProviderServiceAreasScreenState
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
+        ),
       ),
       style: const TextStyle(fontSize: 13, color: _textDark),
       onChanged: onChanged,

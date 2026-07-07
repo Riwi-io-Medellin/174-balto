@@ -82,9 +82,7 @@ class _AssistantBubble extends StatelessWidget {
             bottomLeft: Radius.circular(18),
             bottomRight: Radius.circular(18),
           ),
-          border: Border.all(
-            color: AppColors.navCoach.withValues(alpha: 0.25),
-          ),
+          border: Border.all(color: AppColors.navCoach.withValues(alpha: 0.25)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -105,9 +103,8 @@ class _AssistantBubble extends StatelessWidget {
                   topRight: Radius.circular(18),
                 ),
               ),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-              child: Row(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
@@ -115,7 +112,7 @@ class _AssistantBubble extends StatelessWidget {
                     size: 13,
                     color: AppColors.navCoach,
                   ),
-                  const SizedBox(width: 5),
+                  SizedBox(width: 5),
                   Text(
                     'Balto Coach',
                     style: TextStyle(
@@ -130,8 +127,7 @@ class _AssistantBubble extends StatelessWidget {
             ),
             // Body
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               child: Text(
                 content,
                 style: const TextStyle(
@@ -189,9 +185,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
             bottomLeft: Radius.circular(18),
             bottomRight: Radius.circular(18),
           ),
-          border: Border.all(
-            color: AppColors.navCoach.withValues(alpha: 0.25),
-          ),
+          border: Border.all(color: AppColors.navCoach.withValues(alpha: 0.25)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -212,14 +206,16 @@ class _TypingIndicatorState extends State<TypingIndicator>
                   topRight: Radius.circular(18),
                 ),
               ),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-              child: Row(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.auto_awesome_rounded,
-                      size: 13, color: AppColors.navCoach),
-                  const SizedBox(width: 5),
+                  Icon(
+                    Icons.auto_awesome_rounded,
+                    size: 13,
+                    color: AppColors.navCoach,
+                  ),
+                  SizedBox(width: 5),
                   Text(
                     'Balto Coach',
                     style: TextStyle(
@@ -244,8 +240,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
                       final opacity =
                           (0.25 + 0.75 * (t < 0.5 ? t * 2 : (1.0 - t) * 2))
                               .clamp(0.0, 1.0);
-                      final yOffset =
-                          -3.0 * (t < 0.5 ? t * 2 : (1.0 - t) * 2);
+                      final yOffset = -3.0 * (t < 0.5 ? t * 2 : (1.0 - t) * 2);
                       return Transform.translate(
                         offset: Offset(0, yOffset),
                         child: Container(
@@ -253,7 +248,9 @@ class _TypingIndicatorState extends State<TypingIndicator>
                           width: 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: AppColors.navCoach.withValues(alpha: opacity),
+                            color: AppColors.navCoach.withValues(
+                              alpha: opacity,
+                            ),
                             shape: BoxShape.circle,
                           ),
                         ),

@@ -93,11 +93,15 @@ class _WalkChatSheetState extends State<WalkChatSheet> {
                     }
                     return ListView.builder(
                       controller: _scrollController,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       itemCount: state.messages.length,
                       itemBuilder: (context, index) {
                         final message = state.messages[index];
-                        final isMine = message.senderUserId == state.currentUserId;
+                        final isMine =
+                            message.senderUserId == state.currentUserId;
                         return _ChatBubble(message: message, isMine: isMine);
                       },
                     );
@@ -123,7 +127,10 @@ class _WalkChatSheetState extends State<WalkChatSheet> {
                           hintText: 'Type a message…',
                           filled: true,
                           fillColor: Colors.grey.shade100,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
                             borderSide: BorderSide.none,
@@ -135,7 +142,9 @@ class _WalkChatSheetState extends State<WalkChatSheet> {
                     IconButton.filled(
                       onPressed: _send,
                       icon: const Icon(Icons.send_rounded),
-                      style: IconButton.styleFrom(backgroundColor: AppColors.navWalks),
+                      style: IconButton.styleFrom(
+                        backgroundColor: AppColors.navWalks,
+                      ),
                     ),
                   ],
                 ),
@@ -159,7 +168,9 @@ class _ChatBubble extends StatelessWidget {
     return Align(
       alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.72),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.72,
+        ),
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(

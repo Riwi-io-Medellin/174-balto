@@ -52,13 +52,13 @@ class PetRepositoryImpl implements PetRepository {
     try {
       final request = <String, dynamic>{
         'name': name,
-        if (species case final v?) 'species': v,
-        if (breed case final v?) 'breed': v,
+        'species': ?species,
+        'breed': ?breed,
         if (birthDate case final v?)
           'birthDate': v.toIso8601String().split('T').first,
-        if (description case final v?) 'description': v,
-        if (photoUrl case final v?) 'photoUrl': v,
-        if (weight case final v?) 'weight': v,
+        'description': ?description,
+        'photoUrl': ?photoUrl,
+        'weight': ?weight,
       };
       final dto = await _remote.create(request);
       return dto.toEntity();
@@ -86,13 +86,13 @@ class PetRepositoryImpl implements PetRepository {
     try {
       final request = <String, dynamic>{
         'name': name,
-        if (species case final v?) 'species': v,
-        if (breed case final v?) 'breed': v,
+        'species': ?species,
+        'breed': ?breed,
         if (birthDate case final v?)
           'birthDate': v.toIso8601String().split('T').first,
-        if (description case final v?) 'description': v,
-        if (photoUrl case final v?) 'photoUrl': v,
-        if (weight case final v?) 'weight': v,
+        'description': ?description,
+        'photoUrl': ?photoUrl,
+        'weight': ?weight,
       };
       final dto = await _remote.update(id, request);
       return dto.toEntity();

@@ -7,7 +7,7 @@ import 'walker_availability_state.dart';
 
 class WalkerAvailabilityCubit extends Cubit<WalkerAvailabilityState> {
   WalkerAvailabilityCubit(this._repository)
-      : super(const WalkerAvailabilityInitial());
+    : super(const WalkerAvailabilityInitial());
 
   final WalkerAvailabilityRepository _repository;
 
@@ -20,10 +20,7 @@ class WalkerAvailabilityCubit extends Cubit<WalkerAvailabilityState> {
       ]);
       final slots = results[0] as List<AvailabilitySlot>;
       final exceptions = results[1] as List<AvailabilityException>;
-      emit(WalkerAvailabilityLoaded(
-        slots: slots,
-        exceptions: exceptions,
-      ));
+      emit(WalkerAvailabilityLoaded(slots: slots, exceptions: exceptions));
     } on WalkerAvailabilityFailure catch (e) {
       emit(WalkerAvailabilityError(e.code, e.message));
     } catch (e) {

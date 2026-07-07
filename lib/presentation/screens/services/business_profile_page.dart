@@ -47,10 +47,10 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
   }
 
   List<String> _tabsFor(Business b) => [
-        'Overview',
-        if (b.isVeterinary || b.isStore) 'Services',
-        'Reviews',
-      ];
+    'Overview',
+    if (b.isVeterinary || b.isStore) 'Services',
+    'Reviews',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +102,11 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
       backgroundColor: AppColors.navWalkers,
       leading: IconButton(
         onPressed: () => Navigator.of(context).pop(),
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+        icon: const Icon(
+          Icons.arrow_back_ios_new_rounded,
+          color: Colors.white,
+          size: 20,
+        ),
       ),
       actions: [
         IconButton(
@@ -119,7 +123,11 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
               fit: BoxFit.cover,
               errorBuilder: (_, _, _) => Container(
                 color: const Color(0xFF3A80C2),
-                child: const Icon(Icons.storefront_rounded, size: 80, color: Colors.white24),
+                child: const Icon(
+                  Icons.storefront_rounded,
+                  size: 80,
+                  color: Colors.white24,
+                ),
               ),
             ),
             DecoratedBox(
@@ -169,7 +177,10 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
             return GestureDetector(
               onTap: () => setState(() => _tab = i),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 14,
+                ),
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
@@ -183,7 +194,9 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-                    color: active ? AppColors.navWalkers : const Color(0xFF8A93A0),
+                    color: active
+                        ? AppColors.navWalkers
+                        : const Color(0xFF8A93A0),
                   ),
                 ),
               ),
@@ -210,7 +223,12 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
     if (b.services.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(40),
-        child: Center(child: Text('No services listed yet.', style: TextStyle(color: Color(0xFF8A93A0)))),
+        child: Center(
+          child: Text(
+            'No services listed yet.',
+            style: TextStyle(color: Color(0xFF8A93A0)),
+          ),
+        ),
       );
     }
     return ListView.separated(
@@ -233,13 +251,33 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(s.serviceType, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1F2937))),
+                    Text(
+                      s.serviceType,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1F2937),
+                      ),
+                    ),
                     if (s.description != null) ...[
                       const SizedBox(height: 4),
-                      Text(s.description!, style: const TextStyle(fontSize: 13, color: Color(0xFF5A6473))),
+                      Text(
+                        s.description!,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFF5A6473),
+                        ),
+                      ),
                     ],
                     const SizedBox(height: 8),
-                    Text('\$${s.price.toStringAsFixed(2)}', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.navWalkers)),
+                    Text(
+                      '\$${s.price.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.navWalkers,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -256,14 +294,19 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
         if (state is FeedbackLoading) {
           return const Padding(
             padding: EdgeInsets.all(60),
-            child: Center(child: CircularProgressIndicator(color: AppColors.navWalkers)),
+            child: Center(
+              child: CircularProgressIndicator(color: AppColors.navWalkers),
+            ),
           );
         }
         if (state is FeedbackError) {
           return Padding(
             padding: const EdgeInsets.all(40),
             child: Center(
-              child: Text(state.message, style: const TextStyle(color: Color(0xFF8A93A0), fontSize: 14)),
+              child: Text(
+                state.message,
+                style: const TextStyle(color: Color(0xFF8A93A0), fontSize: 14),
+              ),
             ),
           );
         }
@@ -280,7 +323,10 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                   const Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: 32),
-                      child: Text('No reviews yet.', style: TextStyle(color: Color(0xFF8A93A0))),
+                      child: Text(
+                        'No reviews yet.',
+                        style: TextStyle(color: Color(0xFF8A93A0)),
+                      ),
                     ),
                   )
                 else

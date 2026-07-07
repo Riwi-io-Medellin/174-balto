@@ -43,7 +43,8 @@ class _VetDocumentAnalysisView extends StatefulWidget {
   final Pet? pet;
 
   @override
-  State<_VetDocumentAnalysisView> createState() => _VetDocumentAnalysisViewState();
+  State<_VetDocumentAnalysisView> createState() =>
+      _VetDocumentAnalysisViewState();
 }
 
 class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
@@ -137,7 +138,9 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
     if (_sexOptions.contains(sex)) return sex;
     final normalized = sex.trim().toLowerCase();
     if (normalized.startsWith('m')) return 'Male';
-    if (normalized.startsWith('f') || normalized.startsWith('h')) return 'Female';
+    if (normalized.startsWith('f') || normalized.startsWith('h')) {
+      return 'Female';
+    }
     return null;
   }
 
@@ -157,8 +160,8 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
     final size = await File(image.path).length();
     if (!mounted) return;
     context.read<VetDocumentAnalysisCubit>().addFile(
-          PickedFileInfo(path: image.path, name: image.name, sizeBytes: size),
-        );
+      PickedFileInfo(path: image.path, name: image.name, sizeBytes: size),
+    );
   }
 
   Future<void> _pickPdf() async {
@@ -169,8 +172,8 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
     final file = result?.files.firstOrNull;
     if (file == null || file.path == null || !mounted) return;
     context.read<VetDocumentAnalysisCubit>().addFile(
-          PickedFileInfo(path: file.path!, name: file.name, sizeBytes: file.size),
-        );
+      PickedFileInfo(path: file.path!, name: file.name, sizeBytes: file.size),
+    );
   }
 
   void _showFileSourceSheet() {
@@ -241,7 +244,9 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
       age: ageText.isEmpty ? null : int.tryParse(ageText),
       sex: _selectedSex,
       weightKg: weightText.isEmpty ? null : double.tryParse(weightText),
-      symptoms: _symptomsCtrl.text.trim().isEmpty ? null : _symptomsCtrl.text.trim(),
+      symptoms: _symptomsCtrl.text.trim().isEmpty
+          ? null
+          : _symptomsCtrl.text.trim(),
       documentType: _selectedDocumentType,
     );
     context.read<VetDocumentAnalysisCubit>().submit(context0);
@@ -293,7 +298,9 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: _primary,
                 side: const BorderSide(color: _primary),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               child: const Text('Analyze Another Document'),
             ),
@@ -307,9 +314,11 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
     final files = state is VetDocumentAnalysisInitial
         ? state.files
         : state is VetDocumentAnalysisError
-            ? state.files
-            : const <PickedFileInfo>[];
-    final isBusy = state is VetDocumentAnalysisUploading || state is VetDocumentAnalysisAnalyzing;
+        ? state.files
+        : const <PickedFileInfo>[];
+    final isBusy =
+        state is VetDocumentAnalysisUploading ||
+        state is VetDocumentAnalysisAnalyzing;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -326,7 +335,9 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
             const SizedBox(height: 20),
             _fieldLabel('Documents'),
             const SizedBox(height: 8),
-            ...files.asMap().entries.map((e) => _fileTile(context, e.key, e.value)),
+            ...files.asMap().entries.map(
+              (e) => _fileTile(context, e.key, e.value),
+            ),
             const SizedBox(height: 8),
             OutlinedButton.icon(
               onPressed: _showFileSourceSheet,
@@ -335,7 +346,9 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: _primary,
                 side: const BorderSide(color: _primary),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 minimumSize: const Size(double.infinity, 0),
               ),
@@ -354,8 +367,13 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
             DropdownButtonFormField<String>(
               initialValue: _selectedSpecies,
               isExpanded: true,
-              decoration: _decoration(hint: 'Select species', icon: Icons.category_outlined),
-              items: _speciesList.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+              decoration: _decoration(
+                hint: 'Select species',
+                icon: Icons.category_outlined,
+              ),
+              items: _speciesList
+                  .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                  .toList(),
               onChanged: (value) => setState(() => _selectedSpecies = value),
               validator: (v) => v == null || v.isEmpty ? 'Required' : null,
             ),
@@ -364,7 +382,10 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
             const SizedBox(height: 8),
             TextFormField(
               controller: _breedCtrl,
-              decoration: _decoration(hint: 'e.g. Labrador Retriever', icon: Icons.style_outlined),
+              decoration: _decoration(
+                hint: 'e.g. Labrador Retriever',
+                icon: Icons.style_outlined,
+              ),
             ),
             const SizedBox(height: 20),
             Row(
@@ -378,8 +399,13 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
                       TextFormField(
                         controller: _ageCtrl,
                         keyboardType: TextInputType.number,
-                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                        decoration: _decoration(hint: 'Years', icon: Icons.cake_outlined),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        decoration: _decoration(
+                          hint: 'Years',
+                          icon: Icons.cake_outlined,
+                        ),
                       ),
                     ],
                   ),
@@ -393,9 +419,18 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _weightCtrl,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
-                        decoration: _decoration(hint: 'e.g. 12.5', icon: Icons.monitor_weight_outlined),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d{0,2}'),
+                          ),
+                        ],
+                        decoration: _decoration(
+                          hint: 'e.g. 12.5',
+                          icon: Icons.monitor_weight_outlined,
+                        ),
                       ),
                     ],
                   ),
@@ -408,8 +443,13 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
             DropdownButtonFormField<String>(
               initialValue: _selectedSex,
               isExpanded: true,
-              decoration: _decoration(hint: 'Select sex', icon: Icons.wc_outlined),
-              items: _sexOptions.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+              decoration: _decoration(
+                hint: 'Select sex',
+                icon: Icons.wc_outlined,
+              ),
+              items: _sexOptions
+                  .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                  .toList(),
               onChanged: (value) => setState(() => _selectedSex = value),
             ),
             const SizedBox(height: 20),
@@ -418,9 +458,15 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
             DropdownButtonFormField<String>(
               initialValue: _selectedDocumentType,
               isExpanded: true,
-              decoration: _decoration(hint: 'Select document type', icon: Icons.description_outlined),
-              items: _documentTypes.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
-              onChanged: (value) => setState(() => _selectedDocumentType = value),
+              decoration: _decoration(
+                hint: 'Select document type',
+                icon: Icons.description_outlined,
+              ),
+              items: _documentTypes
+                  .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                  .toList(),
+              onChanged: (value) =>
+                  setState(() => _selectedDocumentType = value),
             ),
             const SizedBox(height: 20),
             _fieldLabel('Symptoms / Reason (optional)'),
@@ -428,7 +474,10 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
             TextFormField(
               controller: _symptomsCtrl,
               maxLines: 3,
-              decoration: _decoration(hint: 'What prompted this document?', icon: Icons.notes_outlined),
+              decoration: _decoration(
+                hint: 'What prompted this document?',
+                icon: Icons.notes_outlined,
+              ),
             ),
             const SizedBox(height: 28),
             SizedBox(
@@ -439,7 +488,9 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primary,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   elevation: 0,
                 ),
                 child: isBusy
@@ -449,13 +500,26 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
                           const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           ),
                           const SizedBox(width: 12),
-                          Text(state is VetDocumentAnalysisUploading ? 'Uploading...' : 'Analyzing...'),
+                          Text(
+                            state is VetDocumentAnalysisUploading
+                                ? 'Uploading...'
+                                : 'Analyzing...',
+                          ),
                         ],
                       )
-                    : const Text('Analyze Document', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    : const Text(
+                        'Analyze Document',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 24),
@@ -477,7 +541,10 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
       ),
       child: Row(
         children: [
-          Icon(isPdf ? Icons.picture_as_pdf_rounded : Icons.image_rounded, color: _primary),
+          Icon(
+            isPdf ? Icons.picture_as_pdf_rounded : Icons.image_rounded,
+            color: _primary,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -488,7 +555,8 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
           ),
           IconButton(
             icon: const Icon(Icons.close, size: 18),
-            onPressed: () => context.read<VetDocumentAnalysisCubit>().removeFile(index),
+            onPressed: () =>
+                context.read<VetDocumentAnalysisCubit>().removeFile(index),
           ),
         ],
       ),
@@ -496,7 +564,8 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
   }
 
   Widget _clinicalDocumentCard() {
-    final hasDocument = _clinicalRecord?.documentUrl != null &&
+    final hasDocument =
+        _clinicalRecord?.documentUrl != null &&
         _clinicalRecord!.documentUrl!.isNotEmpty;
     return Container(
       width: double.infinity,
@@ -511,9 +580,14 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(color: _primary.withValues(alpha: 0.10), shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: _primary.withValues(alpha: 0.10),
+              shape: BoxShape.circle,
+            ),
             child: Icon(
-              hasDocument ? Icons.picture_as_pdf_outlined : Icons.folder_shared_outlined,
+              hasDocument
+                  ? Icons.picture_as_pdf_outlined
+                  : Icons.folder_shared_outlined,
               size: 20,
               color: _primary,
             ),
@@ -552,7 +626,9 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
       decoration: BoxDecoration(
         color: const Color(0xFFFFF3CD),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE8A84C).withValues(alpha: 0.5)),
+        border: Border.all(
+          color: const Color(0xFFE8A84C).withValues(alpha: 0.5),
+        ),
       ),
       child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -562,7 +638,11 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
           Expanded(
             child: Text(
               _requiredDisclaimer,
-              style: TextStyle(fontSize: 12.5, color: Color(0xFF6B4E00), height: 1.4),
+              style: TextStyle(
+                fontSize: 12.5,
+                color: Color(0xFF6B4E00),
+                height: 1.4,
+              ),
             ),
           ),
         ],
@@ -588,7 +668,11 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
   Widget _fieldLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textDark),
+      style: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+        color: _textDark,
+      ),
     );
   }
 }

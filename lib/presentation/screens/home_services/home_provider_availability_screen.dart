@@ -70,20 +70,21 @@ class _HomeProviderAvailabilityScreenState
       final schedule = <int, List<_TimeRange>>{};
       for (final slot in state.slots) {
         schedule.putIfAbsent(slot.dayOfWeek, () => []);
-        schedule[slot.dayOfWeek]!.add(_TimeRange(
-          startTime: slot.startTime,
-          endTime: slot.endTime,
-        ));
+        schedule[slot.dayOfWeek]!.add(
+          _TimeRange(startTime: slot.startTime, endTime: slot.endTime),
+        );
       }
       setState(() {
         _weeklySchedule = schedule;
         _exceptions = state.exceptions
-            .map((e) => _ExceptionEntry(
-                  date: e.date,
-                  isUnavailable: e.isUnavailable,
-                  startTime: e.startTime,
-                  endTime: e.endTime,
-                ))
+            .map(
+              (e) => _ExceptionEntry(
+                date: e.date,
+                isUnavailable: e.isUnavailable,
+                startTime: e.startTime,
+                endTime: e.endTime,
+              ),
+            )
             .toList();
         _initialized = true;
       });
@@ -99,18 +100,19 @@ class _HomeProviderAvailabilityScreenState
       for (final entry in _weeklySchedule.entries) {
         for (final interval in entry.value) {
           if (interval.startTime.isEmpty || interval.endTime.isEmpty) continue;
-          slots.add(AvailabilitySlot(
-            dayOfWeek: entry.key,
-            startTime: interval.startTime,
-            endTime: interval.endTime,
-          ));
+          slots.add(
+            AvailabilitySlot(
+              dayOfWeek: entry.key,
+              startTime: interval.startTime,
+              endTime: interval.endTime,
+            ),
+          );
         }
       }
 
       final exceptions = <AvailabilityException>[];
       for (final ex in _exceptions) {
-        if (!ex.isUnavailable &&
-            (ex.startTime == null || ex.endTime == null)) {
+        if (!ex.isUnavailable && (ex.startTime == null || ex.endTime == null)) {
           if (!mounted) return;
           BaltoToast.warning(
             context,
@@ -119,18 +121,22 @@ class _HomeProviderAvailabilityScreenState
           setState(() => _saving = false);
           return;
         }
-        exceptions.add(AvailabilityException(
-          date: ex.date,
-          isUnavailable: ex.isUnavailable,
-          startTime: ex.startTime,
-          endTime: ex.endTime,
-        ));
+        exceptions.add(
+          AvailabilityException(
+            date: ex.date,
+            isUnavailable: ex.isUnavailable,
+            startTime: ex.startTime,
+            endTime: ex.endTime,
+          ),
+        );
       }
 
-      await sl<HomeServiceAvailabilityRepository>()
-          .replaceMyAvailability(slots);
-      await sl<HomeServiceAvailabilityRepository>()
-          .replaceMyExceptions(exceptions);
+      await sl<HomeServiceAvailabilityRepository>().replaceMyAvailability(
+        slots,
+      );
+      await sl<HomeServiceAvailabilityRepository>().replaceMyExceptions(
+        exceptions,
+      );
       await _cubit.load();
 
       if (!mounted) return;
@@ -173,9 +179,7 @@ class _HomeProviderAvailabilityScreenState
     }
   }
 
-  Future<void> _pickDate({
-    required ValueChanged<String> onPicked,
-  }) async {
+  Future<void> _pickDate({required ValueChanged<String> onPicked}) async {
     final picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now().add(const Duration(days: 1)),
@@ -193,10 +197,9 @@ class _HomeProviderAvailabilityScreenState
   void _addInterval(int dayOfWeek) {
     setState(() {
       _weeklySchedule.putIfAbsent(dayOfWeek, () => []);
-      _weeklySchedule[dayOfWeek]!.add(_TimeRange(
-        startTime: '09:00',
-        endTime: '17:00',
-      ));
+      _weeklySchedule[dayOfWeek]!.add(
+        _TimeRange(startTime: '09:00', endTime: '17:00'),
+      );
     });
   }
 
@@ -217,10 +220,7 @@ class _HomeProviderAvailabilityScreenState
           return;
         }
         setState(() {
-          _exceptions.add(_ExceptionEntry(
-            date: date,
-            isUnavailable: true,
-          ));
+          _exceptions.add(_ExceptionEntry(date: date, isUnavailable: true));
         });
       },
     );
@@ -236,8 +236,18 @@ class _HomeProviderAvailabilityScreenState
     final month = int.tryParse(parts[1]) ?? 1;
     final day = int.tryParse(parts[2]) ?? 1;
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[month - 1]} $day, ${parts[0]}';
   }
@@ -288,55 +298,59 @@ class _HomeProviderAvailabilityScreenState
           const SizedBox(width: 4),
         ],
       ),
-      body: BlocConsumer<HomeServiceAvailabilityCubit, HomeServiceAvailabilityState>(
-        bloc: _cubit,
-        listener: _onState,
-        builder: (context, state) {
-          if (state is HomeServiceAvailabilityLoading && !_initialized) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is HomeServiceAvailabilityError && !_initialized) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.error_outline_rounded,
-                      size: 48,
-                      color: Color(0xFF8A93A0),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      state.message,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF5A6473),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () => _cubit.load(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _accent,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+      body:
+          BlocConsumer<
+            HomeServiceAvailabilityCubit,
+            HomeServiceAvailabilityState
+          >(
+            bloc: _cubit,
+            listener: _onState,
+            builder: (context, state) {
+              if (state is HomeServiceAvailabilityLoading && !_initialized) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is HomeServiceAvailabilityError && !_initialized) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.error_outline_rounded,
+                          size: 48,
+                          color: Color(0xFF8A93A0),
                         ),
-                      ),
-                      child: const Text('Retry'),
+                        const SizedBox(height: 16),
+                        Text(
+                          state.message,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF5A6473),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton(
+                          onPressed: () => _cubit.load(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _accent,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text('Retry'),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            );
-          }
-          return _buildForm();
-        },
-      ),
+                  ),
+                );
+              }
+              return _buildForm();
+            },
+          ),
     );
   }
 
@@ -356,18 +370,15 @@ class _HomeProviderAvailabilityScreenState
             padding: EdgeInsets.only(bottom: 12),
             child: Text(
               'Override your regular schedule for specific dates.',
-              style: TextStyle(
-                fontSize: 13,
-                color: Color(0xFF5A6473),
-              ),
+              style: TextStyle(fontSize: 13, color: Color(0xFF5A6473)),
             ),
           ),
           if (_exceptions.isEmpty)
             _buildEmptyExceptions()
           else
             ..._exceptions.asMap().entries.map(
-                  (entry) => _buildExceptionCard(entry.key, entry.value),
-                ),
+              (entry) => _buildExceptionCard(entry.key, entry.value),
+            ),
           const SizedBox(height: 12),
           _buildAddExceptionButton(),
         ],
@@ -458,8 +469,8 @@ class _HomeProviderAvailabilityScreenState
             )
           else
             ...intervals.asMap().entries.map(
-                  (entry) => _buildIntervalRow(dayOfWeek, entry.key, entry.value),
-                ),
+              (entry) => _buildIntervalRow(dayOfWeek, entry.key, entry.value),
+            ),
           const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
@@ -530,8 +541,8 @@ class _HomeProviderAvailabilityScreenState
             child: Container(
               width: 32,
               height: 32,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF0ED),
+              decoration: const BoxDecoration(
+                color: Color(0xFFFFF0ED),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -546,10 +557,7 @@ class _HomeProviderAvailabilityScreenState
     );
   }
 
-  Widget _buildTimeChip({
-    required String label,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildTimeChip({required String label, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -595,18 +603,11 @@ class _HomeProviderAvailabilityScreenState
       ),
       child: const Column(
         children: [
-          Icon(
-            Icons.event_busy_rounded,
-            size: 36,
-            color: Color(0xFFB0B8C1),
-          ),
+          Icon(Icons.event_busy_rounded, size: 36, color: Color(0xFFB0B8C1)),
           SizedBox(height: 8),
           Text(
             'No exceptions yet',
-            style: TextStyle(
-              fontSize: 13,
-              color: Color(0xFF8A93A0),
-            ),
+            style: TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
           ),
         ],
       ),
@@ -662,8 +663,8 @@ class _HomeProviderAvailabilityScreenState
                 child: Container(
                   width: 28,
                   height: 28,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF0ED),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFFF0ED),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -757,9 +758,7 @@ class _HomeProviderAvailabilityScreenState
         label: const Text('Add Exception'),
         style: OutlinedButton.styleFrom(
           foregroundColor: _accent,
-          side: BorderSide(
-            color: _accent.withValues(alpha: 0.30),
-          ),
+          side: BorderSide(color: _accent.withValues(alpha: 0.30)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),

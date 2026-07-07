@@ -22,7 +22,11 @@ void main() {
 
     test('rejects an unsupported file extension', () {
       final result = validateFiles([
-        const PickedFileInfo(path: 'doc.docx', name: 'doc.docx', sizeBytes: 100),
+        const PickedFileInfo(
+          path: 'doc.docx',
+          name: 'doc.docx',
+          sizeBytes: 100,
+        ),
       ]);
       expect(result.isValid, isFalse);
       expect(result.error, contains('not a supported file type'));
@@ -30,7 +34,7 @@ void main() {
 
     test('rejects a file over the size cap', () {
       final result = validateFiles([
-        PickedFileInfo(
+        const PickedFileInfo(
           path: 'big.pdf',
           name: 'big.pdf',
           sizeBytes: maxVetDocumentSizeBytes + 1,
@@ -42,8 +46,16 @@ void main() {
 
     test('accepts a valid list of supported files', () {
       final result = validateFiles([
-        const PickedFileInfo(path: 'report.pdf', name: 'report.pdf', sizeBytes: 1024),
-        const PickedFileInfo(path: 'scan.jpg', name: 'scan.jpg', sizeBytes: 2048),
+        const PickedFileInfo(
+          path: 'report.pdf',
+          name: 'report.pdf',
+          sizeBytes: 1024,
+        ),
+        const PickedFileInfo(
+          path: 'scan.jpg',
+          name: 'scan.jpg',
+          sizeBytes: 2048,
+        ),
       ]);
       expect(result.isValid, isTrue);
     });
@@ -51,21 +63,33 @@ void main() {
 
   group('validatePetContext', () {
     test('rejects an empty name', () {
-      const context = PetHealthContext(petId: 'pet-1', name: '  ', species: 'Dog');
+      const context = PetHealthContext(
+        petId: 'pet-1',
+        name: '  ',
+        species: 'Dog',
+      );
       final result = validatePetContext(context);
       expect(result.isValid, isFalse);
       expect(result.error, contains('name'));
     });
 
     test('rejects an empty species', () {
-      const context = PetHealthContext(petId: 'pet-1', name: 'Rocky', species: '');
+      const context = PetHealthContext(
+        petId: 'pet-1',
+        name: 'Rocky',
+        species: '',
+      );
       final result = validatePetContext(context);
       expect(result.isValid, isFalse);
       expect(result.error, contains('Species'));
     });
 
     test('accepts a valid pet context', () {
-      const context = PetHealthContext(petId: 'pet-1', name: 'Rocky', species: 'Dog');
+      const context = PetHealthContext(
+        petId: 'pet-1',
+        name: 'Rocky',
+        species: 'Dog',
+      );
       final result = validatePetContext(context);
       expect(result.isValid, isTrue);
     });

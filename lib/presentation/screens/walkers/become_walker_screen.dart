@@ -95,10 +95,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
       BaltoToast.error(context, e.message);
     } catch (e) {
       if (!mounted) return;
-      BaltoToast.error(
-        context,
-        'Something went wrong. Please try again.',
-      );
+      BaltoToast.error(context, 'Something went wrong. Please try again.');
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -134,7 +131,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: _green, width: 1.5),
+        borderSide: const BorderSide(color: _green, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     );
@@ -178,9 +175,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
             _fieldLabel('Work Location *'),
             TextField(
               controller: _workLocationCtrl,
-              decoration: _inputDecoration(
-                hint: 'e.g. Downtown, Westside',
-              ),
+              decoration: _inputDecoration(hint: 'e.g. Downtown, Westside'),
             ),
             const SizedBox(height: 16),
             _fieldLabel('Experience *'),
@@ -248,11 +243,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
               color: _green.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.directions_walk,
-              size: 32,
-              color: _green,
-            ),
+            child: const Icon(Icons.directions_walk, size: 32, color: _green),
           ),
           const SizedBox(height: 14),
           Text(
@@ -271,11 +262,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
             widget.isReapply
                 ? 'Your previous document was not accepted. Upload a new, clear photo to try again.'
                 : 'Earn money doing what you love. Walk dogs in your neighbourhood and set your own schedule.',
-            style: const TextStyle(
-              fontSize: 13,
-              color: _textMid,
-              height: 1.55,
-            ),
+            style: const TextStyle(fontSize: 13, color: _textMid, height: 1.55),
             textAlign: TextAlign.center,
           ),
           if (!widget.isReapply) ...[
@@ -415,10 +402,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
           child: GestureDetector(
             onTap: _submitting ? null : _pickDocument,
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 7,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
               decoration: BoxDecoration(
                 color: Colors.black.withValues(alpha: 0.55),
                 borderRadius: BorderRadius.circular(99),
@@ -453,11 +437,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
             child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.check_circle_rounded,
-                  size: 13,
-                  color: Colors.white,
-                ),
+                Icon(Icons.check_circle_rounded, size: 13, color: Colors.white),
                 SizedBox(width: 5),
                 Text(
                   'Document selected',
@@ -483,11 +463,11 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
       (Icons.crop_free_rounded, 'All four corners of the ID must be visible'),
       (
         Icons.person_rounded,
-        'Name and photo on the ID must match your profile'
+        'Name and photo on the ID must match your profile',
       ),
       (
         Icons.security_rounded,
-        'Document will only be used for identity verification'
+        'Document will only be used for identity verification',
       ),
     ];
 
@@ -581,9 +561,7 @@ class _BecomeWalkerScreenState extends State<BecomeWalkerScreen> {
                 ),
               )
             : Text(
-                widget.isReapply
-                    ? 'Re-submit Document'
-                    : 'Submit Application',
+                widget.isReapply ? 'Re-submit Document' : 'Submit Application',
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,

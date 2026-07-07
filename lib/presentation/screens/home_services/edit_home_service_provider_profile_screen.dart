@@ -56,8 +56,9 @@ class _EditHomeServiceProviderProfileScreenState
         return;
       }
       _bioCtrl.text = pp.bio ?? '';
-      _yearsCtrl.text =
-          pp.yearsOfExperience != null ? pp.yearsOfExperience.toString() : '';
+      _yearsCtrl.text = pp.yearsOfExperience != null
+          ? pp.yearsOfExperience.toString()
+          : '';
       _maxConcurrentCtrl.text = pp.maxConcurrentBookings.toString();
       _baseLocationCtrl.text = pp.baseLocation ?? '';
       _isAcceptingBookings = pp.isAcceptingBookings;
@@ -233,7 +234,8 @@ class _EditHomeServiceProviderProfileScreenState
           minLines: 4,
           maxLines: 6,
           decoration: _inputDecoration(
-            hint: 'Certified veterinarian with 8 years of home-visit experience...',
+            hint:
+                'Certified veterinarian with 8 years of home-visit experience...',
           ),
         ),
       ],
@@ -322,11 +324,7 @@ class _EditHomeServiceProviderProfileScreenState
               color: _accent.withValues(alpha: 0.10),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.schedule_rounded,
-              size: 20,
-              color: _accent,
-            ),
+            child: const Icon(Icons.schedule_rounded, size: 20, color: _accent),
           ),
           const SizedBox(width: 12),
           const Expanded(

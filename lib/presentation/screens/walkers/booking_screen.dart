@@ -70,10 +70,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 children: [
                   const Text(
                     'Book a Walk',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
                   ),
                   Text(
                     'with ${widget.walker.name}',
@@ -203,12 +200,12 @@ class _FormBody extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 120),
       children: [
-        _PickupAddressCard(
-          address: form.ownerAddress,
-          city: form.ownerCity,
-        ),
+        _PickupAddressCard(address: form.ownerAddress, city: form.ownerCity),
         const SizedBox(height: 24),
-        _SectionTitle(title: 'Your Pet', subtitle: "Who's going for a walk?"),
+        const _SectionTitle(
+          title: 'Your Pet',
+          subtitle: "Who's going for a walk?",
+        ),
         const SizedBox(height: 12),
         _PetSelector(
           pets: form.pets,
@@ -224,10 +221,7 @@ class _FormBody extends StatelessWidget {
           onSelect: cubit.selectDuration,
         ),
         const SizedBox(height: 12),
-        _DateSelector(
-          selected: form.selectedDate,
-          onSelect: cubit.selectDate,
-        ),
+        _DateSelector(selected: form.selectedDate, onSelect: cubit.selectDate),
         const SizedBox(height: 24),
         const _SectionTitle(
           title: 'Available Slots',
@@ -258,7 +252,8 @@ class _FormBody extends StatelessWidget {
           maxLines: 3,
           maxLength: 500,
           decoration: InputDecoration(
-            hintText: 'e.g. "Gate code is 1234. Max is friendly but pulls on leash."',
+            hintText:
+                'e.g. "Gate code is 1234. Max is friendly but pulls on leash."',
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(
@@ -271,8 +266,10 @@ class _FormBody extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: AppColors.navWalkers, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.navWalkers,
+                width: 1.5,
+              ),
             ),
             contentPadding: const EdgeInsets.all(14),
           ),
@@ -301,9 +298,7 @@ class _ExclusiveWalkToggle extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isExclusive
-              ? const Color(0xFFFFF8EC)
-              : Colors.white,
+          color: isExclusive ? const Color(0xFFFFF8EC) : Colors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: isExclusive
@@ -347,12 +342,9 @@ class _ExclusiveWalkToggle extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 3),
-                  Text(
+                  const Text(
                     'Your dog walks alone — recommended for energetic or reactive dogs. +50% fare.',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF8A93A0),
-                    ),
+                    style: TextStyle(fontSize: 12, color: Color(0xFF8A93A0)),
                   ),
                 ],
               ),
@@ -468,8 +460,7 @@ class _PetCard extends StatelessWidget {
               : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color:
-                isSelected ? AppColors.navWalkers : const Color(0xFFE0E4EC),
+            color: isSelected ? AppColors.navWalkers : const Color(0xFFE0E4EC),
             width: isSelected ? 2 : 1,
           ),
           boxShadow: [
@@ -527,14 +518,14 @@ class _PetAvatar extends StatelessWidget {
   }
 
   Widget _fallback(double s) => Container(
-        width: s,
-        height: s,
-        decoration: const BoxDecoration(
-          color: Color(0xFFE8F5EE),
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(Icons.pets_rounded, size: 22, color: Color(0xFFB0B8C1)),
-      );
+    width: s,
+    height: s,
+    decoration: const BoxDecoration(
+      color: Color(0xFFE8F5EE),
+      shape: BoxShape.circle,
+    ),
+    child: const Icon(Icons.pets_rounded, size: 22, color: Color(0xFFB0B8C1)),
+  );
 }
 
 class _AddPetCard extends StatelessWidget {
@@ -559,8 +550,11 @@ class _AddPetCard extends StatelessWidget {
         child: const Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.add_circle_outline_rounded,
-                size: 28, color: Color(0xFFB0B8C1)),
+            Icon(
+              Icons.add_circle_outline_rounded,
+              size: 28,
+              color: Color(0xFFB0B8C1),
+            ),
             SizedBox(height: 6),
             Text(
               'Add pet',
@@ -580,10 +574,7 @@ class _AddPetCard extends StatelessWidget {
 // ─── Duration Selector ────────────────────────────────────────────────────────
 
 class _DurationSelector extends StatelessWidget {
-  const _DurationSelector({
-    required this.selected,
-    required this.onSelect,
-  });
+  const _DurationSelector({required this.selected, required this.onSelect});
 
   final int selected;
   final ValueChanged<int> onSelect;
@@ -603,8 +594,7 @@ class _DurationSelector extends StatelessWidget {
                 duration: const Duration(milliseconds: 180),
                 height: 48,
                 decoration: BoxDecoration(
-                  color:
-                      isSelected ? AppColors.navWalkers : Colors.white,
+                  color: isSelected ? AppColors.navWalkers : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isSelected
@@ -649,8 +639,18 @@ class _DateSelector extends StatelessWidget {
     if (d == today) return 'Today';
     if (d == today.add(const Duration(days: 1))) return 'Tomorrow';
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[selected!.month - 1]} ${selected!.day}, ${selected!.year}';
   }
@@ -701,10 +701,7 @@ class _DateSelector extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: Color(0xFFB0B8C1),
-            ),
+            const Icon(Icons.chevron_right_rounded, color: Color(0xFFB0B8C1)),
           ],
         ),
       ),
@@ -758,16 +755,10 @@ class _SlotSelector extends StatelessWidget {
             Expanded(
               child: Text(
                 form.slotsError!,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: Color(0xFF5A6473),
-                ),
+                style: const TextStyle(fontSize: 13, color: Color(0xFF5A6473)),
               ),
             ),
-            TextButton(
-              onPressed: onRefresh,
-              child: const Text('Retry'),
-            ),
+            TextButton(onPressed: onRefresh, child: const Text('Retry')),
           ],
         ),
       );
@@ -781,15 +772,11 @@ class _SlotSelector extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: const Color(0xFFE0E4EC)),
         ),
-        child: Column(
+        child: const Column(
           children: [
-            const Icon(
-              Icons.event_busy_rounded,
-              size: 36,
-              color: Color(0xFFB0B8C1),
-            ),
-            const SizedBox(height: 10),
-            const Text(
+            Icon(Icons.event_busy_rounded, size: 36, color: Color(0xFFB0B8C1)),
+            SizedBox(height: 10),
+            Text(
               'No slots available for this date.',
               style: TextStyle(
                 fontSize: 14,
@@ -797,8 +784,8 @@ class _SlotSelector extends StatelessWidget {
                 color: Color(0xFF5A6473),
               ),
             ),
-            const SizedBox(height: 4),
-            const Text(
+            SizedBox(height: 4),
+            Text(
               'Try another date or duration.',
               style: TextStyle(fontSize: 13, color: Color(0xFF8A93A0)),
             ),
@@ -816,8 +803,7 @@ class _SlotSelector extends StatelessWidget {
           onTap: () => onSelect(slot),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               color: isSelected ? AppColors.navWalkers : Colors.white,
               borderRadius: BorderRadius.circular(10),
@@ -840,8 +826,7 @@ class _SlotSelector extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color:
-                    isSelected ? Colors.white : const Color(0xFF1F2937),
+                color: isSelected ? Colors.white : const Color(0xFF1F2937),
               ),
             ),
           ),
@@ -946,9 +931,7 @@ class _BookingFooter extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  form.canConfirm
-                      ? 'Confirm Booking'
-                      : 'Select a pet and slot',
+                  form.canConfirm ? 'Confirm Booking' : 'Select a pet and slot',
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -1090,9 +1073,7 @@ class _PickupAddressCard extends StatelessWidget {
           const SizedBox(width: 10),
           GestureDetector(
             onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const EditProfileScreen(),
-              ),
+              MaterialPageRoute(builder: (_) => const EditProfileScreen()),
             ),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -1181,10 +1162,7 @@ class _NoPetsView extends StatelessWidget {
               icon: const Icon(Icons.add_rounded),
               label: const Text(
                 'Add a Pet',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
               ),
             ),
           ],

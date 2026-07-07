@@ -12,7 +12,8 @@ class EditBusinessProfileScreen extends StatefulWidget {
   const EditBusinessProfileScreen({super.key});
 
   @override
-  State<EditBusinessProfileScreen> createState() => _EditBusinessProfileScreenState();
+  State<EditBusinessProfileScreen> createState() =>
+      _EditBusinessProfileScreenState();
 }
 
 class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
@@ -98,16 +99,31 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: _textDark),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: _textDark,
+          ),
         ),
-        title: const Text('Edit Business', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _textDark)),
+        title: const Text(
+          'Edit Business',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: _textDark,
+          ),
+        ),
         centerTitle: true,
         actions: [
           TextButton(
             onPressed: _saving ? null : _save,
             child: Text(
               'Save',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: _saving ? _textMuted : _green),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: _saving ? _textMuted : _green,
+              ),
             ),
           ),
           const SizedBox(width: 4),
@@ -121,7 +137,14 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
                 children: [
                   _buildIconHeader(),
                   const SizedBox(height: 32),
-                  const Text('Social Links', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _textDark)),
+                  const Text(
+                    'Social Links',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: _textDark,
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   const Text(
                     'These are the only fields a business can update from the app.',
@@ -133,7 +156,9 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
                   TextFormField(
                     controller: _instagramCtrl,
                     keyboardType: TextInputType.url,
-                    decoration: _inputDecoration(hint: 'https://instagram.com/yourbusiness'),
+                    decoration: _inputDecoration(
+                      hint: 'https://instagram.com/yourbusiness',
+                    ),
                   ),
                   const SizedBox(height: 16),
                   _fieldLabel('Facebook URL'),
@@ -141,7 +166,9 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
                   TextFormField(
                     controller: _facebookCtrl,
                     keyboardType: TextInputType.url,
-                    decoration: _inputDecoration(hint: 'https://facebook.com/yourbusiness'),
+                    decoration: _inputDecoration(
+                      hint: 'https://facebook.com/yourbusiness',
+                    ),
                   ),
                   const SizedBox(height: 36),
                   _buildSaveButton(),
@@ -159,18 +186,35 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
           child: Container(
             width: 100,
             height: 100,
-            decoration: BoxDecoration(color: _green.withValues(alpha: 0.12), shape: BoxShape.circle),
-            child: const Icon(Icons.storefront_rounded, size: 48, color: _green),
+            decoration: BoxDecoration(
+              color: _green.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.storefront_rounded,
+              size: 48,
+              color: _green,
+            ),
           ),
         ),
         const SizedBox(height: 10),
-        const Text('Update how customers find you online', style: TextStyle(fontSize: 13, color: _textMuted)),
+        const Text(
+          'Update how customers find you online',
+          style: TextStyle(fontSize: 13, color: _textMuted),
+        ),
       ],
     );
   }
 
   Widget _fieldLabel(String text) {
-    return Text(text, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF5A6473)));
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: Color(0xFF5A6473),
+      ),
+    );
   }
 
   InputDecoration _inputDecoration({required String hint}) {
@@ -179,9 +223,18 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
       hintStyle: const TextStyle(color: _textMuted, fontSize: 14),
       filled: true,
       fillColor: Colors.white,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE0E4EC))),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE0E4EC))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _green, width: 1.5)),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: _green, width: 1.5),
+      ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     );
   }
@@ -196,16 +249,24 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
           backgroundColor: _green,
           foregroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
           disabledBackgroundColor: _green.withValues(alpha: 0.45),
         ),
         child: _saving
             ? const SizedBox(
                 width: 22,
                 height: 22,
-                child: CircularProgressIndicator(strokeWidth: 2, valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
               )
-            : const Text('Save Changes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            : const Text(
+                'Save Changes',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              ),
       ),
     );
   }

@@ -27,14 +27,16 @@ class HomeServiceBookingRemoteDataSource {
       'durationMinutes': durationMinutes,
       if (serviceAddress != null && serviceAddress.isNotEmpty)
         'serviceAddress': serviceAddress,
-      if (serviceLatitude != null) 'serviceLatitude': serviceLatitude,
-      if (serviceLongitude != null) 'serviceLongitude': serviceLongitude,
+      'serviceLatitude': ?serviceLatitude,
+      'serviceLongitude': ?serviceLongitude,
       if (specialInstructions != null && specialInstructions.isNotEmpty)
         'specialInstructions': specialInstructions,
     };
 
-    final response =
-        await _dio.post<dynamic>('/home-service-bookings', data: body);
+    final response = await _dio.post<dynamic>(
+      '/home-service-bookings',
+      data: body,
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
@@ -44,8 +46,9 @@ class HomeServiceBookingRemoteDataSource {
     _throwFailure(status, data);
   }
 
-  Future<List<HomeServiceBookingResponseDto>> getMyBookings(
-      {String? status}) async {
+  Future<List<HomeServiceBookingResponseDto>> getMyBookings({
+    String? status,
+  }) async {
     final params = <String, dynamic>{};
     if (status != null) params['status'] = status;
 
@@ -59,23 +62,28 @@ class HomeServiceBookingRemoteDataSource {
     if (code == 200 && data is Map<String, dynamic>) {
       final items = data['items'] as List<dynamic>? ?? [];
       return items
-          .map((e) => HomeServiceBookingResponseDto.fromJson(
-              e as Map<String, dynamic>))
+          .map(
+            (e) => HomeServiceBookingResponseDto.fromJson(
+              e as Map<String, dynamic>,
+            ),
+          )
           .toList();
     }
     _throwFailure(code, data);
   }
 
   Future<void> clientCancelBooking(String bookingId) async {
-    final response = await _dio
-        .post<dynamic>('/home-service-bookings/$bookingId/client-cancel');
+    final response = await _dio.post<dynamic>(
+      '/home-service-bookings/$bookingId/client-cancel',
+    );
     final status = response.statusCode ?? 0;
     if (status == 200) return;
     _throwFailure(status, response.data);
   }
 
-  Future<List<HomeServiceBookingResponseDto>> getProviderBookings(
-      {String? status}) async {
+  Future<List<HomeServiceBookingResponseDto>> getProviderBookings({
+    String? status,
+  }) async {
     final params = <String, dynamic>{};
     if (status != null) params['status'] = status;
 
@@ -89,40 +97,47 @@ class HomeServiceBookingRemoteDataSource {
     if (code == 200 && data is Map<String, dynamic>) {
       final items = data['items'] as List<dynamic>? ?? [];
       return items
-          .map((e) => HomeServiceBookingResponseDto.fromJson(
-              e as Map<String, dynamic>))
+          .map(
+            (e) => HomeServiceBookingResponseDto.fromJson(
+              e as Map<String, dynamic>,
+            ),
+          )
           .toList();
     }
     _throwFailure(code, data);
   }
 
   Future<void> acceptBooking(String bookingId) async {
-    final response =
-        await _dio.post<dynamic>('/home-service-bookings/$bookingId/accept');
+    final response = await _dio.post<dynamic>(
+      '/home-service-bookings/$bookingId/accept',
+    );
     final status = response.statusCode ?? 0;
     if (status == 200) return;
     _throwFailure(status, response.data);
   }
 
   Future<void> rejectBooking(String bookingId) async {
-    final response =
-        await _dio.post<dynamic>('/home-service-bookings/$bookingId/reject');
+    final response = await _dio.post<dynamic>(
+      '/home-service-bookings/$bookingId/reject',
+    );
     final status = response.statusCode ?? 0;
     if (status == 200) return;
     _throwFailure(status, response.data);
   }
 
   Future<void> providerCancelBooking(String bookingId) async {
-    final response =
-        await _dio.post<dynamic>('/home-service-bookings/$bookingId/cancel');
+    final response = await _dio.post<dynamic>(
+      '/home-service-bookings/$bookingId/cancel',
+    );
     final status = response.statusCode ?? 0;
     if (status == 200) return;
     _throwFailure(status, response.data);
   }
 
   Future<void> startSession(String bookingId) async {
-    final response = await _dio
-        .post<dynamic>('/home-service-sessions/from-booking/$bookingId');
+    final response = await _dio.post<dynamic>(
+      '/home-service-sessions/from-booking/$bookingId',
+    );
     final status = response.statusCode ?? 0;
     if (status == 200 || status == 201) return;
     _throwFailure(status, response.data);

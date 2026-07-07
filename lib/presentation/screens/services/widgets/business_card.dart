@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../domain/entities/business.dart';
+import '../../../widgets/app_network_image.dart';
 
 class BusinessCard extends StatelessWidget {
-  const BusinessCard({
-    super.key,
-    required this.business,
-    required this.onTap,
-  });
+  const BusinessCard({super.key, required this.business, required this.onTap});
 
   final Business business;
   final VoidCallback onTap;
@@ -80,10 +77,10 @@ class _CoverImage extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             business.photoUrl != null && business.photoUrl!.isNotEmpty
-                ? Image.network(
+                ? AppNetworkImage(
                     business.photoUrl!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => _placeholder(),
+                    height: 140,
+                    errorWidget: _placeholder(),
                   )
                 : _placeholder(),
             Positioned(
@@ -105,8 +102,10 @@ class _CoverImage extends StatelessWidget {
                 top: 10,
                 right: 10,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -114,12 +113,19 @@ class _CoverImage extends StatelessWidget {
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.verified_rounded,
-                          size: 14, color: AppColors.navWalkers),
+                      Icon(
+                        Icons.verified_rounded,
+                        size: 14,
+                        color: AppColors.navWalkers,
+                      ),
                       SizedBox(width: 4),
-                      Text('Verified',
-                          style: TextStyle(
-                              fontSize: 11, fontWeight: FontWeight.w700)),
+                      Text(
+                        'Verified',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -131,10 +137,13 @@ class _CoverImage extends StatelessWidget {
   }
 
   Widget _placeholder() => Container(
-        color: const Color(0xFFE9ECF1),
-        child: const Icon(Icons.storefront_rounded,
-            size: 40, color: Color(0xFFB6BEC9)),
-      );
+    color: const Color(0xFFE9ECF1),
+    child: const Icon(
+      Icons.storefront_rounded,
+      size: 40,
+      color: Color(0xFFB6BEC9),
+    ),
+  );
 }
 
 class _CategoryBadge extends StatelessWidget {
@@ -147,12 +156,17 @@ class _CategoryBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration:
-          BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Text(
         label,
         style: const TextStyle(
-            fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white),
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+        ),
       ),
     );
   }
@@ -192,17 +206,24 @@ class _MetaRow extends StatelessWidget {
         Text(
           business.rating.toStringAsFixed(1),
           style: const TextStyle(
-              fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF1F2937)),
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF1F2937),
+          ),
         ),
         const SizedBox(width: 4),
-        Text('(${business.reviewCount})',
-            style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0))),
+        Text(
+          '(${business.reviewCount})',
+          style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0)),
+        ),
         const SizedBox(width: 10),
         Container(
           width: 6,
           height: 6,
           decoration: BoxDecoration(
-            color: business.isOpen ? const Color(0xFF34C759) : const Color(0xFFFF3B30),
+            color: business.isOpen
+                ? const Color(0xFF34C759)
+                : const Color(0xFFFF3B30),
             shape: BoxShape.circle,
           ),
         ),
@@ -212,15 +233,23 @@ class _MetaRow extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: business.isOpen ? const Color(0xFF34C759) : const Color(0xFFFF3B30),
+            color: business.isOpen
+                ? const Color(0xFF34C759)
+                : const Color(0xFFFF3B30),
           ),
         ),
         if (business.distanceKm != null) ...[
           const SizedBox(width: 10),
-          const Icon(Icons.location_on_rounded, size: 13, color: Color(0xFF8A93A0)),
+          const Icon(
+            Icons.location_on_rounded,
+            size: 13,
+            color: Color(0xFF8A93A0),
+          ),
           const SizedBox(width: 2),
-          Text('${business.distanceKm!.toStringAsFixed(1)}km',
-              style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0))),
+          Text(
+            '${business.distanceKm!.toStringAsFixed(1)}km',
+            style: const TextStyle(fontSize: 12, color: Color(0xFF8A93A0)),
+          ),
         ],
       ],
     );

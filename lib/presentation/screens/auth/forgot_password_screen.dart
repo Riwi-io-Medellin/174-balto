@@ -28,9 +28,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   void _sendResetLink() {
     final email = _emailController.text.trim();
     if (email.isEmpty) return;
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => CheckEmailScreen(email: email)),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => CheckEmailScreen(email: email)));
   }
 
   @override
@@ -147,11 +147,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 color: _primary.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.lock_reset,
-                color: _primary,
-                size: 56,
-              ),
+              child: const Icon(Icons.lock_reset, color: _primary, size: 56),
             ),
           ),
           Positioned(
@@ -171,11 +167,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                 ],
               ),
-              child: const Icon(
-                Icons.check_circle,
-                color: _success,
-                size: 22,
-              ),
+              child: const Icon(Icons.check_circle, color: _success, size: 22),
             ),
           ),
         ],

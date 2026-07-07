@@ -32,8 +32,6 @@ class _HomeServiceProviderProfilePageState
     extends State<HomeServiceProviderProfilePage> {
   late final HomeServiceCubit _cubit;
   late final FeedbackCubit _feedbackCubit;
-  bool _isFavorite = false;
-  bool _favoriteBusy = false;
 
   @override
   void initState() {
@@ -43,41 +41,6 @@ class _HomeServiceProviderProfilePageState
     if (widget.provider.id.isNotEmpty) {
       _cubit.loadProviderDetail(widget.provider.id);
       _feedbackCubit.loadHomeServiceProviderReviews(widget.provider.id);
-      _checkFavorite();
-    }
-  }
-
-  Future<void> _checkFavorite() async {
-    try {
-      final ids =
-          await sl<HomeFavoriteProviderRepository>().getMyFavoriteProviderIds();
-      if (!mounted) return;
-      setState(() => _isFavorite = ids.contains(widget.provider.id));
-    } catch (_) {
-      // ignore — favorites are a non-critical enhancement
-    }
-  }
-
-  Future<void> _toggleFavorite() async {
-    if (_favoriteBusy) return;
-    setState(() => _favoriteBusy = true);
-    try {
-      final repo = sl<HomeFavoriteProviderRepository>();
-      if (_isFavorite) {
-        await repo.removeFavorite(widget.provider.id);
-      } else {
-        await repo.addFavorite(widget.provider.id);
-      }
-      if (!mounted) return;
-      setState(() => _isFavorite = !_isFavorite);
-    } on HomeFavoriteProviderFailure catch (e) {
-      if (!mounted) return;
-      BaltoToast.error(context, e.message);
-    } catch (_) {
-      if (!mounted) return;
-      BaltoToast.error(context, 'Something went wrong. Please try again.');
-    } finally {
-      if (mounted) setState(() => _favoriteBusy = false);
     }
   }
 
@@ -97,8 +60,9 @@ class _HomeServiceProviderProfilePageState
       ],
       child: BlocBuilder<HomeServiceCubit, HomeServiceState>(
         builder: (context, state) {
-          final provider =
-              state is HomeServiceDetailLoaded ? state.provider : widget.provider;
+          final provider = state is HomeServiceDetailLoaded
+              ? state.provider
+              : widget.provider;
           final isLoadingDetail = state is HomeServiceLoading;
 
           return Scaffold(
@@ -106,10 +70,7 @@ class _HomeServiceProviderProfilePageState
             bottomNavigationBar: _BookingBar(provider: provider),
             body: CustomScrollView(
               slivers: [
-                _ProviderAppBar(
-                  isFavorite: _isFavorite,
-                  onFavoriteTap: _toggleFavorite,
-                ),
+                _ProviderAppBar(providerId: provider.id),
                 SliverToBoxAdapter(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,7 +106,9 @@ class _HomeServiceProviderProfilePageState
                         const SizedBox(height: 20),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: _ServiceAreasSection(areas: provider.serviceAreas),
+                          child: _ServiceAreasSection(
+                            areas: provider.serviceAreas,
+                          ),
                         ),
                       ],
                       if (provider.weeklyAvailability.isNotEmpty) ...[
@@ -181,10 +144,9 @@ class _HomeServiceProviderProfilePageState
 // ─── App Bar ─────────────────────────────────────────────────────────────────
 
 class _ProviderAppBar extends StatelessWidget {
-  const _ProviderAppBar({required this.isFavorite, required this.onFavoriteTap});
+  const _ProviderAppBar({required this.providerId});
 
-  final bool isFavorite;
-  final VoidCallback onFavoriteTap;
+  final String providerId;
 
   @override
   Widget build(BuildContext context) {
@@ -201,15 +163,74 @@ class _ProviderAppBar extends StatelessWidget {
           color: Color(0xFF1F2937),
         ),
       ),
-      actions: [
-        IconButton(
-          onPressed: onFavoriteTap,
-          icon: Icon(
-            isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-            color: isFavorite ? AppColors.homeServices : const Color(0xFF1F2937),
-          ),
-        ),
-      ],
+      actions: [_FavoriteButton(providerId: providerId)],
+    );
+  }
+}
+
+// Owns its own favorite-toggle state so tapping it doesn't rebuild the
+// whole provider profile (gallery, about, services, schedule, reviews).
+class _FavoriteButton extends StatefulWidget {
+  const _FavoriteButton({required this.providerId});
+
+  final String providerId;
+
+  @override
+  State<_FavoriteButton> createState() => _FavoriteButtonState();
+}
+
+class _FavoriteButtonState extends State<_FavoriteButton> {
+  bool _isFavorite = false;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.providerId.isNotEmpty) _checkFavorite();
+  }
+
+  Future<void> _checkFavorite() async {
+    try {
+      final ids = await sl<HomeFavoriteProviderRepository>()
+          .getMyFavoriteProviderIds();
+      if (!mounted) return;
+      setState(() => _isFavorite = ids.contains(widget.providerId));
+    } catch (_) {
+      // ignore — favorites are a non-critical enhancement
+    }
+  }
+
+  Future<void> _toggle() async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      final repo = sl<HomeFavoriteProviderRepository>();
+      if (_isFavorite) {
+        await repo.removeFavorite(widget.providerId);
+      } else {
+        await repo.addFavorite(widget.providerId);
+      }
+      if (!mounted) return;
+      setState(() => _isFavorite = !_isFavorite);
+    } on HomeFavoriteProviderFailure catch (e) {
+      if (!mounted) return;
+      BaltoToast.error(context, e.message);
+    } catch (_) {
+      if (!mounted) return;
+      BaltoToast.error(context, 'Something went wrong. Please try again.');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: _toggle,
+      icon: Icon(
+        _isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+        color: _isFavorite ? AppColors.homeServices : const Color(0xFF1F2937),
+      ),
     );
   }
 }
@@ -287,7 +308,11 @@ class _ProfileHeader extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.star_rounded, size: 16, color: Color(0xFFF6C86A)),
+              const Icon(
+                Icons.star_rounded,
+                size: 16,
+                color: Color(0xFFF6C86A),
+              ),
               const SizedBox(width: 4),
               Text(
                 '${provider.rating}',
@@ -326,7 +351,11 @@ class _ProfileHeader extends StatelessWidget {
                 const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.verified_rounded, size: 16, color: AppColors.navCoach),
+                    Icon(
+                      Icons.verified_rounded,
+                      size: 16,
+                      color: AppColors.navCoach,
+                    ),
                     SizedBox(width: 4),
                     Text(
                       'Verified',
@@ -374,7 +403,11 @@ class _GalleryStrip extends StatelessWidget {
               width: 220,
               height: 160,
               color: const Color(0xFFFBEAF1),
-              child: const Icon(Icons.image_outlined, size: 36, color: Color(0xFFB0B8C1)),
+              child: const Icon(
+                Icons.image_outlined,
+                size: 36,
+                color: Color(0xFFB0B8C1),
+              ),
             ),
           ),
         ),
@@ -419,7 +452,11 @@ class _AboutCard extends StatelessWidget {
                   color: AppColors.homeServices.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.info_outline_rounded, size: 16, color: AppColors.homeServices),
+                child: const Icon(
+                  Icons.info_outline_rounded,
+                  size: 16,
+                  color: AppColors.homeServices,
+                ),
               ),
               const SizedBox(width: 10),
               Text(
@@ -435,14 +472,20 @@ class _AboutCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             bio,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF5A6473), height: 1.55),
+            style: const TextStyle(
+              fontSize: 14,
+              color: Color(0xFF5A6473),
+              height: 1.55,
+            ),
           ),
           if (provider.specialties.isNotEmpty) ...[
             const SizedBox(height: 14),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: provider.specialties.map((s) => _SpecialtyChip(label: s)).toList(),
+              children: provider.specialties
+                  .map((s) => _SpecialtyChip(label: s))
+                  .toList(),
             ),
           ],
         ],
@@ -467,7 +510,11 @@ class _SpecialtyChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF4A5568)),
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: Color(0xFF4A5568),
+        ),
       ),
     );
   }
@@ -487,13 +534,22 @@ class _ServicesSection extends StatelessWidget {
       children: [
         const Text(
           'Services Offered',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1F2937)),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF1F2937),
+          ),
         ),
         const SizedBox(height: 14),
         if (services.isEmpty)
-          const Text('No services listed yet.', style: TextStyle(color: Color(0xFF8A93A0)))
+          const Text(
+            'No services listed yet.',
+            style: TextStyle(color: Color(0xFF8A93A0)),
+          )
         else
-          ...services.where((s) => s.isActive).map(
+          ...services
+              .where((s) => s.isActive)
+              .map(
                 (s) => Container(
                   margin: const EdgeInsets.only(bottom: 10),
                   padding: const EdgeInsets.all(14),
@@ -517,21 +573,30 @@ class _ServicesSection extends StatelessWidget {
                           color: AppColors.homeServices.withValues(alpha: 0.10),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.design_services_rounded,
-                            size: 18, color: AppColors.homeServices),
+                        child: const Icon(
+                          Icons.design_services_rounded,
+                          size: 18,
+                          color: AppColors.homeServices,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           s.serviceTypeName,
                           style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1F2937)),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1F2937),
+                          ),
                         ),
                       ),
                       Text(
                         s.priceLabel,
                         style: const TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.homeServices),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.homeServices,
+                        ),
                       ),
                     ],
                   ),
@@ -556,33 +621,51 @@ class _ServiceAreasSection extends StatelessWidget {
       children: [
         const Text(
           'Service Areas',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1F2937)),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF1F2937),
+          ),
         ),
         const SizedBox(height: 14),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: areas
-              .map((a) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: AppColors.homeServices.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.homeServices.withValues(alpha: 0.3)),
+              .map(
+                (a) => Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.homeServices.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: AppColors.homeServices.withValues(alpha: 0.3),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.place_rounded, size: 14, color: AppColors.homeServices),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${a.label ?? 'Area'} · ${a.radiusKm.toStringAsFixed(0)}km',
-                          style: const TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.homeServices),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.place_rounded,
+                        size: 14,
+                        color: AppColors.homeServices,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${a.label ?? 'Area'} · ${a.radiusKm.toStringAsFixed(0)}km',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.homeServices,
                         ),
-                      ],
-                    ),
-                  ))
+                      ),
+                    ],
+                  ),
+                ),
+              )
               .toList(),
         ),
       ],
@@ -599,7 +682,13 @@ class _WeeklyScheduleSection extends StatelessWidget {
 
   static const _days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   static const _daysFull = [
-    'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
   ];
 
   Map<int, List<AvailabilitySlot>> _group() {
@@ -622,8 +711,10 @@ class _WeeklyScheduleSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final grouped = _group();
-    final activeDays =
-        List.generate(7, (i) => i).where((d) => grouped.containsKey(d)).toList();
+    final activeDays = List.generate(
+      7,
+      (i) => i,
+    ).where((d) => grouped.containsKey(d)).toList();
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -650,13 +741,20 @@ class _WeeklyScheduleSection extends StatelessWidget {
                   color: AppColors.homeServices.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.calendar_month_rounded,
-                    size: 16, color: AppColors.homeServices),
+                child: const Icon(
+                  Icons.calendar_month_rounded,
+                  size: 16,
+                  color: AppColors.homeServices,
+                ),
               ),
               const SizedBox(width: 10),
               const Text(
                 'Weekly Schedule',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF1F2937)),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1F2937),
+                ),
               ),
             ],
           ),
@@ -670,7 +768,9 @@ class _WeeklyScheduleSection extends StatelessWidget {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: active ? AppColors.homeServices : const Color(0xFFF0F2F5),
+                  color: active
+                      ? AppColors.homeServices
+                      : const Color(0xFFF0F2F5),
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
@@ -698,7 +798,10 @@ class _WeeklyScheduleSection extends StatelessWidget {
                     child: Text(
                       _daysFull[day],
                       style: const TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF1F2937)),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF1F2937),
+                      ),
                     ),
                   ),
                   Expanded(
@@ -707,16 +810,28 @@ class _WeeklyScheduleSection extends StatelessWidget {
                       runSpacing: 6,
                       children: daySlots.map((s) {
                         return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
-                            color: AppColors.homeServices.withValues(alpha: 0.08),
+                            color: AppColors.homeServices.withValues(
+                              alpha: 0.08,
+                            ),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.homeServices.withValues(alpha: 0.25)),
+                            border: Border.all(
+                              color: AppColors.homeServices.withValues(
+                                alpha: 0.25,
+                              ),
+                            ),
                           ),
                           child: Text(
                             '${_fmt(s.startTime)} – ${_fmt(s.endTime)}',
                             style: const TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.homeServices),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.homeServices,
+                            ),
                           ),
                         );
                       }).toList(),
@@ -749,21 +864,30 @@ class _ReviewsSection extends StatelessWidget {
           children: [
             const Text(
               'Ratings & Reviews',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1F2937)),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF1F2937),
+              ),
             ),
             const SizedBox(height: 16),
             if (state is FeedbackLoading)
               const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 24),
-                  child: CircularProgressIndicator(color: AppColors.homeServices),
+                  child: CircularProgressIndicator(
+                    color: AppColors.homeServices,
+                  ),
                 ),
               )
             else if (state is FeedbackError)
               Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24),
-                  child: Text(state.message, style: const TextStyle(color: Color(0xFF8A93A0))),
+                  child: Text(
+                    state.message,
+                    style: const TextStyle(color: Color(0xFF8A93A0)),
+                  ),
                 ),
               )
             else if (state is FeedbackLoaded) ...[
@@ -779,7 +903,10 @@ class _ReviewsSection extends StatelessWidget {
               ] else ...[
                 const SizedBox(height: 16),
                 const Center(
-                  child: Text('No reviews yet.', style: TextStyle(color: Color(0xFF8A93A0))),
+                  child: Text(
+                    'No reviews yet.',
+                    style: TextStyle(color: Color(0xFF8A93A0)),
+                  ),
                 ),
               ],
               const SizedBox(height: 16),
@@ -801,7 +928,9 @@ class _ReviewsSection extends StatelessWidget {
                     foregroundColor: Colors.white,
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
@@ -844,17 +973,29 @@ class _BookingBar extends StatelessWidget {
               children: [
                 Text(
                   provider.startingPriceLabel,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF1F2937)),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF1F2937),
+                  ),
                 ),
                 const SizedBox(height: 2),
                 const Row(
                   children: [
-                    Icon(Icons.bolt_rounded, size: 13, color: AppColors.homeServices),
+                    Icon(
+                      Icons.bolt_rounded,
+                      size: 13,
+                      color: AppColors.homeServices,
+                    ),
                     SizedBox(width: 2),
                     Text(
                       'BOOK NOW',
                       style: TextStyle(
-                          fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.homeServices, letterSpacing: 0.5),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.homeServices,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ],
                 ),
@@ -865,18 +1006,24 @@ class _BookingBar extends StatelessWidget {
               onPressed: provider.services.isEmpty
                   ? null
                   : () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          fullscreenDialog: true,
-                          builder: (_) => HomeServiceBookingScreen(provider: provider),
-                        ),
+                      MaterialPageRoute(
+                        fullscreenDialog: true,
+                        builder: (_) =>
+                            HomeServiceBookingScreen(provider: provider),
                       ),
+                    ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF1F2937),
                 foregroundColor: Colors.white,
                 elevation: 0,
                 disabledBackgroundColor: const Color(0xFFE0E4EC),
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
               child: const Text(
                 'Book Service',

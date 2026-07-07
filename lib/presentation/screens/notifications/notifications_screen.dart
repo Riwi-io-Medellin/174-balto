@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/entities/notification.dart';
 import '../../../domain/repositories/notification_repository.dart';
-import '../../widgets/alerts/lost_pet_alert_banner.dart';
+import '../pets/lost_pet_report_screen.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -37,7 +37,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       _error = null;
     });
     try {
-      final notifications = await _repo.getMyNotifications(page: 1, pageSize: 50);
+      final notifications = await _repo.getMyNotifications(
+        page: 1,
+        pageSize: 50,
+      );
       if (!mounted) return;
       setState(() {
         _notifications = notifications;
@@ -55,6 +58,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         _error = e.toString();
         _loading = false;
       });
+    }
+  }
+
+  void _onNotificationTap(AppNotification notification) {
+    if (!notification.isRead) _markAsRead(notification.id);
+    if (notification.type == 'lost_pet' && notification.entityId != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => LostPetReportScreen(petId: notification.entityId!),
+        ),
+      );
     }
   }
 
@@ -175,7 +189,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               onPressed: _markAllAsRead,
               child: const Text(
                 'Mark all read',
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _primary),
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: _primary,
+                ),
               ),
             ),
         ],
@@ -196,11 +214,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: Color(0xFF9AA0B2)),
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: Color(0xFF9AA0B2),
+              ),
               const SizedBox(height: 16),
-              Text(
+              const Text(
                 'Could not load notifications',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: _textDark),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: _textDark,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -214,7 +240,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primary,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: const Text('Retry'),
               ),
@@ -231,11 +259,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.notifications_none, size: 64, color: _textLight.withValues(alpha: 0.5)),
+              Icon(
+                Icons.notifications_none,
+                size: 64,
+                color: _textLight.withValues(alpha: 0.5),
+              ),
               const SizedBox(height: 16),
               const Text(
                 'No notifications yet',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: _textDark),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: _textDark,
+                ),
               ),
               const SizedBox(height: 8),
               const Text(
@@ -253,12 +289,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       onRefresh: _load,
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
-        itemCount: _notifications.length + 1,
-        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        itemCount: _notifications.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 8),
         itemBuilder: (context, index) {
-          if (index == 0) return const LostPetAlertBanner();
-          final notification = _notifications[index - 1];
-          return _buildNotificationCard(notification);
+          return _buildNotificationCard(_notifications[index]);
         },
       ),
     );
@@ -269,9 +303,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final color = _colorForType(notification.type);
 
     return GestureDetector(
-      onTap: notification.isRead
-          ? null
-          : () => _markAsRead(notification.id),
+      onTap: () => _onNotificationTap(notification),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(14),
@@ -308,7 +340,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           notification.title,
                           style: TextStyle(
                             fontSize: 14,
-                            fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.w700,
+                            fontWeight: notification.isRead
+                                ? FontWeight.w500
+                                : FontWeight.w700,
                             color: _textDark,
                           ),
                         ),
@@ -323,7 +357,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   const SizedBox(height: 4),
                   Text(
                     notification.body,
-                    style: const TextStyle(fontSize: 13, color: _textMuted, height: 1.3),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: _textMuted,
+                      height: 1.3,
+                    ),
                   ),
                 ],
               ),

@@ -37,25 +37,62 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
   static const Color _textMuted = Color(0xFF6B7280);
 
   static const _speciesList = [
-    'Dog', 'Cat', 'Rabbit', 'Hamster', 'Guinea Pig', 'Ferret',
-    'Bird', 'Fish', 'Turtle', 'Snake', 'Chinchilla', 'Parrot',
+    'Dog',
+    'Cat',
+    'Rabbit',
+    'Hamster',
+    'Guinea Pig',
+    'Ferret',
+    'Bird',
+    'Fish',
+    'Turtle',
+    'Snake',
+    'Chinchilla',
+    'Parrot',
   ];
 
   static const _breedOptions = <String, List<String>>{
     'Dog': [
       'Mixed-breed',
-      'Labrador Retriever', 'Golden Retriever', 'French Bulldog', 'Bulldog',
-      'Poodle', 'Beagle', 'Rottweiler', 'German Shepherd', 'Yorkshire Terrier',
-      'Dachshund', 'Husky', 'Boxer', 'Chihuahua', 'Shih Tzu',
-      'Doberman', 'Border Collie', 'Pomeranian', 'Maltese', 'Schnauzer',
-      'Cocker Spaniel', 'Great Dane',
+      'Labrador Retriever',
+      'Golden Retriever',
+      'French Bulldog',
+      'Bulldog',
+      'Poodle',
+      'Beagle',
+      'Rottweiler',
+      'German Shepherd',
+      'Yorkshire Terrier',
+      'Dachshund',
+      'Husky',
+      'Boxer',
+      'Chihuahua',
+      'Shih Tzu',
+      'Doberman',
+      'Border Collie',
+      'Pomeranian',
+      'Maltese',
+      'Schnauzer',
+      'Cocker Spaniel',
+      'Great Dane',
     ],
     'Cat': [
       'Mixed-breed',
-      'Persian', 'Siamese', 'Maine Coon', 'Ragdoll', 'Bengal',
-      'British Shorthair', 'Abyssinian', 'Sphynx', 'Russian Blue',
-      'Scottish Fold', 'Birman', 'American Shorthair',
-      'Norwegian Forest Cat', 'Burmese', 'Turkish Angora',
+      'Persian',
+      'Siamese',
+      'Maine Coon',
+      'Ragdoll',
+      'Bengal',
+      'British Shorthair',
+      'Abyssinian',
+      'Sphynx',
+      'Russian Blue',
+      'Scottish Fold',
+      'Birman',
+      'American Shorthair',
+      'Norwegian Forest Cat',
+      'Burmese',
+      'Turkish Angora',
     ],
   };
 
@@ -82,7 +119,10 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
     );
   }
 
-  InputDecoration _dropdownDecoration({required String hint, required IconData icon}) {
+  InputDecoration _dropdownDecoration({
+    required String hint,
+    required IconData icon,
+  }) {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(color: _textMuted, fontSize: 14),
@@ -99,7 +139,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: _primary, width: 1.5),
+        borderSide: const BorderSide(color: _primary, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
@@ -142,11 +182,14 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
         species: _selectedSpecies,
         breed: _selectedBreed,
         birthDate: _birthDate,
-        description: _descriptionCtrl.text.trim().isEmpty ? null : _descriptionCtrl.text.trim(),
+        description: _descriptionCtrl.text.trim().isEmpty
+            ? null
+            : _descriptionCtrl.text.trim(),
         photoUrl: photoUrl,
         weight: weight,
       );
 
+      if (!mounted) return;
       await context.read<ProfileCubit>().load();
 
       if (!mounted) return;
@@ -209,7 +252,8 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                   controller: _nameCtrl,
                   style: const TextStyle(fontSize: 14, color: _textDark),
                   decoration: _decoration(hint: 'Pet name', icon: Icons.pets),
-                  validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                  validator: (v) =>
+                      v?.trim().isEmpty == true ? 'Required' : null,
                 ),
                 const SizedBox(height: 20),
                 _buildSpeciesDropdown(),
@@ -223,19 +267,21 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                 TextFormField(
                   readOnly: true,
                   style: const TextStyle(fontSize: 14, color: _textDark),
-                  decoration: _decoration(
-                    hint: _birthDate != null
-                        ? '${_birthDate!.day}/${_birthDate!.month}/${_birthDate!.year}'
-                        : 'Tap to select',
-                    icon: Icons.calendar_today_outlined,
-                  ).copyWith(
-                    suffixIcon: _birthDate != null
-                        ? IconButton(
-                            icon: const Icon(Icons.close, size: 18),
-                            onPressed: () => setState(() => _birthDate = null),
-                          )
-                        : null,
-                  ),
+                  decoration:
+                      _decoration(
+                        hint: _birthDate != null
+                            ? '${_birthDate!.day}/${_birthDate!.month}/${_birthDate!.year}'
+                            : 'Tap to select',
+                        icon: Icons.calendar_today_outlined,
+                      ).copyWith(
+                        suffixIcon: _birthDate != null
+                            ? IconButton(
+                                icon: const Icon(Icons.close, size: 18),
+                                onPressed: () =>
+                                    setState(() => _birthDate = null),
+                              )
+                            : null,
+                      ),
                   onTap: _pickDate,
                 ),
                 const SizedBox(height: 20),
@@ -244,9 +290,13 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                 TextFormField(
                   controller: _weightCtrl,
                   style: const TextStyle(fontSize: 14, color: _textDark),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'^\d*\.?\d{0,2}'),
+                    ),
                   ],
                   decoration: _decoration(
                     hint: 'e.g. 12.5',
@@ -285,12 +335,17 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                             height: 22,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
                           )
                         : const Text(
                             'Add Pet',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                   ),
                 ),
@@ -309,7 +364,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
         _fieldLabel('Species'),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: _selectedSpecies,
+          initialValue: _selectedSpecies,
           isExpanded: true,
           decoration: _dropdownDecoration(
             hint: 'Select species',
@@ -338,7 +393,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
         _fieldLabel('Breed'),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: _selectedBreed,
+          initialValue: _selectedBreed,
           isExpanded: true,
           decoration: _dropdownDecoration(
             hint: 'Select breed',
@@ -382,7 +437,11 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                       color: Colors.black.withValues(alpha: 0.5),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.close, size: 18, color: Colors.white),
+                    child: const Icon(
+                      Icons.close,
+                      size: 18,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -402,11 +461,11 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                   width: 1.5,
                 ),
               ),
-              child: Column(
+              child: const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.camera_alt_outlined, size: 32, color: _primary),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     'Add Photo',
                     style: TextStyle(

@@ -147,8 +147,9 @@ class _MapSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final active =
-        state is WalkerLiveWalkActive ? state as WalkerLiveWalkActive : null;
+    final active = state is WalkerLiveWalkActive
+        ? state as WalkerLiveWalkActive
+        : null;
     final hasPosition = active?.currentPosition != null;
 
     return Stack(
@@ -191,8 +192,7 @@ class _MapSection extends StatelessWidget {
         if (!hasPosition)
           Center(
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
               decoration: BoxDecoration(
                 color: Colors.black.withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(12),
@@ -226,12 +226,7 @@ class _MapSection extends StatelessWidget {
           left: 12,
           child: const _BackButton(),
         ),
-        const Positioned(
-          top: 0,
-          right: 0,
-          left: 0,
-          child: _WalkingBadge(),
-        ),
+        const Positioned(top: 0, right: 0, left: 0, child: _WalkingBadge()),
       ],
     );
   }
@@ -252,8 +247,11 @@ class _BackButton extends StatelessWidget {
         onTap: () => Navigator.of(context).pop(),
         child: const Padding(
           padding: EdgeInsets.all(10),
-          child: Icon(Icons.arrow_back_rounded,
-              color: Color(0xFF1A1A2E), size: 22),
+          child: Icon(
+            Icons.arrow_back_rounded,
+            color: Color(0xFF1A1A2E),
+            size: 22,
+          ),
         ),
       ),
     );
@@ -272,8 +270,7 @@ class _WalkingBadge extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(top: 12, right: 16),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -291,7 +288,7 @@ class _WalkingBadge extends StatelessWidget {
                 Container(
                   width: 8,
                   height: 8,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppColors.navWalkers,
                     shape: BoxShape.circle,
                   ),
@@ -323,8 +320,9 @@ class _BottomPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final active =
-        state is WalkerLiveWalkActive ? state as WalkerLiveWalkActive : null;
+    final active = state is WalkerLiveWalkActive
+        ? state as WalkerLiveWalkActive
+        : null;
     final isEnding = state is WalkerLiveWalkEnding;
 
     return Container(
@@ -403,7 +401,10 @@ class _BottomPanel extends StatelessWidget {
                     label: 'Video',
                     color: const Color(0xFF7C3AED),
                     isLoading: false,
-                    enabled: active != null && !isEnding && !(active.isUploadingMedia),
+                    enabled:
+                        active != null &&
+                        !isEnding &&
+                        !(active.isUploadingMedia),
                     onTap: () => _showMediaSourceSheet(context, isVideo: true),
                   ),
                 ),
@@ -443,15 +444,15 @@ class _BottomPanel extends StatelessWidget {
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed:
-                    (active == null || isEnding)
-                        ? null
-                        : () => _confirmEnd(context),
+                onPressed: (active == null || isEnding)
+                    ? null
+                    : () => _confirmEnd(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFD05A24),
                   foregroundColor: Colors.white,
-                  disabledBackgroundColor:
-                      const Color(0xFFD05A24).withValues(alpha: 0.4),
+                  disabledBackgroundColor: const Color(
+                    0xFFD05A24,
+                  ).withValues(alpha: 0.4),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -515,20 +516,22 @@ class _BottomPanel extends StatelessWidget {
               onTap: () {
                 Navigator.pop(ctx);
                 context.read<WalkerLiveWalkCubit>().captureAndUploadMedia(
-                      source: ImageSource.camera,
-                      isVideo: isVideo,
-                    );
+                  source: ImageSource.camera,
+                  isVideo: isVideo,
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_rounded),
-              title: Text(isVideo ? 'Choose video from gallery' : 'Choose from gallery'),
+              title: Text(
+                isVideo ? 'Choose video from gallery' : 'Choose from gallery',
+              ),
               onTap: () {
                 Navigator.pop(ctx);
                 context.read<WalkerLiveWalkCubit>().captureAndUploadMedia(
-                      source: ImageSource.gallery,
-                      isVideo: isVideo,
-                    );
+                  source: ImageSource.gallery,
+                  isVideo: isVideo,
+                );
               },
             ),
             const SizedBox(height: 8),
@@ -705,8 +708,11 @@ class _MediaThumb extends StatelessWidget {
                     width: 64,
                     height: 64,
                     color: const Color(0xFF1A1A2E),
-                    child: const Icon(Icons.play_circle_fill_rounded,
-                        color: Colors.white, size: 28),
+                    child: const Icon(
+                      Icons.play_circle_fill_rounded,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                   )
                 : Image.network(
                     media.url,
@@ -717,8 +723,10 @@ class _MediaThumb extends StatelessWidget {
                       width: 64,
                       height: 64,
                       color: const Color(0xFFE0E4EC),
-                      child: const Icon(Icons.broken_image_rounded,
-                          color: Colors.grey),
+                      child: const Icon(
+                        Icons.broken_image_rounded,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
           ],
@@ -790,8 +798,7 @@ class _ErrorView extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.error_outline,
-                    size: 56, color: Colors.grey),
+                const Icon(Icons.error_outline, size: 56, color: Colors.grey),
                 const SizedBox(height: 16),
                 const Text(
                   'Could not start the walk',
@@ -818,9 +825,12 @@ class _ErrorView extends StatelessWidget {
                     backgroundColor: AppColors.navWalkers,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 32, vertical: 14),
+                      horizontal: 32,
+                      vertical: 14,
+                    ),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: const Text('Retry'),
                 ),

@@ -5,7 +5,7 @@ import 'home_provider_booking_state.dart';
 
 class HomeProviderBookingCubit extends Cubit<HomeProviderBookingState> {
   HomeProviderBookingCubit(this._repository)
-      : super(const HomeProviderBookingInitial());
+    : super(const HomeProviderBookingInitial());
 
   final HomeServiceBookingRepository _repository;
 
@@ -17,10 +17,12 @@ class HomeProviderBookingCubit extends Cubit<HomeProviderBookingState> {
     } on HomeServiceBookingFailure catch (e) {
       emit(HomeProviderBookingError(code: e.code, message: e.message));
     } catch (_) {
-      emit(const HomeProviderBookingError(
-        code: 'UNKNOWN',
-        message: 'An unexpected error occurred.',
-      ));
+      emit(
+        const HomeProviderBookingError(
+          code: 'UNKNOWN',
+          message: 'An unexpected error occurred.',
+        ),
+      );
     }
   }
 
@@ -37,10 +39,12 @@ class HomeProviderBookingCubit extends Cubit<HomeProviderBookingState> {
       }
     } catch (_) {
       if (current is HomeProviderBookingLoaded) {
-        emit(current.copyWith(
-          errorMessage: 'Could not refresh bookings.',
-          clearError: false,
-        ));
+        emit(
+          current.copyWith(
+            errorMessage: 'Could not refresh bookings.',
+            clearError: false,
+          ),
+        );
       }
     }
   }
@@ -100,20 +104,23 @@ class HomeProviderBookingCubit extends Cubit<HomeProviderBookingState> {
     try {
       await action();
       final bookings = await _repository.getProviderBookings();
-      emit(HomeProviderBookingLoaded(
-        bookings: bookings,
-        successMessage: successMsg,
-      ));
+      emit(
+        HomeProviderBookingLoaded(
+          bookings: bookings,
+          successMessage: successMsg,
+        ),
+      );
     } on HomeServiceBookingFailure catch (e) {
-      emit(current.copyWith(
-        isPerformingAction: false,
-        errorMessage: e.message,
-      ));
+      emit(
+        current.copyWith(isPerformingAction: false, errorMessage: e.message),
+      );
     } catch (_) {
-      emit(current.copyWith(
-        isPerformingAction: false,
-        errorMessage: 'An unexpected error occurred.',
-      ));
+      emit(
+        current.copyWith(
+          isPerformingAction: false,
+          errorMessage: 'An unexpected error occurred.',
+        ),
+      );
     }
   }
 }

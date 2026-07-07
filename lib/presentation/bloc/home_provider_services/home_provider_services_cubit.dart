@@ -8,7 +8,7 @@ import 'home_provider_services_state.dart';
 
 class HomeProviderServicesCubit extends Cubit<HomeProviderServicesState> {
   HomeProviderServicesCubit(this._repository, this._typeRepository)
-      : super(const HomeProviderServicesInitial());
+    : super(const HomeProviderServicesInitial());
 
   final HomeProviderServicesRepository _repository;
   final HomeServiceTypeRepository _typeRepository;
@@ -27,7 +27,9 @@ class HomeProviderServicesCubit extends Cubit<HomeProviderServicesState> {
       final services = results[0] as List<HomeProviderServiceItem>;
       final types = results[1] as List<HomeServiceType>;
       _cachedTypes = types;
-      emit(HomeProviderServicesLoaded(services: services, availableTypes: types));
+      emit(
+        HomeProviderServicesLoaded(services: services, availableTypes: types),
+      );
     } on HomeProviderServicesFailure catch (e) {
       emit(HomeProviderServicesError(e.code, e.message));
     } catch (e) {

@@ -75,11 +75,11 @@ class BusinessRemoteDataSource {
       'nit': nit,
       'email': email,
       'phone': int.tryParse(phone) ?? phone,
-      if (type != null) 'type': type,
-      if (location != null) 'location': location,
-      if (address != null) 'address': address,
-      if (latitude != null) 'latitude': latitude,
-      if (longitude != null) 'longitude': longitude,
+      'type': ?type,
+      'location': ?location,
+      'address': ?address,
+      'latitude': ?latitude,
+      'longitude': ?longitude,
     };
 
     final response = await _dio.post<dynamic>('/businesses', data: body);
@@ -120,7 +120,10 @@ class BusinessRemoteDataSource {
       throw BusinessFailure(data['code'] as String, data['error'] as String);
     }
 
-    throw BusinessFailure('MY_BUSINESS_FAILED', 'Unexpected response ($status).');
+    throw BusinessFailure(
+      'MY_BUSINESS_FAILED',
+      'Unexpected response ($status).',
+    );
   }
 
   /// PUT /businesses/me — update the current user's approved business.
@@ -129,8 +132,8 @@ class BusinessRemoteDataSource {
     String? facebookUrl,
   }) async {
     final body = <String, dynamic>{
-      if (instagramUrl != null) 'instagramUrl': instagramUrl,
-      if (facebookUrl != null) 'facebookUrl': facebookUrl,
+      'instagramUrl': ?instagramUrl,
+      'facebookUrl': ?facebookUrl,
     };
 
     final response = await _dio.put<dynamic>('/businesses/me', data: body);
@@ -173,8 +176,9 @@ class BusinessRemoteDataSource {
   Future<List<BusinessHourExceptionDto>> getBusinessHourExceptions(
     String businessId,
   ) async {
-    final response =
-        await _dio.get<dynamic>('/businesses/$businessId/hours/exceptions');
+    final response = await _dio.get<dynamic>(
+      '/businesses/$businessId/hours/exceptions',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
@@ -254,15 +258,17 @@ class BusinessRemoteDataSource {
   Future<List<BusinessServiceItemDto>> getBusinessServices(
     String businessId,
   ) async {
-    final response =
-        await _dio.get<dynamic>('/businesses/$businessId/services');
+    final response = await _dio.get<dynamic>(
+      '/businesses/$businessId/services',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
     if (status == 200 && data is List) {
       return data
-          .map((e) =>
-              BusinessServiceItemDto.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) => BusinessServiceItemDto.fromJson(e as Map<String, dynamic>),
+          )
           .toList();
     }
 

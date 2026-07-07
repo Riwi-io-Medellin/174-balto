@@ -166,11 +166,7 @@ class CheckEmailScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(
-                Icons.check_circle,
-                color: _success,
-                size: 22,
-              ),
+              child: const Icon(Icons.check_circle, color: _success, size: 22),
             ),
           ),
         ],

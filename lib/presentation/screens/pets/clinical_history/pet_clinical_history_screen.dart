@@ -24,7 +24,8 @@ class PetClinicalHistoryScreen extends StatefulWidget {
   final Pet pet;
 
   @override
-  State<PetClinicalHistoryScreen> createState() => _PetClinicalHistoryScreenState();
+  State<PetClinicalHistoryScreen> createState() =>
+      _PetClinicalHistoryScreenState();
 }
 
 class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
@@ -33,7 +34,14 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
   static const _textDark = Color(0xFF1A1A2E);
   static const _textMuted = Color(0xFF6B7280);
 
-  static const _allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'pdf'];
+  static const _allowedExtensions = [
+    'jpg',
+    'jpeg',
+    'png',
+    'webp',
+    'gif',
+    'pdf',
+  ];
 
   bool _loading = true;
   bool _processing = false;
@@ -62,8 +70,11 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
         sl<PetClinicalRepository>().getTips(widget.pet.id),
       ]);
       if (!mounted) return;
+      final record = results[0] as PetClinicalRecord;
+      // Sort once here instead of on every ClinicalTimeline build.
+      record.events.sort((a, b) => b.eventDate.compareTo(a.eventDate));
       setState(() {
-        _record = results[0] as PetClinicalRecord;
+        _record = record;
         _tips = results[1] as List<PetClinicalTip>;
       });
     } catch (_) {
@@ -120,12 +131,13 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
         if (path == null) continue;
         final extension = (file.extension ?? '').toLowerCase();
         final url = await sl<UploadRepository>().uploadFile(path, file.name);
-        final documentId = await sl<PetClinicalRepository>().registerSourceDocument(
-          petId: widget.pet.id,
-          fileUrl: url,
-          fileName: file.name,
-          fileType: extension,
-        );
+        final documentId = await sl<PetClinicalRepository>()
+            .registerSourceDocument(
+              petId: widget.pet.id,
+              fileUrl: url,
+              fileName: file.name,
+              fileType: extension,
+            );
         documentIds.add(documentId);
       }
 
@@ -145,7 +157,8 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
 
       final saved = await Navigator.of(context).push<bool>(
         MaterialPageRoute(
-          builder: (_) => ClinicalEventFormScreen(pet: widget.pet, draft: draft),
+          builder: (_) =>
+              ClinicalEventFormScreen(pet: widget.pet, draft: draft),
         ),
       );
       if (saved == true) await _load();
@@ -177,20 +190,29 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
                 RefreshIndicator(
                   color: _accent,
                   onRefresh: _load,
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-                    children: [
-                      _uploadCard(),
-                      const SizedBox(height: 24),
-                      if (_tips.isNotEmpty) ...[
-                        _sectionTitle('AI-generated tips'),
-                        const SizedBox(height: 10),
-                        ClinicalTipsSection(tips: _tips),
-                        const SizedBox(height: 24),
-                      ],
-                      _sectionTitle('Clinical history log'),
-                      const SizedBox(height: 14),
-                      ClinicalTimeline(events: _record?.events ?? []),
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate([
+                            _uploadCard(),
+                            const SizedBox(height: 24),
+                            if (_tips.isNotEmpty) ...[
+                              _sectionTitle('AI-generated tips'),
+                              const SizedBox(height: 10),
+                              ClinicalTipsSection(tips: _tips),
+                              const SizedBox(height: 24),
+                            ],
+                            _sectionTitle('Clinical history log'),
+                            const SizedBox(height: 14),
+                          ]),
+                        ),
+                      ),
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                        sliver: ClinicalTimeline(events: _record?.events ?? []),
+                      ),
                     ],
                   ),
                 ),
@@ -201,9 +223,13 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
   }
 
   Widget _sectionTitle(String text) => Text(
-        text,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: _textDark),
-      );
+    text,
+    style: const TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w800,
+      color: _textDark,
+    ),
+  );
 
   Widget _uploadCard() {
     return Container(
@@ -213,7 +239,11 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -224,20 +254,33 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
               Container(
                 width: 42,
                 height: 42,
-                decoration: BoxDecoration(color: _accent.withValues(alpha: 0.10), shape: BoxShape.circle),
-                child: const Icon(Icons.upload_file_rounded, size: 20, color: _accent),
+                decoration: BoxDecoration(
+                  color: _accent.withValues(alpha: 0.10),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.upload_file_rounded,
+                  size: 20,
+                  color: _accent,
+                ),
               ),
               const SizedBox(width: 12),
-              Expanded(
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Add a medical document',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textDark)),
-                    const SizedBox(height: 2),
+                    Text(
+                      'Add a medical document',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: _textDark,
+                      ),
+                    ),
+                    SizedBox(height: 2),
                     Text(
                       'PDF or images. AI extracts the data automatically.',
-                      style: const TextStyle(fontSize: 12, color: _textMuted),
+                      style: TextStyle(fontSize: 12, color: _textMuted),
                     ),
                   ],
                 ),
@@ -250,12 +293,17 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
             child: ElevatedButton.icon(
               onPressed: _processing ? null : _uploadDocuments,
               icon: const Icon(Icons.add_rounded),
-              label: const Text('Upload clinical history', style: TextStyle(fontWeight: FontWeight.w700)),
+              label: const Text(
+                'Upload clinical history',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _accent,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
                 elevation: 0,
               ),
             ),
@@ -272,14 +320,20 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 40),
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
-          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(
                 width: 40,
                 height: 40,
-                child: CircularProgressIndicator(strokeWidth: 3, color: _accent),
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                  color: _accent,
+                ),
               ),
               const SizedBox(height: 20),
               AnimatedSwitcher(
@@ -288,7 +342,11 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
                   _processingMessage,
                   key: ValueKey(_processingMessage),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _textDark),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _textDark,
+                  ),
                 ),
               ),
             ],

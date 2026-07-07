@@ -157,11 +157,7 @@ class _FaqScreenState extends State<FaqScreen> {
           color: _primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(
-          Icons.help_outline,
-          size: 20,
-          color: _primary,
-        ),
+        child: const Icon(Icons.help_outline, size: 20, color: _primary),
       ),
       title: Row(
         children: [
@@ -179,18 +175,18 @@ class _FaqScreenState extends State<FaqScreen> {
           AnimatedRotation(
             turns: isExpanded ? 0.5 : 0.0,
             duration: const Duration(milliseconds: 200),
-            child: const Icon(Icons.expand_more, size: 20, color: Color(0xFF6B7280)),
+            child: const Icon(
+              Icons.expand_more,
+              size: 20,
+              color: Color(0xFF6B7280),
+            ),
           ),
         ],
       ),
       children: [
         Text(
           answer,
-          style: const TextStyle(
-            fontSize: 13,
-            color: _textMuted,
-            height: 1.4,
-          ),
+          style: const TextStyle(fontSize: 13, color: _textMuted, height: 1.4),
         ),
       ],
     );

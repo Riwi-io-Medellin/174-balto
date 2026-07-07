@@ -5,7 +5,7 @@ import 'my_home_service_bookings_state.dart';
 
 class MyHomeServiceBookingsCubit extends Cubit<MyHomeServiceBookingsState> {
   MyHomeServiceBookingsCubit(this._repository)
-      : super(const MyHomeServiceBookingsInitial());
+    : super(const MyHomeServiceBookingsInitial());
 
   final HomeServiceBookingRepository _repository;
 
@@ -15,12 +15,19 @@ class MyHomeServiceBookingsCubit extends Cubit<MyHomeServiceBookingsState> {
       final bookings = await _repository.getMyBookings();
       emit(MyHomeServiceBookingsLoaded(bookings: bookings));
     } on HomeServiceBookingFailure catch (e) {
-      emit(MyHomeServiceBookingsLoaded(bookings: [], errorMessage: e.message));
+      emit(
+        MyHomeServiceBookingsLoaded(
+          bookings: const [],
+          errorMessage: e.message,
+        ),
+      );
     } catch (_) {
-      emit(const MyHomeServiceBookingsLoaded(
-        bookings: [],
-        errorMessage: 'Could not load bookings.',
-      ));
+      emit(
+        const MyHomeServiceBookingsLoaded(
+          bookings: [],
+          errorMessage: 'Could not load bookings.',
+        ),
+      );
     }
   }
 
@@ -33,7 +40,12 @@ class MyHomeServiceBookingsCubit extends Cubit<MyHomeServiceBookingsState> {
       if (current is MyHomeServiceBookingsLoaded) {
         emit(current.copyWith(errorMessage: e.message));
       } else {
-        emit(MyHomeServiceBookingsLoaded(bookings: [], errorMessage: e.message));
+        emit(
+          MyHomeServiceBookingsLoaded(
+            bookings: const [],
+            errorMessage: e.message,
+          ),
+        );
       }
     } catch (_) {
       if (current is MyHomeServiceBookingsLoaded) {
@@ -44,16 +56,30 @@ class MyHomeServiceBookingsCubit extends Cubit<MyHomeServiceBookingsState> {
 
   Future<void> cancelBooking(String bookingId) async {
     final current = state;
-    if (current is! MyHomeServiceBookingsLoaded || current.isPerformingAction) return;
+    if (current is! MyHomeServiceBookingsLoaded || current.isPerformingAction) {
+      return;
+    }
     emit(current.copyWith(isPerformingAction: true));
     try {
       await _repository.clientCancelBooking(bookingId);
       final bookings = await _repository.getMyBookings();
-      emit(MyHomeServiceBookingsLoaded(bookings: bookings, successMessage: 'Booking cancelled.'));
+      emit(
+        MyHomeServiceBookingsLoaded(
+          bookings: bookings,
+          successMessage: 'Booking cancelled.',
+        ),
+      );
     } on HomeServiceBookingFailure catch (e) {
-      emit(current.copyWith(isPerformingAction: false, errorMessage: e.message));
+      emit(
+        current.copyWith(isPerformingAction: false, errorMessage: e.message),
+      );
     } catch (_) {
-      emit(current.copyWith(isPerformingAction: false, errorMessage: 'An unexpected error occurred.'));
+      emit(
+        current.copyWith(
+          isPerformingAction: false,
+          errorMessage: 'An unexpected error occurred.',
+        ),
+      );
     }
   }
 

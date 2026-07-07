@@ -5,6 +5,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../../domain/repositories/notification_repository.dart';
 import '../../presentation/screens/notifications/notifications_screen.dart';
+import '../../presentation/screens/pets/lost_pet_report_screen.dart';
 import 'active_session_tracker.dart';
 
 /// Types of push notification whose in-app banner should be suppressed while
@@ -34,12 +35,15 @@ class PushNotificationService {
     importance: Importance.high,
   );
 
-  Future<void> initialize({required GlobalKey<NavigatorState> navigatorKey}) async {
+  Future<void> initialize({
+    required GlobalKey<NavigatorState> navigatorKey,
+  }) async {
     this.navigatorKey = navigatorKey;
 
     await _localNotifications
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(_channel);
 
     await _localNotifications.initialize(
@@ -49,7 +53,13 @@ class PushNotificationService {
       ),
       onDidReceiveNotificationResponse: (response) {
         final payload = response.payload;
-        if (payload != null) _openNotifications();
+        if (payload == null) return;
+        final parts = payload.split('|');
+        final type = parts.isNotEmpty ? parts[0] : null;
+        final entityId = parts.length > 1 && parts[1].isNotEmpty
+            ? parts[1]
+            : null;
+        _handleNotificationTap(type: type, entityId: entityId);
       },
     );
 
@@ -60,10 +70,20 @@ class PushNotificationService {
     );
 
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
-    FirebaseMessaging.onMessageOpenedApp.listen((_) => _openNotifications());
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (message) => _handleNotificationTap(
+        type: message.data['type'],
+        entityId: message.data['entityId'],
+      ),
+    );
 
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-    if (initialMessage != null) _openNotifications();
+    if (initialMessage != null) {
+      _handleNotificationTap(
+        type: initialMessage.data['type'],
+        entityId: initialMessage.data['entityId'],
+      );
+    }
 
     FirebaseMessaging.instance.onTokenRefresh.listen(_registerToken);
   }
@@ -90,7 +110,9 @@ class PushNotificationService {
     try {
       await _notificationRepository.registerDeviceToken(
         token: token,
-        platform: defaultTargetPlatform == TargetPlatform.iOS ? 'ios' : 'android',
+        platform: defaultTargetPlatform == TargetPlatform.iOS
+            ? 'ios'
+            : 'android',
       );
     } catch (e) {
       debugPrint('Failed to register device token: $e');
@@ -102,7 +124,8 @@ class PushNotificationService {
     final type = data['type'];
     final entityId = data['entityId'];
 
-    if (_sessionScopedTypes.contains(type) && ActiveSessionTracker.isActive(entityId)) {
+    if (_sessionScopedTypes.contains(type) &&
+        ActiveSessionTracker.isActive(entityId)) {
       // Already visible in-app (live chat / media section) — don't duplicate.
       return;
     }
@@ -124,13 +147,21 @@ class PushNotificationService {
         ),
         iOS: DarwinNotificationDetails(),
       ),
-      payload: type,
+      payload: '$type|${entityId ?? ''}',
     );
   }
 
-  void _openNotifications() {
+  void _handleNotificationTap({String? type, String? entityId}) {
     final navigator = navigatorKey?.currentState;
     if (navigator == null) return;
-    navigator.push(MaterialPageRoute(builder: (_) => const NotificationsScreen()));
+    if (type == 'lost_pet' && entityId != null) {
+      navigator.push(
+        MaterialPageRoute(builder: (_) => LostPetReportScreen(petId: entityId)),
+      );
+      return;
+    }
+    navigator.push(
+      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+    );
   }
 }

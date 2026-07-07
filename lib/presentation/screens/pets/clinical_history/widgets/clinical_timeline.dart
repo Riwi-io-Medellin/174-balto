@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../domain/entities/pet_clinical_event.dart';
 
-/// Timeline of clinical events (visit, vaccine, surgery, etc).
+/// Timeline of clinical events (visit, vaccine, surgery, etc), rendered as a
+/// sliver so a long history is built lazily instead of all at once — use it
+/// directly inside a `CustomScrollView`'s `slivers`.
 /// Each event is shown as a card with the essentials and a button
 /// to expand all the details.
 class ClinicalTimeline extends StatelessWidget {
@@ -35,43 +37,51 @@ class ClinicalTimeline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (events.isEmpty) {
-      return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 32),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE0E4EC)),
-        ),
-        child: const Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.timeline_rounded, size: 40, color: Color(0xFFB0B8C1)),
-            SizedBox(height: 10),
-            Text('No events recorded yet.', style: TextStyle(color: Color(0xFF6B7280), fontSize: 13)),
-          ],
+      return SliverToBoxAdapter(
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 32),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE0E4EC)),
+          ),
+          child: const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.timeline_rounded, size: 40, color: Color(0xFFB0B8C1)),
+              SizedBox(height: 10),
+              Text(
+                'No events recorded yet.',
+                style: TextStyle(color: Color(0xFF6B7280), fontSize: 13),
+              ),
+            ],
+          ),
         ),
       );
     }
 
-    final sorted = List<PetClinicalEvent>.from(events)
-      ..sort((a, b) => b.eventDate.compareTo(a.eventDate));
-
-    return Column(
-      children: [
-        for (var i = 0; i < sorted.length; i++)
-          _TimelineEntry(
-            event: sorted[i],
-            icon: _iconFor(sorted[i].eventType),
-            isLast: i == sorted.length - 1,
-          ),
-      ],
+    // `events` is expected to already be sorted newest-first by the caller
+    // (sorted once when loaded, not re-sorted on every build).
+    return SliverList(
+      delegate: SliverChildBuilderDelegate(
+        (context, i) => _TimelineEntry(
+          event: events[i],
+          icon: _iconFor(events[i].eventType),
+          isLast: i == events.length - 1,
+        ),
+        childCount: events.length,
+      ),
     );
   }
 }
 
 class _TimelineEntry extends StatefulWidget {
-  const _TimelineEntry({required this.event, required this.icon, required this.isLast});
+  const _TimelineEntry({
+    required this.event,
+    required this.icon,
+    required this.isLast,
+  });
 
   final PetClinicalEvent event;
   final IconData icon;
@@ -95,9 +105,19 @@ class _TimelineEntryState extends State<_TimelineEntry> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: _textMuted)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: _textMuted,
+            ),
+          ),
           const SizedBox(height: 2),
-          Text(value, style: const TextStyle(fontSize: 13, color: _textDark, height: 1.4)),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 13, color: _textDark, height: 1.4),
+          ),
         ],
       ),
     );
@@ -115,12 +135,19 @@ class _TimelineEntryState extends State<_TimelineEntry> {
               Container(
                 width: 36,
                 height: 36,
-                decoration: BoxDecoration(color: _accent.withValues(alpha: 0.12), shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: _accent.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
                 child: Icon(widget.icon, size: 17, color: _accent),
               ),
               if (!widget.isLast)
                 Expanded(
-                  child: Container(width: 2, color: const Color(0xFFE0E4EC), margin: const EdgeInsets.symmetric(vertical: 4)),
+                  child: Container(
+                    width: 2,
+                    color: const Color(0xFFE0E4EC),
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                  ),
                 ),
             ],
           ),
@@ -142,7 +169,11 @@ class _TimelineEntryState extends State<_TimelineEntry> {
                       Expanded(
                         child: Text(
                           PetClinicalEventType.label(e.eventType),
-                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textDark),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: _textDark,
+                          ),
                         ),
                       ),
                       Text(
@@ -154,13 +185,19 @@ class _TimelineEntryState extends State<_TimelineEntry> {
                   if (e.veterinarianName != null || e.clinicName != null) ...[
                     const SizedBox(height: 4),
                     Text(
-                      [e.veterinarianName, e.clinicName].where((s) => s != null && s.isNotEmpty).join(' · '),
+                      [
+                        e.veterinarianName,
+                        e.clinicName,
+                      ].where((s) => s != null && s.isNotEmpty).join(' · '),
                       style: const TextStyle(fontSize: 12, color: _textMuted),
                     ),
                   ],
                   if (e.diagnosis != null && e.diagnosis!.isNotEmpty) ...[
                     const SizedBox(height: 6),
-                    Text(e.diagnosis!, style: const TextStyle(fontSize: 13, color: _textDark)),
+                    Text(
+                      e.diagnosis!,
+                      style: const TextStyle(fontSize: 13, color: _textDark),
+                    ),
                   ],
                   if (_expanded) ...[
                     const Divider(height: 20, color: Color(0xFFE0E4EC)),
@@ -173,14 +210,24 @@ class _TimelineEntryState extends State<_TimelineEntry> {
                     _detailRow('Recommendations', e.recommendations),
                     _detailRow('Observations', e.observations),
                     if (e.medications.isNotEmpty) ...[
-                      const Text('Medications', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: _textMuted)),
+                      const Text(
+                        'Medications',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: _textMuted,
+                        ),
+                      ),
                       const SizedBox(height: 4),
                       for (final m in e.medications)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 4),
                           child: Text(
                             '• ${m.name}${m.dose != null ? ' — ${m.dose}' : ''}${m.frequency != null ? ' · ${m.frequency}' : ''}',
-                            style: const TextStyle(fontSize: 12, color: _textDark),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: _textDark,
+                            ),
                           ),
                         ),
                     ],
@@ -198,9 +245,19 @@ class _TimelineEntryState extends State<_TimelineEntry> {
                       children: [
                         Text(
                           _expanded ? 'See less' : 'See details',
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _accent),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: _accent,
+                          ),
                         ),
-                        Icon(_expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded, size: 16, color: _accent),
+                        Icon(
+                          _expanded
+                              ? Icons.expand_less_rounded
+                              : Icons.expand_more_rounded,
+                          size: 16,
+                          color: _accent,
+                        ),
                       ],
                     ),
                   ),

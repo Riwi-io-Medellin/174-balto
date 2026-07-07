@@ -90,7 +90,10 @@ class _HomeProviderGalleryDocumentsScreenState
   }
 
   Future<void> _addPhoto() async {
-    final image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     if (image == null) return;
     try {
       final url = await sl<UploadRepository>().uploadImage(image.path);
@@ -103,12 +106,17 @@ class _HomeProviderGalleryDocumentsScreenState
   }
 
   Future<void> _addDocument() async {
-    final image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final image = await _picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     if (image == null) return;
     try {
       final url = await sl<UploadRepository>().uploadImage(image.path);
-      await sl<HomeProviderAssetsRepository>()
-          .addMyDocument(documentType: 'general', fileUrl: url);
+      await sl<HomeProviderAssetsRepository>().addMyDocument(
+        documentType: 'general',
+        fileUrl: url,
+      );
       await _reloadAll();
     } catch (_) {
       if (!mounted) return;
@@ -137,17 +145,27 @@ class _HomeProviderGalleryDocumentsScreenState
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Add Certification',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _textDark)),
+            const Text(
+              'Add Certification',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: _textDark,
+              ),
+            ),
             const SizedBox(height: 16),
             TextField(
               controller: titleCtrl,
-              decoration: const InputDecoration(hintText: 'Title (e.g. Veterinary License)'),
+              decoration: const InputDecoration(
+                hintText: 'Title (e.g. Veterinary License)',
+              ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: orgCtrl,
-              decoration: const InputDecoration(hintText: 'Issuing organization (optional)'),
+              decoration: const InputDecoration(
+                hintText: 'Issuing organization (optional)',
+              ),
             ),
             const SizedBox(height: 20),
             SizedBox(
@@ -157,7 +175,9 @@ class _HomeProviderGalleryDocumentsScreenState
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _accent,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 onPressed: () => Navigator.of(sheetContext).pop(true),
                 child: const Text('Add'),
@@ -172,7 +192,9 @@ class _HomeProviderGalleryDocumentsScreenState
       try {
         await sl<HomeProviderAssetsRepository>().addMyCertification(
           title: titleCtrl.text.trim(),
-          issuingOrganization: orgCtrl.text.trim().isEmpty ? null : orgCtrl.text.trim(),
+          issuingOrganization: orgCtrl.text.trim().isEmpty
+              ? null
+              : orgCtrl.text.trim(),
         );
         await _reloadAll();
       } catch (_) {
@@ -206,7 +228,9 @@ class _HomeProviderGalleryDocumentsScreenState
     );
     if (confirmed == true && ctrl.text.trim().isNotEmpty) {
       try {
-        await sl<HomeProviderAssetsRepository>().addMySpecialty(ctrl.text.trim());
+        await sl<HomeProviderAssetsRepository>().addMySpecialty(
+          ctrl.text.trim(),
+        );
         await _reloadAll();
       } catch (_) {
         if (!mounted) return;
@@ -225,11 +249,19 @@ class _HomeProviderGalleryDocumentsScreenState
         scrolledUnderElevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: _textDark),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: _textDark,
+          ),
         ),
         title: const Text(
           'Gallery & Documents',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: _textDark),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: _textDark,
+          ),
         ),
         centerTitle: true,
         bottom: TabBar(
@@ -237,7 +269,10 @@ class _HomeProviderGalleryDocumentsScreenState
           labelColor: _accent,
           unselectedLabelColor: _textMuted,
           indicatorColor: _accent,
-          labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
+          ),
           tabs: const [
             Tab(text: 'Gallery'),
             Tab(text: 'Documents'),
@@ -284,7 +319,8 @@ class _HomeProviderGalleryDocumentsScreenState
                           fit: BoxFit.cover,
                           width: double.infinity,
                           height: double.infinity,
-                          errorBuilder: (_, _, _) => Container(color: const Color(0xFFE8F5EE)),
+                          errorBuilder: (_, _, _) =>
+                              Container(color: const Color(0xFFE8F5EE)),
                         ),
                       ),
                       Positioned(
@@ -292,7 +328,8 @@ class _HomeProviderGalleryDocumentsScreenState
                         right: 6,
                         child: GestureDetector(
                           onTap: () async {
-                            await sl<HomeProviderAssetsRepository>().deleteMyPhoto(photo.id);
+                            await sl<HomeProviderAssetsRepository>()
+                                .deleteMyPhoto(photo.id);
                             await _reloadAll();
                           },
                           child: Container(
@@ -301,7 +338,11 @@ class _HomeProviderGalleryDocumentsScreenState
                               color: Colors.black.withValues(alpha: 0.55),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.close_rounded, size: 14, color: Colors.white),
+                            child: const Icon(
+                              Icons.close_rounded,
+                              size: 14,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -339,7 +380,9 @@ class _HomeProviderGalleryDocumentsScreenState
                     icon: Icons.description_rounded,
                     title: doc.documentType,
                     onDelete: () async {
-                      await sl<HomeProviderAssetsRepository>().deleteMyDocument(doc.id);
+                      await sl<HomeProviderAssetsRepository>().deleteMyDocument(
+                        doc.id,
+                      );
                       await _reloadAll();
                     },
                   );
@@ -364,7 +407,10 @@ class _HomeProviderGalleryDocumentsScreenState
     return Stack(
       children: [
         _certifications.isEmpty
-            ? _emptyState(Icons.workspace_premium_outlined, 'No certifications yet')
+            ? _emptyState(
+                Icons.workspace_premium_outlined,
+                'No certifications yet',
+              )
             : ListView.separated(
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 90),
                 itemCount: _certifications.length,
@@ -409,17 +455,26 @@ class _HomeProviderGalleryDocumentsScreenState
                   spacing: 8,
                   runSpacing: 8,
                   children: _specialties
-                      .map((s) => Chip(
-                            label: Text(s.specialty),
-                            backgroundColor: _accent.withValues(alpha: 0.10),
-                            labelStyle: const TextStyle(color: _accent, fontWeight: FontWeight.w600),
-                            deleteIcon: const Icon(Icons.close_rounded, size: 16, color: _accent),
-                            onDeleted: () async {
-                              await sl<HomeProviderAssetsRepository>()
-                                  .deleteMySpecialty(s.id);
-                              await _reloadAll();
-                            },
-                          ))
+                      .map(
+                        (s) => Chip(
+                          label: Text(s.specialty),
+                          backgroundColor: _accent.withValues(alpha: 0.10),
+                          labelStyle: const TextStyle(
+                            color: _accent,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          deleteIcon: const Icon(
+                            Icons.close_rounded,
+                            size: 16,
+                            color: _accent,
+                          ),
+                          onDeleted: () async {
+                            await sl<HomeProviderAssetsRepository>()
+                                .deleteMySpecialty(s.id);
+                            await _reloadAll();
+                          },
+                        ),
+                      )
                       .toList(),
                 ),
               ),
@@ -469,7 +524,10 @@ class _HomeProviderGalleryDocumentsScreenState
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(color: _accent.withValues(alpha: 0.10), shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: _accent.withValues(alpha: 0.10),
+              shape: BoxShape.circle,
+            ),
             child: Icon(icon, size: 18, color: _accent),
           ),
           const SizedBox(width: 12),
@@ -477,9 +535,19 @@ class _HomeProviderGalleryDocumentsScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: _textDark)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: _textDark,
+                  ),
+                ),
                 if (subtitle != null && subtitle.isNotEmpty)
-                  Text(subtitle, style: const TextStyle(fontSize: 12, color: _textMuted)),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 12, color: _textMuted),
+                  ),
               ],
             ),
           ),
@@ -488,8 +556,15 @@ class _HomeProviderGalleryDocumentsScreenState
             child: Container(
               width: 28,
               height: 28,
-              decoration: const BoxDecoration(color: Color(0xFFFFF0ED), shape: BoxShape.circle),
-              child: const Icon(Icons.close_rounded, size: 14, color: Color(0xFFD05A24)),
+              decoration: const BoxDecoration(
+                color: Color(0xFFFFF0ED),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.close_rounded,
+                size: 14,
+                color: Color(0xFFD05A24),
+              ),
             ),
           ),
         ],

@@ -15,39 +15,31 @@ class HomeSkeleton extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── GreetingHeader ──────────────────────────────────
-            Row(
+            const Row(
               children: [
-                const SkeletonCircle(size: 48),
-                const SizedBox(width: 12),
+                SkeletonCircle(size: 48),
+                SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SkeletonBox(width: 100, height: 12),
-                      const SizedBox(height: 6),
-                      const SkeletonBox(width: 140, height: 18),
+                      SkeletonBox(width: 100, height: 12),
+                      SizedBox(height: 6),
+                      SkeletonBox(width: 140, height: 18),
                     ],
                   ),
                 ),
-                const SkeletonCircle(size: 40),
+                SkeletonCircle(size: 40),
               ],
             ),
             const SizedBox(height: 20),
 
             // ── PetHeroCard ─────────────────────────────────────
-            SkeletonBox(
-              width: double.infinity,
-              height: 220,
-              radius: 20,
-            ),
+            const SkeletonBox(width: double.infinity, height: 220, radius: 20),
             const SizedBox(height: 16),
 
             // ── DailyTipCard ────────────────────────────────────
-            SkeletonBox(
-              width: double.infinity,
-              height: 88,
-              radius: 16,
-            ),
+            const SkeletonBox(width: double.infinity, height: 88, radius: 16),
             const SizedBox(height: 26),
 
             // ── Section title: Walks ─────────────────────────────
@@ -82,13 +74,13 @@ class HomeSkeleton extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          child: Row(
+          child: const Row(
             children: [
-              const SkeletonBox(width: 4, height: 48, radius: 2),
-              const SizedBox(width: 10),
-              const SkeletonBox(width: 48, height: 48, radius: 10),
-              const SizedBox(width: 12),
-              const Expanded(
+              SkeletonBox(width: 4, height: 48, radius: 2),
+              SizedBox(width: 10),
+              SkeletonBox(width: 48, height: 48, radius: 10),
+              SizedBox(width: 12),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -99,7 +91,7 @@ class HomeSkeleton extends StatelessWidget {
                   ],
                 ),
               ),
-              const SkeletonBox(width: 20, height: 20, radius: 4),
+              SkeletonBox(width: 20, height: 20, radius: 4),
             ],
           ),
         ),
@@ -113,10 +105,10 @@ class HomeSkeleton extends StatelessWidget {
       runSpacing: 12,
       children: List.generate(4, (_) {
         return SizedBox(
-          width: (MediaQueryData.fromView(
-                        WidgetsBinding.instance.platformDispatcher.views.first)
-                      .size
-                      .width -
+          width:
+              (MediaQueryData.fromView(
+                    WidgetsBinding.instance.platformDispatcher.views.first,
+                  ).size.width -
                   40 -
                   12) /
               2,

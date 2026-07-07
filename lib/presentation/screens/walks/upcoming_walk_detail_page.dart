@@ -31,12 +31,14 @@ class UpcomingWalkDetailPage extends StatelessWidget {
                     _NotesCard(notes: walk.notes!),
                   ],
                   const SizedBox(height: 24),
-                  _CancelButton(onCancel: () {
-                    BaltoToast.warning(
-                      context,
-                      'Cancellation will be available closer to the scheduled time.',
-                    );
-                  }),
+                  _CancelButton(
+                    onCancel: () {
+                      BaltoToast.warning(
+                        context,
+                        'Cancellation will be available closer to the scheduled time.',
+                      );
+                    },
+                  ),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -76,7 +78,7 @@ class _DetailAppBar extends StatelessWidget {
                 color: Color(0xFF1A1A2E),
               ),
             ),
-            Text(
+            const Text(
               'Upcoming Walk',
               style: TextStyle(
                 fontSize: 12,
@@ -94,8 +96,11 @@ class _DetailAppBar extends StatelessWidget {
               fit: BoxFit.cover,
               errorBuilder: (_, _, _) => Container(
                 color: const Color(0xFFE8F0F8),
-                child: const Icon(Icons.pets,
-                    color: AppColors.navWalks, size: 64),
+                child: const Icon(
+                  Icons.pets,
+                  color: AppColors.navWalks,
+                  size: 64,
+                ),
               ),
             ),
             const DecoratedBox(
@@ -135,9 +140,7 @@ class _StatusCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.navWalks.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.navWalks.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: AppColors.navWalks.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -148,8 +151,11 @@ class _StatusCard extends StatelessWidget {
               color: AppColors.navWalks.withValues(alpha: 0.15),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.access_time_rounded,
-                color: AppColors.navWalks, size: 22),
+            child: const Icon(
+              Icons.access_time_rounded,
+              color: AppColors.navWalks,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 14),
           Column(
@@ -198,9 +204,17 @@ class _WalkInfoCard extends StatelessWidget {
       iconColor: AppColors.navWalks,
       child: Column(
         children: [
-          _InfoRow(icon: Icons.calendar_today_outlined, label: 'Date', value: dateStr),
+          _InfoRow(
+            icon: Icons.calendar_today_outlined,
+            label: 'Date',
+            value: dateStr,
+          ),
           const _Divider(),
-          _InfoRow(icon: Icons.schedule_outlined, label: 'Time', value: timeStr),
+          _InfoRow(
+            icon: Icons.schedule_outlined,
+            label: 'Time',
+            value: timeStr,
+          ),
           const _Divider(),
           _InfoRow(
             icon: Icons.timer_outlined,
@@ -221,31 +235,31 @@ class _WalkInfoCard extends StatelessWidget {
   }
 
   String _weekday(int d) => const [
-        '',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday',
-        'Sunday'
-      ][d];
+    '',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ][d];
 
   String _month(int m) => const [
-        '',
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec'
-      ][m];
+    '',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ][m];
 }
 
 class _WalkerCard extends StatelessWidget {
@@ -271,8 +285,11 @@ class _WalkerCard extends StatelessWidget {
                 width: 52,
                 height: 52,
                 color: AppColors.navWalkers.withValues(alpha: 0.15),
-                child: const Icon(Icons.person,
-                    color: AppColors.navWalkers, size: 28),
+                child: const Icon(
+                  Icons.person,
+                  color: AppColors.navWalkers,
+                  size: 28,
+                ),
               ),
             ),
           ),
@@ -292,8 +309,11 @@ class _WalkerCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 6),
-                    const Icon(Icons.verified_rounded,
-                        color: AppColors.navWalks, size: 16),
+                    const Icon(
+                      Icons.verified_rounded,
+                      color: AppColors.navWalks,
+                      size: 16,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 3),
@@ -306,8 +326,11 @@ class _WalkerCard extends StatelessWidget {
           ),
           Row(
             children: [
-              const Icon(Icons.star_rounded,
-                  color: Color(0xFFE8A84C), size: 16),
+              const Icon(
+                Icons.star_rounded,
+                color: Color(0xFFE8A84C),
+                size: 16,
+              ),
               const SizedBox(width: 3),
               Text(
                 walk.walkerRating.toStringAsFixed(1),

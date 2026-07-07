@@ -29,11 +29,17 @@ void main() async {
   }
   final token = await tokenStorage.readAccessToken();
 
-  final pushService = sl<PushNotificationService>();
-  await pushService.initialize(navigatorKey: navigatorKey);
-  if (token != null) await pushService.registerCurrentToken();
-
   runApp(BaltoApp(isLoggedIn: token != null));
+
+  // Deferred past the first frame: neither the login screen nor the home
+  // shell reads any push-related state to render, and this can involve an
+  // iOS permission dialog plus a backend round-trip — no reason to make
+  // startup wait on it.
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    final pushService = sl<PushNotificationService>();
+    await pushService.initialize(navigatorKey: navigatorKey);
+    if (token != null) await pushService.registerCurrentToken();
+  });
 }
 
 class BaltoApp extends StatelessWidget {
@@ -52,11 +58,12 @@ class BaltoApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: base.copyWith(
-        textTheme: GoogleFonts.interTextTheme(base.textTheme).apply(
-          fontFamilyFallback: const ['Ubuntu', 'Roboto'],
-        ),
-        primaryTextTheme: GoogleFonts.interTextTheme(base.primaryTextTheme)
-            .apply(fontFamilyFallback: const ['Ubuntu', 'Roboto']),
+        textTheme: GoogleFonts.interTextTheme(
+          base.textTheme,
+        ).apply(fontFamilyFallback: const ['Ubuntu', 'Roboto']),
+        primaryTextTheme: GoogleFonts.interTextTheme(
+          base.primaryTextTheme,
+        ).apply(fontFamilyFallback: const ['Ubuntu', 'Roboto']),
       ),
       home: isLoggedIn ? const MainShell() : const LoginScreen(),
     );
