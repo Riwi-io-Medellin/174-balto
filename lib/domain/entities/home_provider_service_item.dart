@@ -33,13 +33,13 @@ class HomeProviderServiceItem extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        serviceTypeId,
-        serviceTypeCode,
-        serviceTypeName,
-        price,
-        priceUnit,
-        description,
-        isActive,
-      ];
+    id,
+    serviceTypeId,
+    serviceTypeCode,
+    serviceTypeName,
+    price,
+    priceUnit,
+    description,
+    isActive,
+  ];
 }

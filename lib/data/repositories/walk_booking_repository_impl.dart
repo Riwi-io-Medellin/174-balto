@@ -123,5 +123,4 @@ class WalkBookingRepositoryImpl implements WalkBookingRepository {
       );
     }
   }
-
 }

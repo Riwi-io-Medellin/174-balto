@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/utils/vet_document_validators.dart';
 import '../../../core/widgets/balto_toast.dart';
@@ -180,7 +181,9 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
     showModalBottomSheet<void>(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadius.r20),
+        ),
       ),
       builder: (ctx) => SafeArea(
         child: Column(
@@ -192,7 +195,7 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
               height: 4,
               decoration: BoxDecoration(
                 color: const Color(0xFFE0E0E0),
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: AppRadius.radius2,
               ),
             ),
             const SizedBox(height: 16),
@@ -298,9 +301,7 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: _primary,
                 side: const BorderSide(color: _primary),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
               ),
               child: const Text('Analyze Another Document'),
             ),
@@ -346,9 +347,7 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: _primary,
                 side: const BorderSide(color: _primary),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.radius12),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 minimumSize: const Size(double.infinity, 0),
               ),
@@ -489,7 +488,7 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
                   backgroundColor: _primary,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: AppRadius.radius14,
                   ),
                   elevation: 0,
                 ),
@@ -536,7 +535,7 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Row(
@@ -572,7 +571,7 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         border: Border.all(color: const Color(0xFFE0E4EC)),
       ),
       child: Row(
@@ -625,7 +624,7 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: const Color(0xFFFFF3CD),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
         border: Border.all(
           color: const Color(0xFFE8A84C).withValues(alpha: 0.5),
         ),
@@ -658,7 +657,7 @@ class _VetDocumentAnalysisViewState extends State<_VetDocumentAnalysisView> {
       filled: true,
       fillColor: _inputFill,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),

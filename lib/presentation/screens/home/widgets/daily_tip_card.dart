@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_radius.dart';
+
 class DailyTipCard extends StatelessWidget {
   const DailyTipCard({super.key, required this.tip});
 
@@ -14,13 +16,9 @@ class DailyTipCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           stops: [0.0, 0.6, 1.0],
-          colors: [
-            Color(0xFF1A3A6E),
-            Color(0xFF2259A8),
-            Color(0xFF3A80C2),
-          ],
+          colors: [Color(0xFF1A3A6E), Color(0xFF2259A8), Color(0xFF3A80C2)],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF2259A8).withValues(alpha: 0.30),
@@ -39,7 +37,10 @@ class DailyTipCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.15),
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 1),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.25),
+                width: 1,
+              ),
             ),
             child: const Icon(
               Icons.lightbulb_outline_rounded,

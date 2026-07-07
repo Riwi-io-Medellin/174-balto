@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_radius.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../domain/entities/business.dart';
 import '../../../widgets/app_network_image.dart';
 
@@ -16,7 +18,7 @@ class BusinessCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.radius20,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.07),
@@ -69,7 +71,9 @@ class _CoverImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(AppRadius.r20),
+      ),
       child: SizedBox(
         height: 140,
         width: double.infinity,
@@ -108,7 +112,7 @@ class _CoverImage extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: AppRadius.radius20,
                   ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
@@ -156,10 +160,7 @@ class _CategoryBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(20),
-      ),
+      decoration: BoxDecoration(color: color, borderRadius: AppRadius.radius20),
       child: Text(
         label,
         style: const TextStyle(
@@ -230,9 +231,7 @@ class _MetaRow extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           business.isOpen ? 'Open Now' : 'Closed',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
+          style: AppTextStyles.captionStrong.copyWith(
             color: business.isOpen
                 ? const Color(0xFF34C759)
                 : const Color(0xFFFF3B30),

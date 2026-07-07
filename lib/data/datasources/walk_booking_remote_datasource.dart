@@ -41,8 +41,10 @@ class WalkBookingRemoteDataSource {
     final params = <String, dynamic>{};
     if (status != null) params['status'] = status;
 
-    final response =
-        await _dio.get<dynamic>('/walk-bookings/me', queryParameters: params);
+    final response = await _dio.get<dynamic>(
+      '/walk-bookings/me',
+      queryParameters: params,
+    );
     final code = response.statusCode ?? 0;
     final data = response.data;
 
@@ -57,8 +59,9 @@ class WalkBookingRemoteDataSource {
   }
 
   Future<void> cancelBooking(String bookingId) async {
-    final response =
-        await _dio.post<dynamic>('/walk-bookings/$bookingId/owner-cancel');
+    final response = await _dio.post<dynamic>(
+      '/walk-bookings/$bookingId/owner-cancel',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
@@ -89,24 +92,27 @@ class WalkBookingRemoteDataSource {
   }
 
   Future<void> acceptBooking(String bookingId) async {
-    final response =
-        await _dio.post<dynamic>('/walk-bookings/$bookingId/accept');
+    final response = await _dio.post<dynamic>(
+      '/walk-bookings/$bookingId/accept',
+    );
     final status = response.statusCode ?? 0;
     if (status == 200) return;
     _throwFailure(status, response.data);
   }
 
   Future<void> rejectBooking(String bookingId) async {
-    final response =
-        await _dio.post<dynamic>('/walk-bookings/$bookingId/reject');
+    final response = await _dio.post<dynamic>(
+      '/walk-bookings/$bookingId/reject',
+    );
     final status = response.statusCode ?? 0;
     if (status == 200) return;
     _throwFailure(status, response.data);
   }
 
   Future<void> walkerCancelBooking(String bookingId) async {
-    final response =
-        await _dio.post<dynamic>('/walk-bookings/$bookingId/cancel');
+    final response = await _dio.post<dynamic>(
+      '/walk-bookings/$bookingId/cancel',
+    );
     final status = response.statusCode ?? 0;
     if (status == 200) return;
     _throwFailure(status, response.data);
@@ -116,11 +122,11 @@ class WalkBookingRemoteDataSource {
     if (data is Map<String, dynamic> &&
         data['code'] is String &&
         data['error'] is String) {
-      throw WalkBookingFailure(
-        data['code'] as String,
-        data['error'] as String,
-      );
+      throw WalkBookingFailure(data['code'] as String, data['error'] as String);
     }
-    throw WalkBookingFailure('REQUEST_FAILED', 'Unexpected response ($status).');
+    throw WalkBookingFailure(
+      'REQUEST_FAILED',
+      'Unexpected response ($status).',
+    );
   }
 }

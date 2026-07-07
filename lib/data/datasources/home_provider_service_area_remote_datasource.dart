@@ -9,8 +9,9 @@ class HomeProviderServiceAreaRemoteDataSource {
   final Dio _dio;
 
   Future<List<HomeProviderServiceAreaDto>> getMyServiceAreas() async {
-    final response =
-        await _dio.get<dynamic>('/home-services/providers/me/service-areas');
+    final response = await _dio.get<dynamic>(
+      '/home-services/providers/me/service-areas',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 

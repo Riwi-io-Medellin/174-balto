@@ -44,7 +44,8 @@ class _ScanNfcTagScreenState extends State<ScanNfcTagScreen> {
       if (!available) {
         setState(() {
           _scanning = false;
-          _error = 'NFC is not available on this device. Turn it on in your device settings.';
+          _error =
+              'NFC is not available on this device. Turn it on in your device settings.';
         });
         return;
       }

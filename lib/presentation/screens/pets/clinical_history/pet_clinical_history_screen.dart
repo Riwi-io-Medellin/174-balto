@@ -4,6 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_radius.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/widgets/balto_toast.dart';
 import '../../../../domain/entities/pet.dart';
@@ -237,7 +239,7 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: AppRadius.radius18,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -265,20 +267,16 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Add a medical document',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: _textDark,
-                      ),
+                      style: AppTextStyles.bodyBold.copyWith(color: _textDark),
                     ),
-                    SizedBox(height: 2),
-                    Text(
+                    const SizedBox(height: 2),
+                    const Text(
                       'PDF or images. AI extracts the data automatically.',
                       style: TextStyle(fontSize: 12, color: _textMuted),
                     ),
@@ -301,9 +299,7 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
                 backgroundColor: _accent,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
                 elevation: 0,
               ),
             ),
@@ -322,7 +318,7 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: AppRadius.radius20,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

@@ -53,33 +53,32 @@ class WalkerLiveWalkActive extends WalkerLiveWalkState {
     bool? isUploadingMedia,
     bool clearMediaError = false,
     String? mediaUploadError,
-  }) =>
-      WalkerLiveWalkActive(
-        sessionId: sessionId ?? this.sessionId,
-        currentPosition: currentPosition ?? this.currentPosition,
-        accuracyMeters: accuracyMeters ?? this.accuracyMeters,
-        elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
-        routePoints: routePoints ?? this.routePoints,
-        distanceKm: distanceKm ?? this.distanceKm,
-        mediaItems: mediaItems ?? this.mediaItems,
-        isUploadingMedia: isUploadingMedia ?? this.isUploadingMedia,
-        mediaUploadError: clearMediaError
-            ? null
-            : (mediaUploadError ?? this.mediaUploadError),
-      );
+  }) => WalkerLiveWalkActive(
+    sessionId: sessionId ?? this.sessionId,
+    currentPosition: currentPosition ?? this.currentPosition,
+    accuracyMeters: accuracyMeters ?? this.accuracyMeters,
+    elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
+    routePoints: routePoints ?? this.routePoints,
+    distanceKm: distanceKm ?? this.distanceKm,
+    mediaItems: mediaItems ?? this.mediaItems,
+    isUploadingMedia: isUploadingMedia ?? this.isUploadingMedia,
+    mediaUploadError: clearMediaError
+        ? null
+        : (mediaUploadError ?? this.mediaUploadError),
+  );
 
   @override
   List<Object?> get props => [
-        sessionId,
-        currentPosition,
-        accuracyMeters,
-        elapsedSeconds,
-        routePoints,
-        distanceKm,
-        mediaItems,
-        isUploadingMedia,
-        mediaUploadError,
-      ];
+    sessionId,
+    currentPosition,
+    accuracyMeters,
+    elapsedSeconds,
+    routePoints,
+    distanceKm,
+    mediaItems,
+    isUploadingMedia,
+    mediaUploadError,
+  ];
 }
 
 class WalkerLiveWalkEnding extends WalkerLiveWalkState {

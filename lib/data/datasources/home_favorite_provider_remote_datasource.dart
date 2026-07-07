@@ -21,16 +21,18 @@ class HomeFavoriteProviderRemoteDataSource {
   }
 
   Future<void> addFavorite(String providerId) async {
-    final response = await _dio
-        .post<dynamic>('/home-services/favorites/$providerId');
+    final response = await _dio.post<dynamic>(
+      '/home-services/favorites/$providerId',
+    );
     final status = response.statusCode ?? 0;
     if (status == 200 || status == 201) return;
     _throwFailure(status, response.data, 'ADD_FAILED');
   }
 
   Future<void> removeFavorite(String providerId) async {
-    final response = await _dio
-        .delete<dynamic>('/home-services/favorites/$providerId');
+    final response = await _dio.delete<dynamic>(
+      '/home-services/favorites/$providerId',
+    );
     final status = response.statusCode ?? 0;
     if (status == 204 || status == 200) return;
     _throwFailure(status, response.data, 'REMOVE_FAILED');

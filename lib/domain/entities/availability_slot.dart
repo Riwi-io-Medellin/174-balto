@@ -10,7 +10,7 @@ class AvailabilitySlot extends Equatable {
   /// 0 = Sunday, 1 = Monday, … 6 = Saturday
   final int dayOfWeek;
   final String startTime; // "HH:mm"
-  final String endTime;   // "HH:mm"
+  final String endTime; // "HH:mm"
 
   @override
   List<Object?> get props => [dayOfWeek, startTime, endTime];

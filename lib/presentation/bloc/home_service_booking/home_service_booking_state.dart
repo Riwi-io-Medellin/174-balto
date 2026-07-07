@@ -100,20 +100,20 @@ class HomeServiceBookingForm extends HomeServiceBookingState {
 
   @override
   List<Object?> get props => [
-        pets,
-        selectedPet,
-        services,
-        selectedService,
-        selectedDuration,
-        selectedDate,
-        availableSlots,
-        selectedSlot,
-        serviceAddress,
-        instructions,
-        isLoadingSlots,
-        slotsError,
-        hadConflict,
-      ];
+    pets,
+    selectedPet,
+    services,
+    selectedService,
+    selectedDuration,
+    selectedDate,
+    availableSlots,
+    selectedSlot,
+    serviceAddress,
+    instructions,
+    isLoadingSlots,
+    slotsError,
+    hadConflict,
+  ];
 }
 
 class HomeServiceBookingSubmitting extends HomeServiceBookingState {

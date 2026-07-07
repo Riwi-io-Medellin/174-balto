@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_radius.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../widgets/app_network_image.dart';
 
 class WalkEntry {
@@ -45,7 +47,7 @@ class WalkCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: _cardBg,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.radius14,
           border: entry.statusColor != null
               ? Border.all(
                   color: entry.statusColor!.withValues(alpha: 0.20),
@@ -71,7 +73,7 @@ class WalkCard extends StatelessWidget {
                   height: 44,
                   decoration: BoxDecoration(
                     color: entry.statusColor,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: AppRadius.radius2,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -85,14 +87,7 @@ class WalkCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      entry.title,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1F2937),
-                      ),
-                    ),
+                    Text(entry.title, style: AppTextStyles.bodyBold),
                     const SizedBox(height: 2),
                     Text(
                       entry.subtitle,
@@ -127,7 +122,7 @@ class _WalkThumbnail extends StatelessWidget {
   Widget build(BuildContext context) {
     if (imageUrl != null && imageUrl!.isNotEmpty) {
       return ClipRRect(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.radius10,
         child: AppNetworkImage(
           imageUrl!,
           width: 48,
@@ -146,7 +141,7 @@ class _WalkThumbnail extends StatelessWidget {
       height: 48,
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.radius10,
       ),
       child: Icon(
         Icons.directions_walk,

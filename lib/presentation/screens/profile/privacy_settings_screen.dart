@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
+
 class PrivacySettingsScreen extends StatefulWidget {
   const PrivacySettingsScreen({super.key});
 
@@ -12,7 +16,6 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
   bool _showOnlineStatus = true;
   bool _allowProfilePhoto = true;
 
-  static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _textDark = Color(0xFF1A1A2E);
   static const Color _textMuted = Color(0xFF6B7280);
@@ -34,7 +37,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: AppRadius.radius20,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.06),
@@ -91,10 +94,10 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: _primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.navWalks.withValues(alpha: 0.1),
+              borderRadius: AppRadius.radius12,
             ),
-            child: Icon(icon, size: 20, color: _primary),
+            child: Icon(icon, size: 20, color: AppColors.navWalks),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -103,11 +106,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: _textDark,
-                  ),
+                  style: AppTextStyles.bodyStrong.copyWith(color: _textDark),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -120,7 +119,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
           Switch(
             value: value,
             activeThumbColor: Colors.white,
-            activeTrackColor: _primary,
+            activeTrackColor: AppColors.navWalks,
             onChanged: onChanged,
           ),
         ],

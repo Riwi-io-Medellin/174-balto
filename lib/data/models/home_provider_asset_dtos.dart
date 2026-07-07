@@ -37,8 +37,11 @@ class HomeProviderDocumentDto {
   final String documentType;
   final String fileUrl;
 
-  HomeProviderDocument toEntity() =>
-      HomeProviderDocument(id: id, documentType: documentType, fileUrl: fileUrl);
+  HomeProviderDocument toEntity() => HomeProviderDocument(
+    id: id,
+    documentType: documentType,
+    fileUrl: fileUrl,
+  );
 }
 
 class HomeProviderCertificationDto {
@@ -72,14 +75,14 @@ class HomeProviderCertificationDto {
   final String? documentUrl;
 
   HomeProviderCertification toEntity() => HomeProviderCertification(
-        id: id,
-        title: title,
-        issuingOrganization: issuingOrganization,
-        credentialNumber: credentialNumber,
-        issuedDate: issuedDate,
-        expiryDate: expiryDate,
-        documentUrl: documentUrl,
-      );
+    id: id,
+    title: title,
+    issuingOrganization: issuingOrganization,
+    credentialNumber: credentialNumber,
+    issuedDate: issuedDate,
+    expiryDate: expiryDate,
+    documentUrl: documentUrl,
+  );
 }
 
 class HomeProviderSpecialtyDto {

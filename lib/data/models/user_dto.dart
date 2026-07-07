@@ -53,19 +53,19 @@ class UserDto {
   }
 
   User toEntity() => User(
-        id: id,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        idNumber: idNumber,
-        idType: idType,
-        phone: phone,
-        phoneExtra: phoneExtra,
-        location: location,
-        address: address,
-        photoUrl: photoUrl,
-        createdAt: createdAt,
-        latitude: latitude,
-        longitude: longitude,
-      );
+    id: id,
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    idNumber: idNumber,
+    idType: idType,
+    phone: phone,
+    phoneExtra: phoneExtra,
+    location: location,
+    address: address,
+    photoUrl: photoUrl,
+    createdAt: createdAt,
+    latitude: latitude,
+    longitude: longitude,
+  );
 }

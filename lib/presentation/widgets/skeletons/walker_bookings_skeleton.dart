@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_radius.dart';
 import 'skeleton_box.dart';
 
 class WalkerBookingsSkeleton extends StatelessWidget {
@@ -25,7 +26,7 @@ class _BookingCardSkeleton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -38,7 +39,7 @@ class _BookingCardSkeleton extends StatelessWidget {
                 height: 44,
                 decoration: BoxDecoration(
                   color: const Color(0xFFE0E0E0),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.radius10,
                 ),
               ),
               const SizedBox(width: 12),
@@ -68,7 +69,7 @@ class _BookingCardSkeleton extends StatelessWidget {
             height: 36,
             decoration: BoxDecoration(
               color: const Color(0xFFE0E0E0),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: AppRadius.radius8,
             ),
           ),
         ],

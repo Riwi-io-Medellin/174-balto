@@ -19,8 +19,9 @@ class AvailabilityExceptionDto {
 
   static List<AvailabilityExceptionDto> fromJsonList(List<dynamic> jsonList) {
     return jsonList
-        .map((e) =>
-            AvailabilityExceptionDto.fromJson(e as Map<String, dynamic>))
+        .map(
+          (e) => AvailabilityExceptionDto.fromJson(e as Map<String, dynamic>),
+        )
         .toList();
   }
 
@@ -30,18 +31,18 @@ class AvailabilityExceptionDto {
   final String? endTime;
 
   Map<String, dynamic> toJson() => {
-        'date': date,
-        'isUnavailable': isUnavailable,
-        if (startTime != null) 'startTime': startTime,
-        if (endTime != null) 'endTime': endTime,
-      };
+    'date': date,
+    'isUnavailable': isUnavailable,
+    if (startTime != null) 'startTime': startTime,
+    if (endTime != null) 'endTime': endTime,
+  };
 
   AvailabilityException toEntity() => AvailabilityException(
-        date: date,
-        isUnavailable: isUnavailable,
-        startTime: startTime,
-        endTime: endTime,
-      );
+    date: date,
+    isUnavailable: isUnavailable,
+    startTime: startTime,
+    endTime: endTime,
+  );
 
   static String? _normalizeTime(String? time) {
     if (time == null) return null;

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_radius.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../domain/entities/business.dart';
 
 class BusinessProfileHeader extends StatelessWidget {
@@ -30,7 +32,7 @@ class BusinessProfileHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.radius14,
                 child: SizedBox(
                   width: 64,
                   height: 64,
@@ -88,10 +90,8 @@ class BusinessProfileHeader extends StatelessWidget {
               const SizedBox(width: 3),
               Text(
                 business.rating.toStringAsFixed(1),
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF1F2937),
+                style: AppTextStyles.bodyBold.copyWith(
+                  color: const Color(0xFF1F2937),
                 ),
               ),
               Text(
@@ -112,9 +112,7 @@ class BusinessProfileHeader extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 business.isOpen ? 'Open Now' : 'Closed',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                style: AppTextStyles.label.copyWith(
                   color: business.isOpen
                       ? const Color(0xFF34C759)
                       : const Color(0xFFFF3B30),
@@ -191,10 +189,7 @@ class BusinessProfileHeader extends StatelessWidget {
 
   Widget _badge(String label, Color color) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(20),
-    ),
+    decoration: BoxDecoration(color: color, borderRadius: AppRadius.radius20),
     child: Text(
       label,
       style: const TextStyle(
@@ -227,7 +222,7 @@ class _ContactButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.radius12,
         ),
         child: Column(
           children: [

@@ -10,10 +10,7 @@ class CoachRepositoryImpl implements CoachRepository {
   final CoachRemoteDataSource _dataSource;
 
   @override
-  Future<String> sendMessage(
-    String message,
-    List<CoachMessage> history,
-  ) async {
+  Future<String> sendMessage(String message, List<CoachMessage> history) async {
     try {
       return await _dataSource.sendMessage(message, history);
     } on CoachFailure {
@@ -25,9 +22,14 @@ class CoachRepositoryImpl implements CoachRepository {
       }
       if (status == 503) {
         throw CoachFailure(
-            'SERVICE_UNAVAILABLE', 'The coach is not available.');
+          'SERVICE_UNAVAILABLE',
+          'The coach is not available.',
+        );
       }
-      throw CoachFailure('NETWORK_ERROR', 'Connection error. Please try again.');
+      throw CoachFailure(
+        'NETWORK_ERROR',
+        'Connection error. Please try again.',
+      );
     } catch (_) {
       throw CoachFailure('UNKNOWN', 'Unexpected error.');
     }

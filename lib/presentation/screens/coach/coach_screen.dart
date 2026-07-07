@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/coach_message.dart';
 import '../../bloc/coach/coach_cubit.dart';
 import '../../bloc/coach/coach_state.dart';
+import '../../widgets/balto_header.dart';
+import '../../widgets/balto_screen_scaffold.dart';
 import 'widgets/message_bubble.dart';
 
 class CoachScreen extends StatelessWidget {
@@ -98,52 +102,31 @@ class _CoachViewState extends State<_CoachView> {
             : <CoachMessage>[];
         final isTyping = state is CoachLoaded && state.isTyping;
 
-        return Scaffold(
-          backgroundColor: const Color(0xFFF5F5F5),
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            title: Row(
-              children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: const BoxDecoration(
-                    color: AppColors.navCoach,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.auto_awesome,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                const Text(
-                  'Balto Coach',
-                  style: TextStyle(
-                    color: Color(0xFF1F2937),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 17,
-                  ),
-                ),
-              ],
+        return BaltoScreenScaffold(
+          header: BaltoHeader(
+            leading: Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                color: AppColors.navCoach,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.auto_awesome,
+                color: Colors.white,
+                size: 16,
+              ),
             ),
+            title: Text('Balto Coach', style: AppTextStyles.h3),
             actions: [
               if (messages.isNotEmpty)
-                IconButton(
-                  icon: const Icon(
-                    Icons.refresh_rounded,
-                    color: Color(0xFF6B7280),
-                  ),
+                BaltoHeaderAction(
+                  icon: Icons.refresh_rounded,
+                  color: AppColors.textSecondary,
                   tooltip: 'New session',
                   onPressed: _confirmClear,
                 ),
             ],
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1),
-              child: Container(color: const Color(0xFFE5E7EB), height: 1),
-            ),
           ),
           body: Column(
             children: [
@@ -212,14 +195,7 @@ class _EmptyState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Balto Coach',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-                color: Color(0xFF1F2937),
-              ),
-            ),
+            const Text('Balto Coach', style: AppTextStyles.h2),
             const SizedBox(height: 8),
             const Text(
               'Your pet wellness assistant.\nAsk me about your pet\'s care, nutrition,\nand health.',
@@ -292,15 +268,15 @@ class _InputBar extends StatelessWidget {
                   vertical: 10,
                 ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: AppRadius.radius22,
                   borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: AppRadius.radius22,
                   borderSide: const BorderSide(color: Color(0xFFE5E7EB)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(22),
+                  borderRadius: AppRadius.radius22,
                   borderSide: const BorderSide(color: AppColors.navCoach),
                 ),
               ),

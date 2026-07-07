@@ -17,7 +17,8 @@ class FeedbackSummaryDto {
   final List<ReviewDto> reviews;
 
   factory FeedbackSummaryDto.fromJson(Map<String, dynamic> json) {
-    final reviewsList = (json['reviews'] as List<dynamic>?)
+    final reviewsList =
+        (json['reviews'] as List<dynamic>?)
             ?.map((e) => ReviewDto.fromJson(e as Map<String, dynamic>))
             .toList() ??
         [];
@@ -32,10 +33,10 @@ class FeedbackSummaryDto {
   }
 
   FeedbackSummary toEntity() => FeedbackSummary(
-        targetId: targetId,
-        targetType: targetType,
-        averageRating: averageRating,
-        totalReviews: totalReviews,
-        reviews: reviews.map((r) => r.toEntity()).toList(),
-      );
+    targetId: targetId,
+    targetType: targetType,
+    averageRating: averageRating,
+    totalReviews: totalReviews,
+    reviews: reviews.map((r) => r.toEntity()).toList(),
+  );
 }

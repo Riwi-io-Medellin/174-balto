@@ -29,7 +29,10 @@ class PetClinicalRepositoryImpl implements PetClinicalRepository {
     } on PetClinicalFailure {
       rethrow;
     } on DioException catch (e) {
-      throw PetClinicalFailure('NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+      throw PetClinicalFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -44,7 +47,10 @@ class PetClinicalRepositoryImpl implements PetClinicalRepository {
     } on PetClinicalFailure {
       rethrow;
     } on DioException catch (e) {
-      throw PetClinicalFailure('NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+      throw PetClinicalFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -62,7 +68,10 @@ class PetClinicalRepositoryImpl implements PetClinicalRepository {
     } on PetClinicalFailure {
       rethrow;
     } on DioException catch (e) {
-      throw PetClinicalFailure('NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+      throw PetClinicalFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -74,7 +83,10 @@ class PetClinicalRepositoryImpl implements PetClinicalRepository {
     } on PetClinicalFailure {
       rethrow;
     } on DioException catch (e) {
-      throw PetClinicalFailure('NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+      throw PetClinicalFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -83,12 +95,17 @@ class PetClinicalRepositoryImpl implements PetClinicalRepository {
     try {
       final list = await _remote.getTips(petId);
       return list
-          .map((t) => ClinicalTipResponseDto.fromJson(t as Map<String, dynamic>))
+          .map(
+            (t) => ClinicalTipResponseDto.fromJson(t as Map<String, dynamic>),
+          )
           .toList();
     } on PetClinicalFailure {
       rethrow;
     } on DioException catch (e) {
-      throw PetClinicalFailure('NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+      throw PetClinicalFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 }

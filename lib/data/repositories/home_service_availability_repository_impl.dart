@@ -34,11 +34,13 @@ class HomeServiceAvailabilityRepositoryImpl
   ) async {
     try {
       final dtos = slots
-          .map((s) => AvailabilitySlotDto(
-                dayOfWeek: s.dayOfWeek,
-                startTime: s.startTime,
-                endTime: s.endTime,
-              ))
+          .map(
+            (s) => AvailabilitySlotDto(
+              dayOfWeek: s.dayOfWeek,
+              startTime: s.startTime,
+              endTime: s.endTime,
+            ),
+          )
           .toList();
       final result = await _remote.replaceMyAvailability(dtos);
       return result.map((dto) => dto.toEntity()).toList();
@@ -73,12 +75,14 @@ class HomeServiceAvailabilityRepositoryImpl
   ) async {
     try {
       final dtos = exceptions
-          .map((e) => AvailabilityExceptionDto(
-                date: e.date,
-                isUnavailable: e.isUnavailable,
-                startTime: e.startTime,
-                endTime: e.endTime,
-              ))
+          .map(
+            (e) => AvailabilityExceptionDto(
+              date: e.date,
+              isUnavailable: e.isUnavailable,
+              startTime: e.startTime,
+              endTime: e.endTime,
+            ),
+          )
           .toList();
       final result = await _remote.replaceMyExceptions(dtos);
       return result.map((dto) => dto.toEntity()).toList();

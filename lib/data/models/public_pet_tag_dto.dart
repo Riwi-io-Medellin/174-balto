@@ -39,7 +39,9 @@ class PublicPetTagDto {
       sex: json['sex'] as String?,
       color: json['color'] as String?,
       weight: (json['weight'] as num?)?.toDouble(),
-      birthDate: json['birthDate'] != null ? DateTime.parse(json['birthDate'] as String) : null,
+      birthDate: json['birthDate'] != null
+          ? DateTime.parse(json['birthDate'] as String)
+          : null,
       isLost: json['isLost'] as bool,
       ownerName: json['ownerName'] as String,
       ownerPhone: json['ownerPhone'] as String,
@@ -47,17 +49,17 @@ class PublicPetTagDto {
   }
 
   PublicPetTagInfo toEntity() => PublicPetTagInfo(
-        id: id,
-        name: name,
-        species: species,
-        breed: breed,
-        photoUrl: photoUrl,
-        sex: sex,
-        color: color,
-        weight: weight,
-        birthDate: birthDate,
-        isLost: isLost,
-        ownerName: ownerName,
-        ownerPhone: ownerPhone,
-      );
+    id: id,
+    name: name,
+    species: species,
+    breed: breed,
+    photoUrl: photoUrl,
+    sex: sex,
+    color: color,
+    weight: weight,
+    birthDate: birthDate,
+    isLost: isLost,
+    ownerName: ownerName,
+    ownerPhone: ownerPhone,
+  );
 }

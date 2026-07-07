@@ -32,13 +32,15 @@ class HomeProviderServiceAreaRepositoryImpl
   ) async {
     try {
       final dtos = areas
-          .map((a) => HomeProviderServiceAreaDto(
-                id: a.id,
-                label: a.label,
-                latitude: a.latitude,
-                longitude: a.longitude,
-                radiusKm: a.radiusKm,
-              ))
+          .map(
+            (a) => HomeProviderServiceAreaDto(
+              id: a.id,
+              label: a.label,
+              latitude: a.latitude,
+              longitude: a.longitude,
+              radiusKm: a.radiusKm,
+            ),
+          )
           .toList();
       final result = await _remote.replaceMyServiceAreas(dtos);
       return result.map((d) => d.toEntity()).toList();

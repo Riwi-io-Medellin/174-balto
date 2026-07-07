@@ -72,35 +72,35 @@ class PetDto {
   }
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        if (species != null) 'species': species,
-        if (breed != null) 'breed': breed,
-        if (birthDate != null)
-          'birthDate': birthDate!.toIso8601String().split('T').first,
-        if (description != null) 'description': description,
-        if (photoUrl != null) 'photoUrl': photoUrl,
-        if (weight != null) 'weight': weight,
-      };
+    'name': name,
+    if (species != null) 'species': species,
+    if (breed != null) 'breed': breed,
+    if (birthDate != null)
+      'birthDate': birthDate!.toIso8601String().split('T').first,
+    if (description != null) 'description': description,
+    if (photoUrl != null) 'photoUrl': photoUrl,
+    if (weight != null) 'weight': weight,
+  };
 
   Pet toEntity() => Pet(
-        id: id,
-        userId: userId,
-        name: name,
-        species: species,
-        breed: breed,
-        birthDate: birthDate,
-        description: description,
-        photoUrl: photoUrl,
-        weight: weight,
-        sex: sex,
-        color: color,
-        identificationNumber: identificationNumber,
-        microchipNumber: microchipNumber,
-        createdAt: createdAt,
-        isLost: isLost,
-        lostLatitude: lostLatitude,
-        lostLongitude: lostLongitude,
-        lostAt: lostAt,
-        latestHealthUrgency: latestHealthUrgency,
-      );
+    id: id,
+    userId: userId,
+    name: name,
+    species: species,
+    breed: breed,
+    birthDate: birthDate,
+    description: description,
+    photoUrl: photoUrl,
+    weight: weight,
+    sex: sex,
+    color: color,
+    identificationNumber: identificationNumber,
+    microchipNumber: microchipNumber,
+    createdAt: createdAt,
+    isLost: isLost,
+    lostLatitude: lostLatitude,
+    lostLongitude: lostLongitude,
+    lostAt: lostAt,
+    latestHealthUrgency: latestHealthUrgency,
+  );
 }

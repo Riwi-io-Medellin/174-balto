@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
+
 class HelpCenterScreen extends StatelessWidget {
   const HelpCenterScreen({super.key});
 
@@ -25,7 +28,7 @@ class HelpCenterScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.radius20,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.06),
@@ -111,7 +114,7 @@ class HelpCenterScreen extends StatelessWidget {
             height: 42,
             decoration: BoxDecoration(
               color: iconBg,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.radius12,
             ),
             child: Icon(icon, size: 20, color: iconColor),
           ),
@@ -122,11 +125,7 @@ class HelpCenterScreen extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: _textDark,
-                  ),
+                  style: AppTextStyles.bodyStrong.copyWith(color: _textDark),
                 ),
                 const SizedBox(height: 6),
                 Text(

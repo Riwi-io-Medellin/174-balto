@@ -16,6 +16,8 @@ class AvailableSlotDto {
   AvailableSlot toEntity() => AvailableSlot(start: start, end: end);
 
   static List<AvailableSlot> listToEntities(List<dynamic> json) => json
-      .map((e) => AvailableSlotDto.fromJson(e as Map<String, dynamic>).toEntity())
+      .map(
+        (e) => AvailableSlotDto.fromJson(e as Map<String, dynamic>).toEntity(),
+      )
       .toList();
 }

@@ -28,12 +28,11 @@ class CoachLoaded extends CoachState {
     List<CoachMessage>? messages,
     bool? isTyping,
     String? sendError,
-  }) =>
-      CoachLoaded(
-        messages: messages ?? this.messages,
-        isTyping: isTyping ?? this.isTyping,
-        sendError: sendError,
-      );
+  }) => CoachLoaded(
+    messages: messages ?? this.messages,
+    isTyping: isTyping ?? this.isTyping,
+    sendError: sendError,
+  );
 
   @override
   List<Object?> get props => [messages, isTyping, sendError];

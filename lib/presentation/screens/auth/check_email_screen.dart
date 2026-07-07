@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+
 class CheckEmailScreen extends StatelessWidget {
   const CheckEmailScreen({super.key, required this.email});
 
   final String email;
 
-  static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _textDark = Color(0xFF1A1A2E);
   static const Color _textMuted = Color(0xFF6B7280);
@@ -38,14 +40,14 @@ class CheckEmailScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          width: 54,
-          height: 54,
-          decoration: BoxDecoration(
-            color: _primary,
-            borderRadius: BorderRadius.circular(14),
+        ClipRRect(
+          borderRadius: AppRadius.radius14,
+          child: Image.asset(
+            'assets/icon/app_icon.png',
+            width: 54,
+            height: 54,
+            fit: BoxFit.cover,
           ),
-          child: const Icon(Icons.pets, color: Colors.white, size: 30),
         ),
         const SizedBox(width: 12),
         const Text(
@@ -53,7 +55,7 @@ class CheckEmailScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: _primary,
+            color: AppColors.navWalks,
           ),
         ),
       ],
@@ -65,7 +67,7 @@ class CheckEmailScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -139,12 +141,12 @@ class CheckEmailScreen extends StatelessWidget {
               width: 110,
               height: 110,
               decoration: BoxDecoration(
-                color: _primary.withValues(alpha: 0.12),
+                color: AppColors.navWalks.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.mark_email_read_outlined,
-                color: _primary,
+                color: AppColors.navWalks,
                 size: 56,
               ),
             ),
@@ -181,11 +183,9 @@ class CheckEmailScreen extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () {},
         style: ElevatedButton.styleFrom(
-          backgroundColor: _primary,
+          backgroundColor: AppColors.navWalks,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
           elevation: 0,
         ),
         child: const Row(
@@ -215,10 +215,8 @@ class CheckEmailScreen extends StatelessWidget {
         onPressed: () =>
             Navigator.of(context).popUntil((route) => route.isFirst),
         style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          side: const BorderSide(color: _primary, width: 1.5),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
+          side: const BorderSide(color: AppColors.navWalks, width: 1.5),
           backgroundColor: Colors.white,
         ),
         child: const Text(
@@ -226,7 +224,7 @@ class CheckEmailScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: _primary,
+            color: AppColors.navWalks,
           ),
         ),
       ),
@@ -243,7 +241,7 @@ class CheckEmailScreen extends StatelessWidget {
             TextSpan(
               text: 'Resend',
               style: TextStyle(
-                color: _primary,
+                color: AppColors.navWalks,
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),

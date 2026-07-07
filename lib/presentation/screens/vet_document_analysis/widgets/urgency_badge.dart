@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_radius.dart';
 import '../../../../domain/entities/vet_document_analysis.dart';
 
 class UrgencyBadge extends StatelessWidget {
@@ -20,7 +21,7 @@ class UrgencyBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
         border: Border.all(color: color.withValues(alpha: 0.4)),
       ),
       child: Row(
@@ -30,7 +31,11 @@ class UrgencyBadge extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             urgencyLevel.label,
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: color),
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
           ),
         ],
       ),

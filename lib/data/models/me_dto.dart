@@ -23,11 +23,11 @@ class BusinessSummaryDto {
   }
 
   BusinessSummary toEntity() => BusinessSummary(
-        id: id,
-        name: name,
-        type: type,
-        verificationStatus: verificationStatus,
-      );
+    id: id,
+    name: name,
+    type: type,
+    verificationStatus: verificationStatus,
+  );
 }
 
 class MeDto {
@@ -66,12 +66,12 @@ class MeDto {
   }
 
   Me toEntity() => Me(
-        id: id,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        isWalker: isWalker,
-        walkerStatus: walkerStatus,
-        businesses: businesses.map((b) => b.toEntity()).toList(),
-      );
+    id: id,
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    isWalker: isWalker,
+    walkerStatus: walkerStatus,
+    businesses: businesses.map((b) => b.toEntity()).toList(),
+  );
 }

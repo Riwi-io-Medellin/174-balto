@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/home_provider_certification.dart';
@@ -132,7 +134,9 @@ class _HomeProviderGalleryDocumentsScreenState
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadius.r24),
+        ),
       ),
       builder: (sheetContext) => Padding(
         padding: EdgeInsets.only(
@@ -176,7 +180,7 @@ class _HomeProviderGalleryDocumentsScreenState
                   backgroundColor: _accent,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.radius12,
                   ),
                 ),
                 onPressed: () => Navigator.of(sheetContext).pop(true),
@@ -242,7 +246,7 @@ class _HomeProviderGalleryDocumentsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -255,13 +259,9 @@ class _HomeProviderGalleryDocumentsScreenState
             color: _textDark,
           ),
         ),
-        title: const Text(
+        title: Text(
           'Gallery & Documents',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: _textDark,
-          ),
+          style: AppTextStyles.h3.copyWith(color: _textDark),
         ),
         centerTitle: true,
         bottom: TabBar(
@@ -313,7 +313,7 @@ class _HomeProviderGalleryDocumentsScreenState
                   return Stack(
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.radius14,
                         child: Image.network(
                           photo.photoUrl,
                           fit: BoxFit.cover,
@@ -516,7 +516,7 @@ class _HomeProviderGalleryDocumentsScreenState
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
         border: Border.all(color: const Color(0xFFE0E4EC)),
       ),
       child: Row(
@@ -537,11 +537,7 @@ class _HomeProviderGalleryDocumentsScreenState
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: _textDark,
-                  ),
+                  style: AppTextStyles.bodyBold.copyWith(color: _textDark),
                 ),
                 if (subtitle != null && subtitle.isNotEmpty)
                   Text(

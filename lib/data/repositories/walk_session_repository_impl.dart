@@ -27,7 +27,10 @@ class WalkSessionRepositoryImpl implements WalkSessionRepository {
 
   @override
   Future<void> addLocation(
-      String sessionId, double latitude, double longitude) async {
+    String sessionId,
+    double latitude,
+    double longitude,
+  ) async {
     try {
       await _remote.addLocation(sessionId, latitude, longitude);
     } on WalkSessionFailure {
@@ -42,9 +45,16 @@ class WalkSessionRepositoryImpl implements WalkSessionRepository {
 
   @override
   Future<void> finishSession(
-      String sessionId, double totalDistanceMeters, int totalDurationSeconds) async {
+    String sessionId,
+    double totalDistanceMeters,
+    int totalDurationSeconds,
+  ) async {
     try {
-      await _remote.finishSession(sessionId, totalDistanceMeters, totalDurationSeconds);
+      await _remote.finishSession(
+        sessionId,
+        totalDistanceMeters,
+        totalDurationSeconds,
+      );
     } on WalkSessionFailure {
       rethrow;
     } on DioException catch (e) {
@@ -62,7 +72,10 @@ class WalkSessionRepositoryImpl implements WalkSessionRepository {
     } on WalkSessionFailure {
       rethrow;
     } on DioException catch (e) {
-      throw WalkSessionFailure('NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+      throw WalkSessionFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -73,7 +86,10 @@ class WalkSessionRepositoryImpl implements WalkSessionRepository {
     } on WalkSessionFailure {
       rethrow;
     } on DioException catch (e) {
-      throw WalkSessionFailure('NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+      throw WalkSessionFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -84,7 +100,10 @@ class WalkSessionRepositoryImpl implements WalkSessionRepository {
     } on WalkSessionFailure {
       rethrow;
     } on DioException catch (e) {
-      throw WalkSessionFailure('NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+      throw WalkSessionFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -95,7 +114,10 @@ class WalkSessionRepositoryImpl implements WalkSessionRepository {
     } on WalkSessionFailure {
       rethrow;
     } on DioException catch (e) {
-      throw WalkSessionFailure('NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+      throw WalkSessionFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -106,7 +128,10 @@ class WalkSessionRepositoryImpl implements WalkSessionRepository {
     } on WalkSessionFailure {
       rethrow;
     } on DioException catch (e) {
-      throw WalkSessionFailure('NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+      throw WalkSessionFailure(
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 }

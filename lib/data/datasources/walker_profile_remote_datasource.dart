@@ -53,10 +53,7 @@ class WalkerProfileRemoteDataSource {
         'description': description,
     });
 
-    final response = await _dio.post<dynamic>(
-      '/walkers/apply',
-      data: formData,
-    );
+    final response = await _dio.post<dynamic>('/walkers/apply', data: formData);
     final status = response.statusCode ?? 0;
     final data = response.data;
 

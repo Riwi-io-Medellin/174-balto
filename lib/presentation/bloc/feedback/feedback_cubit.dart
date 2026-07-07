@@ -13,14 +13,17 @@ class FeedbackCubit extends Cubit<FeedbackState> {
     emit(const FeedbackLoading());
     try {
       final summary = await _repository.getByWalker(walkerId);
-      emit(FeedbackLoaded(
-        summary ?? FeedbackSummary(
-          targetId: walkerId,
-          targetType: 'walker',
-          averageRating: 0,
-          totalReviews: 0,
+      emit(
+        FeedbackLoaded(
+          summary ??
+              FeedbackSummary(
+                targetId: walkerId,
+                targetType: 'walker',
+                averageRating: 0,
+                totalReviews: 0,
+              ),
         ),
-      ));
+      );
     } on FeedbackFailure catch (e) {
       emit(FeedbackError(e.message));
     } catch (e) {
@@ -32,14 +35,17 @@ class FeedbackCubit extends Cubit<FeedbackState> {
     emit(const FeedbackLoading());
     try {
       final summary = await _repository.getByBusiness(businessId);
-      emit(FeedbackLoaded(
-        summary ?? FeedbackSummary(
-          targetId: businessId,
-          targetType: 'business',
-          averageRating: 0,
-          totalReviews: 0,
+      emit(
+        FeedbackLoaded(
+          summary ??
+              FeedbackSummary(
+                targetId: businessId,
+                targetType: 'business',
+                averageRating: 0,
+                totalReviews: 0,
+              ),
         ),
-      ));
+      );
     } on FeedbackFailure catch (e) {
       emit(FeedbackError(e.message));
     } catch (e) {
@@ -51,14 +57,17 @@ class FeedbackCubit extends Cubit<FeedbackState> {
     emit(const FeedbackLoading());
     try {
       final summary = await _repository.getByHomeServiceProvider(providerId);
-      emit(FeedbackLoaded(
-        summary ?? FeedbackSummary(
-          targetId: providerId,
-          targetType: 'home_service_provider',
-          averageRating: 0,
-          totalReviews: 0,
+      emit(
+        FeedbackLoaded(
+          summary ??
+              FeedbackSummary(
+                targetId: providerId,
+                targetType: 'home_service_provider',
+                averageRating: 0,
+                totalReviews: 0,
+              ),
         ),
-      ));
+      );
     } on FeedbackFailure catch (e) {
       emit(FeedbackError(e.message));
     } catch (e) {

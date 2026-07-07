@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/home_provider_service_item.dart';
@@ -87,7 +89,9 @@ class _ManageHomeProviderServicesScreenState
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadius.r24),
+        ),
       ),
       builder: (sheetContext) {
         return StatefulBuilder(
@@ -113,13 +117,9 @@ class _ManageHomeProviderServicesScreenState
                   ),
                   const SizedBox(height: 18),
                   if (existing == null) ...[
-                    const Text(
+                    Text(
                       'Service Type',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: _textMid,
-                      ),
+                      style: AppTextStyles.label.copyWith(color: _textMid),
                     ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<HomeServiceType>(
@@ -133,9 +133,9 @@ class _ManageHomeProviderServicesScreenState
                       onChanged: (v) => setSheetState(() => selectedType = v),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: const Color(0xFFF5F6FA),
+                        fillColor: AppColors.background,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.radius12,
                           borderSide: BorderSide.none,
                         ),
                         contentPadding: const EdgeInsets.symmetric(
@@ -146,13 +146,9 @@ class _ManageHomeProviderServicesScreenState
                     ),
                     const SizedBox(height: 14),
                   ],
-                  const Text(
+                  Text(
                     'Price',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: _textMid,
-                    ),
+                    style: AppTextStyles.label.copyWith(color: _textMid),
                   ),
                   const SizedBox(height: 8),
                   TextField(
@@ -161,9 +157,9 @@ class _ManageHomeProviderServicesScreenState
                     decoration: InputDecoration(
                       hintText: 'e.g. 40',
                       filled: true,
-                      fillColor: const Color(0xFFF5F6FA),
+                      fillColor: AppColors.background,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.radius12,
                         borderSide: BorderSide.none,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
@@ -173,13 +169,9 @@ class _ManageHomeProviderServicesScreenState
                     ),
                   ),
                   const SizedBox(height: 14),
-                  const Text(
+                  Text(
                     'Price Unit',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: _textMid,
-                    ),
+                    style: AppTextStyles.label.copyWith(color: _textMid),
                   ),
                   const SizedBox(height: 8),
                   Wrap(
@@ -199,13 +191,9 @@ class _ManageHomeProviderServicesScreenState
                     }).toList(),
                   ),
                   const SizedBox(height: 14),
-                  const Text(
+                  Text(
                     'Description (optional)',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: _textMid,
-                    ),
+                    style: AppTextStyles.label.copyWith(color: _textMid),
                   ),
                   const SizedBox(height: 8),
                   TextField(
@@ -214,9 +202,9 @@ class _ManageHomeProviderServicesScreenState
                     maxLines: 3,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: const Color(0xFFF5F6FA),
+                      fillColor: AppColors.background,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.radius12,
                         borderSide: BorderSide.none,
                       ),
                       contentPadding: const EdgeInsets.symmetric(
@@ -229,13 +217,9 @@ class _ManageHomeProviderServicesScreenState
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        const Text(
+                        Text(
                           'Active',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: _textMid,
-                          ),
+                          style: AppTextStyles.label.copyWith(color: _textMid),
                         ),
                         const Spacer(),
                         Switch(
@@ -256,7 +240,7 @@ class _ManageHomeProviderServicesScreenState
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: AppRadius.radius12,
                         ),
                       ),
                       onPressed: () async {
@@ -296,7 +280,7 @@ class _ManageHomeProviderServicesScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -309,13 +293,9 @@ class _ManageHomeProviderServicesScreenState
             color: _textDark,
           ),
         ),
-        title: const Text(
+        title: Text(
           'Manage Services',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: _textDark,
-          ),
+          style: AppTextStyles.h3.copyWith(color: _textDark),
         ),
         centerTitle: true,
       ),
@@ -432,7 +412,7 @@ class _ServiceCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.radius14,
           border: Border.all(color: const Color(0xFFE0E4EC)),
         ),
         child: Row(
@@ -460,10 +440,8 @@ class _ServiceCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           service.serviceTypeName,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF1F2937),
+                          style: AppTextStyles.bodyBold.copyWith(
+                            color: const Color(0xFF1F2937),
                           ),
                         ),
                       ),
@@ -475,7 +453,7 @@ class _ServiceCard extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFE0E4EC),
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: AppRadius.radius20,
                           ),
                           child: const Text(
                             'Inactive',
@@ -491,11 +469,7 @@ class _ServiceCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     service.priceLabel,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: _accent,
-                    ),
+                    style: AppTextStyles.label.copyWith(color: _accent),
                   ),
                 ],
               ),

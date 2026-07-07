@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/entities/walk_booking.dart';
@@ -14,6 +17,7 @@ import '../../bloc/profile/profile_state.dart';
 import '../notifications/notifications_screen.dart';
 import '../pets/manage_pets_screen.dart';
 import '../walks/live_walk_screen.dart';
+import '../../widgets/balto_screen_scaffold.dart';
 import '../../widgets/skeletons/home_skeleton.dart';
 import 'widgets/daily_tip_card.dart';
 import 'widgets/greeting_header.dart';
@@ -89,67 +93,64 @@ class _HomeViewState extends State<_HomeView>
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _fadeAnim,
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF5F6FA),
-        body: SafeArea(
-          child: BlocBuilder<ProfileCubit, ProfileState>(
-            buildWhen: _shouldRebuildOnProfileState,
-            builder: (context, state) {
-              if (state is ProfileLoading) return const HomeSkeleton();
+      child: BlocBuilder<ProfileCubit, ProfileState>(
+        buildWhen: _shouldRebuildOnProfileState,
+        builder: (context, state) {
+          if (state is ProfileLoading) {
+            return const BaltoScreenScaffold(
+              header: SizedBox.shrink(),
+              body: HomeSkeleton(),
+            );
+          }
 
-              final firstName = state is ProfileLoaded
-                  ? state.user.firstName
-                  : 'there';
-              final photoUrl = state is ProfileLoaded
-                  ? state.user.photoUrl
-                  : null;
-              final pets = state is ProfileLoaded ? state.pets : <Pet>[];
+          final firstName = state is ProfileLoaded
+              ? state.user.firstName
+              : 'there';
+          final photoUrl = state is ProfileLoaded ? state.user.photoUrl : null;
+          final pets = state is ProfileLoaded ? state.pets : <Pet>[];
 
-              return RefreshIndicator(
-                onRefresh: () => context.read<MyWalksCubit>().refresh(),
-                child: CustomScrollView(
-                  slivers: [
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-                      sliver: SliverList(
-                        delegate: SliverChildListDelegate([
-                          _HomeGreeting(
-                            firstName: firstName,
-                            photoUrl: photoUrl,
-                          ),
-                          const SizedBox(height: 20),
-                          PetHeroCard(pets: pets, onTap: () {}),
-                          const SizedBox(height: 16),
-                          const _DailyTipFromState(),
-                          const SizedBox(height: 26),
-                          const _SectionTitle('Walks'),
-                          const SizedBox(height: 12),
-                          const _WalksSection(),
-                          const SizedBox(height: 26),
-                          const _SectionTitle('Quick care'),
-                          const SizedBox(height: 12),
-                          QuickCareGrid(
-                            onClinicTap: () => _openServices(2),
-                            onWalkerTap: () => _openServices(1),
-                            onStoreTap: () => _openServices(3),
-                            onPetsTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => BlocProvider.value(
-                                  value: context.read<ProfileCubit>(),
-                                  child: const ManagePetsScreen(),
-                                ),
+          return BaltoScreenScaffold(
+            header: _HomeGreeting(firstName: firstName, photoUrl: photoUrl),
+            body: RefreshIndicator(
+              onRefresh: () => context.read<MyWalksCubit>().refresh(),
+              child: CustomScrollView(
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        const SizedBox(height: 20),
+                        PetHeroCard(pets: pets, onTap: () {}),
+                        const SizedBox(height: 16),
+                        const _DailyTipFromState(),
+                        const SizedBox(height: 26),
+                        const _SectionTitle('Walks'),
+                        const SizedBox(height: 12),
+                        const _WalksSection(),
+                        const SizedBox(height: 26),
+                        const _SectionTitle('Quick care'),
+                        const SizedBox(height: 12),
+                        QuickCareGrid(
+                          onClinicTap: () => _openServices(2),
+                          onWalkerTap: () => _openServices(1),
+                          onStoreTap: () => _openServices(3),
+                          onPetsTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => BlocProvider.value(
+                                value: context.read<ProfileCubit>(),
+                                child: const ManagePetsScreen(),
                               ),
                             ),
                           ),
-                        ]),
-                      ),
+                        ),
+                      ]),
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -344,7 +345,7 @@ class _LiveWalkCard extends StatelessWidget {
                 )
               : null,
           color: hasSession ? null : const Color(0xFFE8F5EE),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.radius16,
           boxShadow: hasSession
               ? [
                   BoxShadow(
@@ -390,9 +391,7 @@ class _LiveWalkCard extends StatelessWidget {
                       ],
                       Text(
                         label,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
+                        style: AppTextStyles.bodyBold.copyWith(
                           color: hasSession
                               ? Colors.white
                               : const Color(0xFF1F2937),
@@ -443,7 +442,7 @@ class _UpcomingWalkCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -459,7 +458,7 @@ class _UpcomingWalkCard extends StatelessWidget {
             height: 48,
             decoration: BoxDecoration(
               color: const Color(0xFFEAF2FB),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.radius12,
             ),
             child: const Icon(
               Icons.calendar_today_rounded,
@@ -472,14 +471,7 @@ class _UpcomingWalkCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Upcoming walk',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1F2937),
-                  ),
-                ),
+                const Text('Upcoming walk', style: AppTextStyles.bodyBold),
                 const SizedBox(height: 3),
                 Text(
                   _formatSlot(booking.slotStart, booking.durationMinutes),
@@ -532,7 +524,7 @@ class _EmptyWalksCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
       ),
       child: const Column(
         children: [
@@ -543,13 +535,13 @@ class _EmptyWalksCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF8A93A0),
+              color: AppColors.textSecondary,
             ),
           ),
           SizedBox(height: 4),
           Text(
             'Book a walker to get started',
-            style: TextStyle(fontSize: 12, color: Color(0xFFB0B8C1)),
+            style: TextStyle(fontSize: 12, color: AppColors.textMuted),
           ),
         ],
       ),
@@ -566,7 +558,7 @@ class _WalksShimmer extends StatelessWidget {
       height: 72,
       decoration: BoxDecoration(
         color: const Color(0xFFEFF1F5),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
       ),
     );
   }
@@ -587,8 +579,8 @@ class _SectionTitle extends StatelessWidget {
           width: 4,
           height: 20,
           decoration: BoxDecoration(
-            color: const Color(0xFF1BAA71),
-            borderRadius: BorderRadius.circular(2),
+            color: AppColors.petProfile,
+            borderRadius: AppRadius.radius2,
           ),
         ),
         const SizedBox(width: 8),

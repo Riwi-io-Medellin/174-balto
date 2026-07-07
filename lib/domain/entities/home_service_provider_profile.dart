@@ -41,21 +41,21 @@ class HomeServiceProviderProfile extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        userId,
-        status,
-        isAcceptingBookings,
-        baseLocation,
-        experience,
-        description,
-        bio,
-        yearsOfExperience,
-        maxConcurrentBookings,
-        documentName,
-        documentNumber,
-        latitude,
-        longitude,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    userId,
+    status,
+    isAcceptingBookings,
+    baseLocation,
+    experience,
+    description,
+    bio,
+    yearsOfExperience,
+    maxConcurrentBookings,
+    documentName,
+    documentNumber,
+    latitude,
+    longitude,
+    createdAt,
+    updatedAt,
+  ];
 }

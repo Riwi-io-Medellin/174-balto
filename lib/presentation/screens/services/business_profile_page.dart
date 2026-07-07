@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/entities/business.dart';
 import '../../bloc/business/business_cubit.dart';
@@ -243,7 +245,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: const Color(0xFFF8F9FB),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: AppRadius.radius14,
           ),
           child: Row(
             children: [
@@ -253,10 +255,8 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                   children: [
                     Text(
                       s.serviceType,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF1F2937),
+                      style: AppTextStyles.bodyBold.copyWith(
+                        color: const Color(0xFF1F2937),
                       ),
                     ),
                     if (s.description != null) ...[
@@ -356,7 +356,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
                       elevation: 0,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: AppRadius.radius12,
                       ),
                     ),
                   ),

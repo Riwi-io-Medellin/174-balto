@@ -36,11 +36,13 @@ class WalkerCubit extends Cubit<WalkerState> {
     try {
       final walkers = await _repository.getWalkers();
       _loadedWalkers = walkers;
-      emit(WalkerListLoaded(
-        walkers: _sortedWalkers(),
-        selectedFilter: _activeFilter,
-        hasMore: false,
-      ));
+      emit(
+        WalkerListLoaded(
+          walkers: _sortedWalkers(),
+          selectedFilter: _activeFilter,
+          hasMore: false,
+        ),
+      );
     } on WalkerFailure catch (e) {
       emit(WalkerError(e.code, e.message));
     } catch (e) {
@@ -51,10 +53,12 @@ class WalkerCubit extends Cubit<WalkerState> {
   Future<void> loadMoreWalkers() async {
     if (!_hasMore || _isLoadingMore) return;
     _isLoadingMore = true;
-    emit(WalkerLoadingMore(
-      walkers: _sortedWalkers(),
-      selectedFilter: _activeFilter,
-    ));
+    emit(
+      WalkerLoadingMore(
+        walkers: _sortedWalkers(),
+        selectedFilter: _activeFilter,
+      ),
+    );
     try {
       _page++;
       final result = await _repository.searchWalkers(
@@ -67,25 +71,31 @@ class WalkerCubit extends Cubit<WalkerState> {
       );
       _loadedWalkers = [..._loadedWalkers, ...result.items];
       _hasMore = _loadedWalkers.length < result.totalCount;
-      emit(WalkerListLoaded(
-        walkers: _sortedWalkers(),
-        selectedFilter: _activeFilter,
-        hasMore: _hasMore,
-      ));
+      emit(
+        WalkerListLoaded(
+          walkers: _sortedWalkers(),
+          selectedFilter: _activeFilter,
+          hasMore: _hasMore,
+        ),
+      );
     } on WalkerFailure catch (_) {
       _page--;
-      emit(WalkerListLoaded(
-        walkers: _sortedWalkers(),
-        selectedFilter: _activeFilter,
-        hasMore: _hasMore,
-      ));
+      emit(
+        WalkerListLoaded(
+          walkers: _sortedWalkers(),
+          selectedFilter: _activeFilter,
+          hasMore: _hasMore,
+        ),
+      );
     } catch (_) {
       _page--;
-      emit(WalkerListLoaded(
-        walkers: _sortedWalkers(),
-        selectedFilter: _activeFilter,
-        hasMore: _hasMore,
-      ));
+      emit(
+        WalkerListLoaded(
+          walkers: _sortedWalkers(),
+          selectedFilter: _activeFilter,
+          hasMore: _hasMore,
+        ),
+      );
     } finally {
       _isLoadingMore = false;
     }
@@ -114,11 +124,13 @@ class WalkerCubit extends Cubit<WalkerState> {
       );
       _loadedWalkers = result.items;
       _hasMore = _loadedWalkers.length < result.totalCount;
-      emit(WalkerListLoaded(
-        walkers: _sortedWalkers(),
-        selectedFilter: _activeFilter,
-        hasMore: _hasMore,
-      ));
+      emit(
+        WalkerListLoaded(
+          walkers: _sortedWalkers(),
+          selectedFilter: _activeFilter,
+          hasMore: _hasMore,
+        ),
+      );
     } on WalkerFailure catch (e) {
       emit(WalkerError(e.code, e.message));
     } catch (e) {
@@ -141,11 +153,13 @@ class WalkerCubit extends Cubit<WalkerState> {
   void applyFilter(int filterIndex) {
     _activeFilter = filterIndex;
     if (_loadedWalkers.isNotEmpty || state is WalkerListLoaded) {
-      emit(WalkerListLoaded(
-        walkers: _sortedWalkers(),
-        selectedFilter: _activeFilter,
-        hasMore: _hasMore,
-      ));
+      emit(
+        WalkerListLoaded(
+          walkers: _sortedWalkers(),
+          selectedFilter: _activeFilter,
+          hasMore: _hasMore,
+        ),
+      );
     }
   }
 
@@ -155,9 +169,7 @@ class WalkerCubit extends Cubit<WalkerState> {
         return List.from(_loadedWalkers)
           ..sort((a, b) => b.rating.compareTo(a.rating));
       case 2:
-        return _loadedWalkers
-            .where((w) => w.isAcceptingBookings)
-            .toList();
+        return _loadedWalkers.where((w) => w.isAcceptingBookings).toList();
       default:
         return List.from(_loadedWalkers)
           ..sort((a, b) => a.distance.compareTo(b.distance));

@@ -31,17 +31,17 @@ class PublicPetTagInfo extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        species,
-        breed,
-        photoUrl,
-        sex,
-        color,
-        weight,
-        birthDate,
-        isLost,
-        ownerName,
-        ownerPhone,
-      ];
+    id,
+    name,
+    species,
+    breed,
+    photoUrl,
+    sex,
+    color,
+    weight,
+    birthDate,
+    isLost,
+    ownerName,
+    ownerPhone,
+  ];
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_radius.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../domain/entities/vet_document_analysis.dart';
 import 'urgency_badge.dart';
 
@@ -19,13 +21,9 @@ class AnalysisResultView extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Summary',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: _textDark,
-              ),
+              style: AppTextStyles.titleSmall.copyWith(color: _textDark),
             ),
             UrgencyBadge(urgencyLevel: result.urgencyLevel),
           ],
@@ -130,7 +128,7 @@ class AnalysisResultView extends StatelessWidget {
     padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: AppRadius.radius14,
       border: Border.all(color: const Color(0xFFE5E7EB)),
     ),
     child: child,
@@ -176,7 +174,7 @@ class AnalysisResultView extends StatelessWidget {
     padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(
       color: const Color(0xFFFFF3CD),
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: AppRadius.radius14,
       border: Border.all(color: const Color(0xFFE8A84C).withValues(alpha: 0.5)),
     ),
     child: Row(

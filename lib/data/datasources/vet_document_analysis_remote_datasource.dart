@@ -34,7 +34,9 @@ class VetDocumentAnalysisRemoteDataSource {
   }
 
   Future<List<VetDocumentAnalysisHistoryItem>> getHistory(String petId) async {
-    final response = await _dio.get<dynamic>('/vet-document-analysis/pet/$petId/history');
+    final response = await _dio.get<dynamic>(
+      '/vet-document-analysis/pet/$petId/history',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 

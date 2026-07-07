@@ -20,8 +20,8 @@ class AuthTokensDto {
   final DateTime expiresAt;
 
   AuthTokens toEntity() => AuthTokens(
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        expiresAt: expiresAt,
-      );
+    accessToken: accessToken,
+    refreshToken: refreshToken,
+    expiresAt: expiresAt,
+  );
 }

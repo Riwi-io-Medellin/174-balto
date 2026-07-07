@@ -9,14 +9,14 @@ class CoachMessage extends Equatable {
   final String content;
 
   Map<String, dynamic> toJson() => {
-        'role': role == CoachRole.user ? 'user' : 'assistant',
-        'content': content,
-      };
+    'role': role == CoachRole.user ? 'user' : 'assistant',
+    'content': content,
+  };
 
   factory CoachMessage.fromJson(Map<String, dynamic> json) => CoachMessage(
-        role: json['role'] == 'user' ? CoachRole.user : CoachRole.assistant,
-        content: json['content'] as String,
-      );
+    role: json['role'] == 'user' ? CoachRole.user : CoachRole.assistant,
+    content: json['content'] as String,
+  );
 
   @override
   List<Object?> get props => [role, content];

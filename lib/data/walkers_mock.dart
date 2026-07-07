@@ -17,7 +17,12 @@ const List<Walker> kMockWalkers = [
     yearsOfExperience: 5,
     biography:
         'Passionate dog lover with 5+ years of experience. I specialize in positive reinforcement and long nature walks. I believe every dog deserves a tailored experience that fits their energy levels and personality.',
-    specialties: ['Large Dogs', 'Puppies', 'First Aid Certified', 'Reactive Dogs'],
+    specialties: [
+      'Large Dogs',
+      'Puppies',
+      'First Aid Certified',
+      'Reactive Dogs',
+    ],
     galleryImages: [
       'https://picsum.photos/seed/ana_g1/400/300',
       'https://picsum.photos/seed/ana_g2/400/300',
@@ -69,7 +74,12 @@ const List<Walker> kMockWalkers = [
     yearsOfExperience: 7,
     biography:
         'Certified pet first-aid professional. Every dog I walk gets my full attention and care. I specialize in reactive dogs and anxiety management for a calm, joyful walk every single time.',
-    specialties: ['First Aid Certified', 'Reactive Dogs', 'Senior Dogs', 'Small Breeds'],
+    specialties: [
+      'First Aid Certified',
+      'Reactive Dogs',
+      'Senior Dogs',
+      'Small Breeds',
+    ],
     galleryImages: [
       'https://picsum.photos/seed/maria_g1/400/300',
       'https://picsum.photos/seed/maria_g2/400/300',

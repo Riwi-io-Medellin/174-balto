@@ -130,7 +130,10 @@ class PetRemoteDataSource {
       throw PetFailure(data['code'] as String, data['error'] as String);
     }
 
-    throw PetFailure('PET_REPORT_LOST_FAILED', 'Unexpected response ($status).');
+    throw PetFailure(
+      'PET_REPORT_LOST_FAILED',
+      'Unexpected response ($status).',
+    );
   }
 
   Future<PetDto> markFound(String id) async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/constants/app_radius.dart';
 import '../../../../../domain/entities/pet_clinical_record.dart';
 
 /// Clean cards with the tips automatically generated
@@ -56,7 +57,7 @@ class ClinicalTipsSection extends StatelessWidget {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: AppRadius.radius14,
                   border: Border.all(color: const Color(0xFFE0E4EC)),
                 ),
                 child: Row(

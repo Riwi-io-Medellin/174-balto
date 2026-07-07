@@ -21,7 +21,9 @@ class HomeProviderAssetsRepositoryImpl implements HomeProviderAssetsRepository {
       rethrow;
     } on DioException catch (e) {
       throw HomeProviderAssetsFailure(
-          'NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -34,7 +36,9 @@ class HomeProviderAssetsRepositoryImpl implements HomeProviderAssetsRepository {
       rethrow;
     } on DioException catch (e) {
       throw HomeProviderAssetsFailure(
-          'NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -46,7 +50,9 @@ class HomeProviderAssetsRepositoryImpl implements HomeProviderAssetsRepository {
       rethrow;
     } on DioException catch (e) {
       throw HomeProviderAssetsFailure(
-          'NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -59,7 +65,9 @@ class HomeProviderAssetsRepositoryImpl implements HomeProviderAssetsRepository {
       rethrow;
     } on DioException catch (e) {
       throw HomeProviderAssetsFailure(
-          'NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -70,13 +78,17 @@ class HomeProviderAssetsRepositoryImpl implements HomeProviderAssetsRepository {
   }) async {
     try {
       final dto = await _remote.addMyDocument(
-          documentType: documentType, fileUrl: fileUrl);
+        documentType: documentType,
+        fileUrl: fileUrl,
+      );
       return dto.toEntity();
     } on HomeProviderAssetsFailure {
       rethrow;
     } on DioException catch (e) {
       throw HomeProviderAssetsFailure(
-          'NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -88,13 +100,16 @@ class HomeProviderAssetsRepositoryImpl implements HomeProviderAssetsRepository {
       rethrow;
     } on DioException catch (e) {
       throw HomeProviderAssetsFailure(
-          'NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
   @override
   Future<List<HomeProviderCertification>> getCertifications(
-      String providerId) async {
+    String providerId,
+  ) async {
     try {
       final dtos = await _remote.getCertifications(providerId);
       return dtos.map((d) => d.toEntity()).toList();
@@ -102,7 +117,9 @@ class HomeProviderAssetsRepositoryImpl implements HomeProviderAssetsRepository {
       rethrow;
     } on DioException catch (e) {
       throw HomeProviderAssetsFailure(
-          'NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -131,7 +148,9 @@ class HomeProviderAssetsRepositoryImpl implements HomeProviderAssetsRepository {
       rethrow;
     } on DioException catch (e) {
       throw HomeProviderAssetsFailure(
-          'NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -143,7 +162,9 @@ class HomeProviderAssetsRepositoryImpl implements HomeProviderAssetsRepository {
       rethrow;
     } on DioException catch (e) {
       throw HomeProviderAssetsFailure(
-          'NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -156,7 +177,9 @@ class HomeProviderAssetsRepositoryImpl implements HomeProviderAssetsRepository {
       rethrow;
     } on DioException catch (e) {
       throw HomeProviderAssetsFailure(
-          'NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -169,7 +192,9 @@ class HomeProviderAssetsRepositoryImpl implements HomeProviderAssetsRepository {
       rethrow;
     } on DioException catch (e) {
       throw HomeProviderAssetsFailure(
-          'NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 
@@ -181,7 +206,9 @@ class HomeProviderAssetsRepositoryImpl implements HomeProviderAssetsRepository {
       rethrow;
     } on DioException catch (e) {
       throw HomeProviderAssetsFailure(
-          'NETWORK_ERROR', e.message ?? 'Could not reach the server.');
+        'NETWORK_ERROR',
+        e.message ?? 'Could not reach the server.',
+      );
     }
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/constants/app_radius.dart';
+import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../domain/entities/pet_clinical_event.dart';
 
 /// Timeline of clinical events (visit, vaccine, surgery, etc), rendered as a
@@ -43,7 +45,7 @@ class ClinicalTimeline extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 32),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: AppRadius.radius16,
             border: Border.all(color: const Color(0xFFE0E4EC)),
           ),
           child: const Column(
@@ -158,7 +160,7 @@ class _TimelineEntryState extends State<_TimelineEntry> {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.radius14,
                 border: Border.all(color: const Color(0xFFE0E4EC)),
               ),
               child: Column(
@@ -169,9 +171,7 @@ class _TimelineEntryState extends State<_TimelineEntry> {
                       Expanded(
                         child: Text(
                           PetClinicalEventType.label(e.eventType),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
+                          style: AppTextStyles.bodyBold.copyWith(
                             color: _textDark,
                           ),
                         ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/home_service_provider_profile.dart';
@@ -29,7 +31,7 @@ class _EditHomeServiceProviderProfileScreenState
   bool _saving = false;
   bool _initialized = false;
 
-  static const Color _bg = Color(0xFFF5F6FA);
+  static const Color _bg = AppColors.background;
   static const Color _textDark = Color(0xFF1F2937);
   static const Color _textMid = Color(0xFF5A6473);
   static const Color _textMuted = Color(0xFF8A93A0);
@@ -126,13 +128,9 @@ class _EditHomeServiceProviderProfileScreenState
             color: _textDark,
           ),
         ),
-        title: const Text(
+        title: Text(
           'Edit Profile',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: _textDark,
-          ),
+          style: AppTextStyles.h3.copyWith(color: _textDark),
         ),
         centerTitle: true,
         actions: [
@@ -312,7 +310,7 @@ class _EditHomeServiceProviderProfileScreenState
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         border: Border.all(color: const Color(0xFFE0E4EC)),
       ),
       child: Row(
@@ -327,20 +325,16 @@ class _EditHomeServiceProviderProfileScreenState
             child: const Icon(Icons.schedule_rounded, size: 20, color: _accent),
           ),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Accepting Bookings',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: _textDark,
-                  ),
+                  style: AppTextStyles.bodyBold.copyWith(color: _textDark),
                 ),
-                SizedBox(height: 2),
-                Text(
+                const SizedBox(height: 2),
+                const Text(
                   'Make your profile visible to pet owners',
                   style: TextStyle(fontSize: 12, color: _textMuted),
                 ),
@@ -370,9 +364,7 @@ class _EditHomeServiceProviderProfileScreenState
           backgroundColor: _accent,
           foregroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
           disabledBackgroundColor: _accent.withValues(alpha: 0.45),
         ),
         child: _saving
@@ -395,14 +387,7 @@ class _EditHomeServiceProviderProfileScreenState
   // ─── Helpers ──────────────────────────────────────────────────────────────
 
   Widget _fieldLabel(String text) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w600,
-        color: _textMid,
-      ),
-    );
+    return Text(text, style: AppTextStyles.label.copyWith(color: _textMid));
   }
 
   InputDecoration _inputDecoration({required String hint}) {
@@ -412,23 +397,23 @@ class _EditHomeServiceProviderProfileScreenState
       filled: true,
       fillColor: Colors.white,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: const BorderSide(color: _accent, width: 1.5),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: const BorderSide(color: Color(0xFFD05A24)),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: const BorderSide(color: Color(0xFFD05A24), width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),

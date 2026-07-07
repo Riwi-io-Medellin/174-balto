@@ -79,31 +79,30 @@ class BusinessDto {
   Business toEntity({
     List<BusinessServiceItem> services = const [],
     List<BusinessHour> openingHours = const [],
-  }) =>
-      Business(
-        id: id,
-        ownerUserId: ownerUserId,
-        name: name,
-        nit: nit,
-        email: email,
-        phone: phone,
-        type: type,
-        location: location,
-        address: address,
-        verificationStatus: verificationStatus,
-        createdAt: createdAt,
-        instagramUrl: instagramUrl,
-        facebookUrl: facebookUrl,
-        description: description,
-        photoUrl: photoUrl,
-        rating: averageRating,
-        reviewCount: totalReviews,
-        latitude: latitude,
-        longitude: longitude,
-        isOpen: isOpenNow,
-        services: services,
-        openingHours: openingHours,
-      );
+  }) => Business(
+    id: id,
+    ownerUserId: ownerUserId,
+    name: name,
+    nit: nit,
+    email: email,
+    phone: phone,
+    type: type,
+    location: location,
+    address: address,
+    verificationStatus: verificationStatus,
+    createdAt: createdAt,
+    instagramUrl: instagramUrl,
+    facebookUrl: facebookUrl,
+    description: description,
+    photoUrl: photoUrl,
+    rating: averageRating,
+    reviewCount: totalReviews,
+    latitude: latitude,
+    longitude: longitude,
+    isOpen: isOpenNow,
+    services: services,
+    openingHours: openingHours,
+  );
 }
 
 class BusinessServiceItemDto {
@@ -135,13 +134,13 @@ class BusinessServiceItemDto {
   final String? photoUrl;
 
   BusinessServiceItem toEntity() => BusinessServiceItem(
-        id: id,
-        businessId: businessId,
-        serviceType: serviceType,
-        price: price,
-        description: description,
-        photoUrl: photoUrl,
-      );
+    id: id,
+    businessId: businessId,
+    serviceType: serviceType,
+    price: price,
+    description: description,
+    photoUrl: photoUrl,
+  );
 }
 
 class BusinessHourDto {
@@ -165,8 +164,9 @@ class BusinessHourDto {
     );
   }
 
-  static List<BusinessHourDto> fromJsonList(List<dynamic> list) =>
-      list.map((e) => BusinessHourDto.fromJson(e as Map<String, dynamic>)).toList();
+  static List<BusinessHourDto> fromJsonList(List<dynamic> list) => list
+      .map((e) => BusinessHourDto.fromJson(e as Map<String, dynamic>))
+      .toList();
 
   final String id;
   final String businessId;
@@ -176,13 +176,13 @@ class BusinessHourDto {
   final bool isActive;
 
   BusinessHour toEntity() => BusinessHour(
-        id: id,
-        businessId: businessId,
-        dayOfWeek: dayOfWeek,
-        startTime: startTime,
-        endTime: endTime,
-        isActive: isActive,
-      );
+    id: id,
+    businessId: businessId,
+    dayOfWeek: dayOfWeek,
+    startTime: startTime,
+    endTime: endTime,
+    isActive: isActive,
+  );
 }
 
 class BusinessHourExceptionDto {
@@ -218,11 +218,11 @@ class BusinessHourExceptionDto {
   final String? endTime;
 
   BusinessHourException toEntity() => BusinessHourException(
-        id: id,
-        businessId: businessId,
-        date: date,
-        isUnavailable: isUnavailable,
-        startTime: startTime,
-        endTime: endTime,
-      );
+    id: id,
+    businessId: businessId,
+    date: date,
+    isUnavailable: isUnavailable,
+    startTime: startTime,
+    endTime: endTime,
+  );
 }

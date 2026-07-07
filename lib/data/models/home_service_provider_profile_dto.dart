@@ -46,7 +46,8 @@ class HomeServiceProviderProfileDto {
 
   /// Creates a DTO from the /apply response (HomeServiceApplyResponse).
   factory HomeServiceProviderProfileDto.fromApplyResponse(
-      Map<String, dynamic> json) {
+    Map<String, dynamic> json,
+  ) {
     return HomeServiceProviderProfileDto(
       id: json['providerId'] as String,
       userId: json['userId'] as String,
@@ -88,21 +89,21 @@ class HomeServiceProviderProfileDto {
   }
 
   HomeServiceProviderProfile toEntity() => HomeServiceProviderProfile(
-        id: id,
-        userId: userId,
-        status: status,
-        isAcceptingBookings: isAcceptingBookings,
-        baseLocation: baseLocation,
-        experience: experience,
-        description: description,
-        bio: bio,
-        yearsOfExperience: yearsOfExperience,
-        maxConcurrentBookings: maxConcurrentBookings,
-        documentName: documentName,
-        documentNumber: documentNumber,
-        latitude: latitude,
-        longitude: longitude,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-      );
+    id: id,
+    userId: userId,
+    status: status,
+    isAcceptingBookings: isAcceptingBookings,
+    baseLocation: baseLocation,
+    experience: experience,
+    description: description,
+    bio: bio,
+    yearsOfExperience: yearsOfExperience,
+    maxConcurrentBookings: maxConcurrentBookings,
+    documentName: documentName,
+    documentNumber: documentNumber,
+    latitude: latitude,
+    longitude: longitude,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+  );
 }

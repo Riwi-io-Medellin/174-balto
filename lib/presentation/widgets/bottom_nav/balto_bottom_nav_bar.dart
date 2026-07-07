@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
 import 'nav_item_model.dart';
 
 class BaltoBottomNavBar extends StatelessWidget {
@@ -46,12 +47,17 @@ class BaltoBottomNavBar extends StatelessWidget {
     // 3-button bar). Adding it ensures the pill always floats above it.
     final systemBottom = MediaQuery.of(context).viewPadding.bottom;
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 8, 20, (systemBottom > 0 ? systemBottom : 16)),
+      padding: EdgeInsets.fromLTRB(
+        20,
+        8,
+        20,
+        (systemBottom > 0 ? systemBottom : 16),
+      ),
       child: Container(
         height: 68,
         decoration: BoxDecoration(
           color: AppColors.navBarBackground,
-          borderRadius: BorderRadius.circular(40),
+          borderRadius: AppRadius.radius40,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.10),
@@ -129,22 +135,14 @@ class _IconBadge extends StatelessWidget {
           color: model.accentColor,
           shape: BoxShape.circle,
         ),
-        child: Icon(
-          model.icon,
-          size: 22,
-          color: Colors.white,
-        ),
+        child: Icon(model.icon, size: 22, color: Colors.white),
       );
     }
 
     return SizedBox(
       width: 40,
       height: 40,
-      child: Icon(
-        model.icon,
-        size: 22,
-        color: AppColors.navIconInactive,
-      ),
+      child: Icon(model.icon, size: 22, color: AppColors.navIconInactive),
     );
   }
 }

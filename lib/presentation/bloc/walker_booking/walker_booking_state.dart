@@ -33,30 +33,34 @@ class WalkerBookingLoaded extends WalkerBookingState {
   final String? successMessage;
   final String? errorMessage;
 
-  List<WalkBooking> get pending => (bookings
-        .where((b) => b.status == WalkBookingStatus.pending)
-        .toList()
-      ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
+  List<WalkBooking> get pending =>
+      (bookings.where((b) => b.status == WalkBookingStatus.pending).toList()
+        ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
 
-  List<WalkBooking> get upcoming => (bookings
-        .where((b) =>
-            b.status == WalkBookingStatus.accepted ||
-            b.status == WalkBookingStatus.inProgress)
-        .toList()
-      ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
+  List<WalkBooking> get upcoming =>
+      (bookings
+          .where(
+            (b) =>
+                b.status == WalkBookingStatus.accepted ||
+                b.status == WalkBookingStatus.inProgress,
+          )
+          .toList()
+        ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
 
-  List<WalkBooking> get completed => (bookings
-        .where((b) => b.status == WalkBookingStatus.completed)
-        .toList()
-      ..sort((a, b) => b.slotStart.compareTo(a.slotStart)));
+  List<WalkBooking> get completed =>
+      (bookings.where((b) => b.status == WalkBookingStatus.completed).toList()
+        ..sort((a, b) => b.slotStart.compareTo(a.slotStart)));
 
-  List<WalkBooking> get cancelled => (bookings
-        .where((b) =>
-            b.status == WalkBookingStatus.walkerCancelled ||
-            b.status == WalkBookingStatus.ownerCancelled ||
-            b.status == WalkBookingStatus.rejected)
-        .toList()
-      ..sort((a, b) => b.slotStart.compareTo(a.slotStart)));
+  List<WalkBooking> get cancelled =>
+      (bookings
+          .where(
+            (b) =>
+                b.status == WalkBookingStatus.walkerCancelled ||
+                b.status == WalkBookingStatus.ownerCancelled ||
+                b.status == WalkBookingStatus.rejected,
+          )
+          .toList()
+        ..sort((a, b) => b.slotStart.compareTo(a.slotStart)));
 
   WalkerBookingLoaded copyWith({
     List<WalkBooking>? bookings,
@@ -69,19 +73,20 @@ class WalkerBookingLoaded extends WalkerBookingState {
     return WalkerBookingLoaded(
       bookings: bookings ?? this.bookings,
       isPerformingAction: isPerformingAction ?? this.isPerformingAction,
-      successMessage:
-          clearSuccess ? null : (successMessage ?? this.successMessage),
+      successMessage: clearSuccess
+          ? null
+          : (successMessage ?? this.successMessage),
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 
   @override
   List<Object?> get props => [
-        bookings,
-        isPerformingAction,
-        successMessage,
-        errorMessage,
-      ];
+    bookings,
+    isPerformingAction,
+    successMessage,
+    errorMessage,
+  ];
 }
 
 class WalkerBookingError extends WalkerBookingState {

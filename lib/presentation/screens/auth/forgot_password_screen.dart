@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
 import 'check_email_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -11,7 +14,6 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
 
-  static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _inputFill = Color(0xFFEEF3F3);
   static const Color _textDark = Color(0xFF1A1A2E);
@@ -59,14 +61,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          width: 54,
-          height: 54,
-          decoration: BoxDecoration(
-            color: _primary,
-            borderRadius: BorderRadius.circular(14),
+        ClipRRect(
+          borderRadius: AppRadius.radius14,
+          child: Image.asset(
+            'assets/icon/app_icon.png',
+            width: 54,
+            height: 54,
+            fit: BoxFit.cover,
           ),
-          child: const Icon(Icons.pets, color: Colors.white, size: 30),
         ),
         const SizedBox(width: 12),
         const Text(
@@ -74,7 +76,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: _primary,
+            color: AppColors.navWalks,
           ),
         ),
       ],
@@ -86,7 +88,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -144,10 +146,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               width: 110,
               height: 110,
               decoration: BoxDecoration(
-                color: _primary.withValues(alpha: 0.12),
+                color: AppColors.navWalks.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.lock_reset, color: _primary, size: 56),
+              child: const Icon(
+                Icons.lock_reset,
+                color: AppColors.navWalks,
+                size: 56,
+              ),
             ),
           ),
           Positioned(
@@ -202,7 +208,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         filled: true,
         fillColor: _inputFill,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.radius12,
           borderSide: BorderSide.none,
         ),
         contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -217,11 +223,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       child: ElevatedButton(
         onPressed: _sendResetLink,
         style: ElevatedButton.styleFrom(
-          backgroundColor: _primary,
+          backgroundColor: AppColors.navWalks,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
           elevation: 0,
         ),
         child: const Row(
@@ -255,7 +259,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               TextSpan(
                 text: 'Sign In',
                 style: TextStyle(
-                  color: _primary,
+                  color: AppColors.navWalks,
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),

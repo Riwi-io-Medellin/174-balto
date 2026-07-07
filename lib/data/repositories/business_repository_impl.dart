@@ -15,7 +15,10 @@ class BusinessRepositoryImpl implements BusinessRepository {
   @override
   Future<List<Business>> getBusinesses({String? type, String? location}) async {
     try {
-      final result = await _remote.getBusinesses(type: type, location: location);
+      final result = await _remote.getBusinesses(
+        type: type,
+        location: location,
+      );
       return result.map((dto) => dto.toEntity()).toList();
     } on BusinessFailure {
       rethrow;
@@ -36,8 +39,7 @@ class BusinessRepositoryImpl implements BusinessRepository {
 
       final businessDto = await businessDtoFuture;
       final hours = (await hoursFuture).map((h) => h.toEntity()).toList();
-      final services =
-          (await servicesFuture).map((s) => s.toEntity()).toList();
+      final services = (await servicesFuture).map((s) => s.toEntity()).toList();
 
       return businessDto.toEntity(services: services, openingHours: hours);
     } on BusinessFailure {
@@ -157,12 +159,14 @@ class BusinessRepositoryImpl implements BusinessRepository {
   Future<List<BusinessHour>> updateMyHours(List<BusinessHour> hours) async {
     try {
       final payload = hours
-          .map((h) => {
-                'dayOfWeek': h.dayOfWeek,
-                'startTime': h.startTime,
-                'endTime': h.endTime,
-                'isActive': h.isActive,
-              })
+          .map(
+            (h) => {
+              'dayOfWeek': h.dayOfWeek,
+              'startTime': h.startTime,
+              'endTime': h.endTime,
+              'isActive': h.isActive,
+            },
+          )
           .toList();
       final result = await _remote.updateMyHours(payload);
       return result.map((dto) => dto.toEntity()).toList();

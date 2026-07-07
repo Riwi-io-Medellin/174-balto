@@ -14,13 +14,18 @@ class FeedbackRemoteDataSource {
   }
 
   Future<FeedbackSummaryDto?> getByBusiness(String businessId) async {
-    final response = await _dio.get<dynamic>('/feedback/businesses/$businessId');
+    final response = await _dio.get<dynamic>(
+      '/feedback/businesses/$businessId',
+    );
     return _handleSummaryResponse(response);
   }
 
-  Future<FeedbackSummaryDto?> getByHomeServiceProvider(String providerId) async {
-    final response =
-        await _dio.get<dynamic>('/feedback/home-service-providers/$providerId');
+  Future<FeedbackSummaryDto?> getByHomeServiceProvider(
+    String providerId,
+  ) async {
+    final response = await _dio.get<dynamic>(
+      '/feedback/home-service-providers/$providerId',
+    );
     return _handleSummaryResponse(response);
   }
 
@@ -48,7 +53,10 @@ class FeedbackRemoteDataSource {
       'rating': rating,
       if (comment != null && comment.isNotEmpty) 'comment': comment,
     };
-    final response = await _dio.post<dynamic>('/feedback/businesses', data: body);
+    final response = await _dio.post<dynamic>(
+      '/feedback/businesses',
+      data: body,
+    );
     _ensureSuccess(response, 'FEEDBACK_CREATE_FAILED');
   }
 
@@ -62,8 +70,10 @@ class FeedbackRemoteDataSource {
       'rating': rating,
       if (comment != null && comment.isNotEmpty) 'comment': comment,
     };
-    final response =
-        await _dio.post<dynamic>('/feedback/home-service-providers', data: body);
+    final response = await _dio.post<dynamic>(
+      '/feedback/home-service-providers',
+      data: body,
+    );
     _ensureSuccess(response, 'FEEDBACK_CREATE_FAILED');
   }
 

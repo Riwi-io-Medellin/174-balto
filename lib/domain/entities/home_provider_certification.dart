@@ -21,12 +21,12 @@ class HomeProviderCertification extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        title,
-        issuingOrganization,
-        credentialNumber,
-        issuedDate,
-        expiryDate,
-        documentUrl,
-      ];
+    id,
+    title,
+    issuingOrganization,
+    credentialNumber,
+    issuedDate,
+    expiryDate,
+    documentUrl,
+  ];
 }

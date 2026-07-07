@@ -34,8 +34,9 @@ class CoachCubit extends Cubit<CoachState> {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
 
-    final current =
-        state is CoachLoaded ? (state as CoachLoaded).messages : <CoachMessage>[];
+    final current = state is CoachLoaded
+        ? (state as CoachLoaded).messages
+        : <CoachMessage>[];
     final userMsg = CoachMessage(role: CoachRole.user, content: trimmed);
     final withUser = [...current, userMsg];
 
@@ -43,7 +44,10 @@ class CoachCubit extends Cubit<CoachState> {
 
     try {
       final reply = await _repository.sendMessage(trimmed, current);
-      final assistantMsg = CoachMessage(role: CoachRole.assistant, content: reply);
+      final assistantMsg = CoachMessage(
+        role: CoachRole.assistant,
+        content: reply,
+      );
       final withReply = [...withUser, assistantMsg];
       emit(CoachLoaded(messages: withReply));
       await _save(withReply);

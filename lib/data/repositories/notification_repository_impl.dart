@@ -75,7 +75,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<void> registerDeviceToken({required String token, required String platform}) async {
+  Future<void> registerDeviceToken({
+    required String token,
+    required String platform,
+  }) async {
     try {
       await _remote.registerDeviceToken(token: token, platform: platform);
     } on NotificationFailure {

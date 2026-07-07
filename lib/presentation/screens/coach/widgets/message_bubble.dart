@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_radius.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../domain/entities/coach_message.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -34,10 +36,10 @@ class _UserBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.navCoach,
           borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(18),
-            topRight: Radius.circular(18),
-            bottomLeft: Radius.circular(18),
-            bottomRight: Radius.circular(4),
+            topLeft: Radius.circular(AppRadius.r18),
+            topRight: Radius.circular(AppRadius.r18),
+            bottomLeft: Radius.circular(AppRadius.r18),
+            bottomRight: Radius.circular(AppRadius.r4),
           ),
           boxShadow: [
             BoxShadow(
@@ -77,10 +79,10 @@ class _AssistantBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(4),
-            topRight: Radius.circular(18),
-            bottomLeft: Radius.circular(18),
-            bottomRight: Radius.circular(18),
+            topLeft: Radius.circular(AppRadius.r4),
+            topRight: Radius.circular(AppRadius.r18),
+            bottomLeft: Radius.circular(AppRadius.r18),
+            bottomRight: Radius.circular(AppRadius.r18),
           ),
           border: Border.all(color: AppColors.navCoach.withValues(alpha: 0.25)),
           boxShadow: [
@@ -99,25 +101,23 @@ class _AssistantBubble extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.navCoach.withValues(alpha: 0.08),
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(4),
-                  topRight: Radius.circular(18),
+                  topLeft: Radius.circular(AppRadius.r4),
+                  topRight: Radius.circular(AppRadius.r18),
                 ),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.auto_awesome_rounded,
                     size: 13,
                     color: AppColors.navCoach,
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   Text(
                     'Balto Coach',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
+                    style: AppTextStyles.micro.copyWith(
                       color: AppColors.navCoach,
                       letterSpacing: 0.2,
                     ),
@@ -180,10 +180,10 @@ class _TypingIndicatorState extends State<TypingIndicator>
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(4),
-            topRight: Radius.circular(18),
-            bottomLeft: Radius.circular(18),
-            bottomRight: Radius.circular(18),
+            topLeft: Radius.circular(AppRadius.r4),
+            topRight: Radius.circular(AppRadius.r18),
+            bottomLeft: Radius.circular(AppRadius.r18),
+            bottomRight: Radius.circular(AppRadius.r18),
           ),
           border: Border.all(color: AppColors.navCoach.withValues(alpha: 0.25)),
           boxShadow: [
@@ -202,25 +202,23 @@ class _TypingIndicatorState extends State<TypingIndicator>
               decoration: BoxDecoration(
                 color: AppColors.navCoach.withValues(alpha: 0.08),
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(4),
-                  topRight: Radius.circular(18),
+                  topLeft: Radius.circular(AppRadius.r4),
+                  topRight: Radius.circular(AppRadius.r18),
                 ),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.auto_awesome_rounded,
                     size: 13,
                     color: AppColors.navCoach,
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   Text(
                     'Balto Coach',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
+                    style: AppTextStyles.micro.copyWith(
                       color: AppColors.navCoach,
                       letterSpacing: 0.2,
                     ),

@@ -5,6 +5,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/entities/walk_media.dart';
 import '../../../domain/repositories/walk_session_repository.dart';
@@ -159,7 +161,7 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
     final hasRoute = pts.length >= 2;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.background,
       body: Column(
         children: [
           Expanded(
@@ -225,17 +227,17 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                   left: 12,
                   child: Material(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.radius12,
                     elevation: 4,
                     shadowColor: Colors.black26,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.radius12,
                       onTap: () => Navigator.of(context).pop(),
                       child: const Padding(
                         padding: EdgeInsets.all(10),
                         child: Icon(
                           Icons.arrow_back_rounded,
-                          color: Color(0xFF1A1A2E),
+                          color: AppColors.textPrimary,
                           size: 22,
                         ),
                       ),
@@ -254,7 +256,7 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.navWalkers,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: AppRadius.radius20,
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.15),
@@ -294,7 +296,9 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
             child: Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(AppRadius.r24),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Color(0x14000000),
@@ -316,7 +320,7 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                           height: 4,
                           decoration: BoxDecoration(
                             color: const Color(0xFFE0E0E0),
-                            borderRadius: BorderRadius.circular(2),
+                            borderRadius: AppRadius.radius2,
                           ),
                         ),
                       ),
@@ -327,7 +331,7 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF1A1A2E),
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -357,15 +361,11 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                       ),
                       if (_mediaItems.isNotEmpty) ...[
                         const SizedBox(height: 20),
-                        const Align(
+                        Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'Walk Photos & Videos',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF1A1A2E),
-                            ),
+                            style: AppTextStyles.bodyBold,
                           ),
                         ),
                         const SizedBox(height: 10),
@@ -394,7 +394,7 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                             backgroundColor: AppColors.navWalkers,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: AppRadius.radius14,
                             ),
                             elevation: 0,
                           ),
@@ -434,7 +434,7 @@ class _WalkRouteSummaryScreenState extends State<WalkRouteSummaryScreen> {
                                 color: AppColors.navWalkers,
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: AppRadius.radius14,
                               ),
                             ),
                           ),
@@ -527,7 +527,7 @@ class _StatTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
       ),
       child: Column(
         children: [
@@ -591,7 +591,7 @@ void _openSummaryMedia(BuildContext context, WalkMedia media) {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: Colors.black54,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: AppRadius.radius20,
                 ),
                 child: const Icon(Icons.close, color: Colors.white, size: 24),
               ),
@@ -613,12 +613,12 @@ class _SummaryMediaThumb extends StatelessWidget {
     return GestureDetector(
       onTap: () => _openSummaryMedia(context, media),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         child: media.isVideo
             ? Container(
                 width: 90,
                 height: 90,
-                color: const Color(0xFF1A1A2E),
+                color: AppColors.textPrimary,
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

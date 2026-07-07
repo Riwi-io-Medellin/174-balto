@@ -11,16 +11,20 @@ class HomeProviderAssetsRemoteDataSource {
   // ── Gallery ──────────────────────────────────────────────────────────────
 
   Future<List<HomeProviderGalleryPhotoDto>> getGallery(
-      String providerId) async {
-    final response = await _dio
-        .get<dynamic>('/home-services/providers/$providerId/gallery');
+    String providerId,
+  ) async {
+    final response = await _dio.get<dynamic>(
+      '/home-services/providers/$providerId/gallery',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
     if (status == 200 && data is List) {
       return data
-          .map((e) =>
-              HomeProviderGalleryPhotoDto.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) =>
+                HomeProviderGalleryPhotoDto.fromJson(e as Map<String, dynamic>),
+          )
           .toList();
     }
     _throwFailure(status, data, 'FETCH_FAILED');
@@ -51,17 +55,18 @@ class HomeProviderAssetsRemoteDataSource {
 
   // ── Documents ────────────────────────────────────────────────────────────
 
-  Future<List<HomeProviderDocumentDto>> getDocuments(
-      String providerId) async {
-    final response = await _dio
-        .get<dynamic>('/home-services/providers/$providerId/documents');
+  Future<List<HomeProviderDocumentDto>> getDocuments(String providerId) async {
+    final response = await _dio.get<dynamic>(
+      '/home-services/providers/$providerId/documents',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
     if (status == 200 && data is List) {
       return data
-          .map((e) =>
-              HomeProviderDocumentDto.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) => HomeProviderDocumentDto.fromJson(e as Map<String, dynamic>),
+          )
           .toList();
     }
     _throwFailure(status, data, 'FETCH_FAILED');
@@ -96,16 +101,21 @@ class HomeProviderAssetsRemoteDataSource {
   // ── Certifications ───────────────────────────────────────────────────────
 
   Future<List<HomeProviderCertificationDto>> getCertifications(
-      String providerId) async {
-    final response = await _dio
-        .get<dynamic>('/home-services/providers/$providerId/certifications');
+    String providerId,
+  ) async {
+    final response = await _dio.get<dynamic>(
+      '/home-services/providers/$providerId/certifications',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
     if (status == 200 && data is List) {
       return data
-          .map((e) => HomeProviderCertificationDto.fromJson(
-              e as Map<String, dynamic>))
+          .map(
+            (e) => HomeProviderCertificationDto.fromJson(
+              e as Map<String, dynamic>,
+            ),
+          )
           .toList();
     }
     _throwFailure(status, data, 'FETCH_FAILED');
@@ -153,16 +163,19 @@ class HomeProviderAssetsRemoteDataSource {
   // ── Specialties ──────────────────────────────────────────────────────────
 
   Future<List<HomeProviderSpecialtyDto>> getSpecialties(
-      String providerId) async {
-    final response = await _dio
-        .get<dynamic>('/home-services/providers/$providerId/specialties');
+    String providerId,
+  ) async {
+    final response = await _dio.get<dynamic>(
+      '/home-services/providers/$providerId/specialties',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
     if (status == 200 && data is List) {
       return data
-          .map((e) =>
-              HomeProviderSpecialtyDto.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) => HomeProviderSpecialtyDto.fromJson(e as Map<String, dynamic>),
+          )
           .toList();
     }
     _throwFailure(status, data, 'FETCH_FAILED');

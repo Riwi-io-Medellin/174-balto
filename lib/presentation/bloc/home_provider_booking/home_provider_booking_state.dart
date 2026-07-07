@@ -33,30 +33,38 @@ class HomeProviderBookingLoaded extends HomeProviderBookingState {
   final String? successMessage;
   final String? errorMessage;
 
-  List<HomeServiceBooking> get pending => (bookings
-        .where((b) => b.status == HomeServiceBookingStatus.pending)
-        .toList()
-      ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
+  List<HomeServiceBooking> get pending =>
+      (bookings
+          .where((b) => b.status == HomeServiceBookingStatus.pending)
+          .toList()
+        ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
 
-  List<HomeServiceBooking> get upcoming => (bookings
-        .where((b) =>
-            b.status == HomeServiceBookingStatus.accepted ||
-            b.status == HomeServiceBookingStatus.inProgress)
-        .toList()
-      ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
+  List<HomeServiceBooking> get upcoming =>
+      (bookings
+          .where(
+            (b) =>
+                b.status == HomeServiceBookingStatus.accepted ||
+                b.status == HomeServiceBookingStatus.inProgress,
+          )
+          .toList()
+        ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
 
-  List<HomeServiceBooking> get completed => (bookings
-        .where((b) => b.status == HomeServiceBookingStatus.completed)
-        .toList()
-      ..sort((a, b) => b.slotStart.compareTo(a.slotStart)));
+  List<HomeServiceBooking> get completed =>
+      (bookings
+          .where((b) => b.status == HomeServiceBookingStatus.completed)
+          .toList()
+        ..sort((a, b) => b.slotStart.compareTo(a.slotStart)));
 
-  List<HomeServiceBooking> get cancelled => (bookings
-        .where((b) =>
-            b.status == HomeServiceBookingStatus.providerCancelled ||
-            b.status == HomeServiceBookingStatus.clientCancelled ||
-            b.status == HomeServiceBookingStatus.rejected)
-        .toList()
-      ..sort((a, b) => b.slotStart.compareTo(a.slotStart)));
+  List<HomeServiceBooking> get cancelled =>
+      (bookings
+          .where(
+            (b) =>
+                b.status == HomeServiceBookingStatus.providerCancelled ||
+                b.status == HomeServiceBookingStatus.clientCancelled ||
+                b.status == HomeServiceBookingStatus.rejected,
+          )
+          .toList()
+        ..sort((a, b) => b.slotStart.compareTo(a.slotStart)));
 
   HomeProviderBookingLoaded copyWith({
     List<HomeServiceBooking>? bookings,
@@ -69,19 +77,20 @@ class HomeProviderBookingLoaded extends HomeProviderBookingState {
     return HomeProviderBookingLoaded(
       bookings: bookings ?? this.bookings,
       isPerformingAction: isPerformingAction ?? this.isPerformingAction,
-      successMessage:
-          clearSuccess ? null : (successMessage ?? this.successMessage),
+      successMessage: clearSuccess
+          ? null
+          : (successMessage ?? this.successMessage),
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 
   @override
   List<Object?> get props => [
-        bookings,
-        isPerformingAction,
-        successMessage,
-        errorMessage,
-      ];
+    bookings,
+    isPerformingAction,
+    successMessage,
+    errorMessage,
+  ];
 }
 
 class HomeProviderBookingError extends HomeProviderBookingState {

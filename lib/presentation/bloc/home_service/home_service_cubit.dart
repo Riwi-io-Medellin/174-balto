@@ -41,11 +41,13 @@ class HomeServiceCubit extends Cubit<HomeServiceState> {
     try {
       final providers = await _repository.getProviders();
       _loadedProviders = providers;
-      emit(HomeServiceListLoaded(
-        providers: _sortedProviders(),
-        selectedFilter: _activeFilter,
-        hasMore: false,
-      ));
+      emit(
+        HomeServiceListLoaded(
+          providers: _sortedProviders(),
+          selectedFilter: _activeFilter,
+          hasMore: false,
+        ),
+      );
     } on HomeServiceFailure catch (e) {
       emit(HomeServiceError(e.code, e.message));
     } catch (e) {
@@ -56,10 +58,12 @@ class HomeServiceCubit extends Cubit<HomeServiceState> {
   Future<void> loadMoreProviders() async {
     if (!_hasMore || _isLoadingMore) return;
     _isLoadingMore = true;
-    emit(HomeServiceLoadingMore(
-      providers: _sortedProviders(),
-      selectedFilter: _activeFilter,
-    ));
+    emit(
+      HomeServiceLoadingMore(
+        providers: _sortedProviders(),
+        selectedFilter: _activeFilter,
+      ),
+    );
     try {
       _page++;
       final result = await _repository.searchProviders(
@@ -73,25 +77,31 @@ class HomeServiceCubit extends Cubit<HomeServiceState> {
       );
       _loadedProviders = [..._loadedProviders, ...result.items];
       _hasMore = _loadedProviders.length < result.totalCount;
-      emit(HomeServiceListLoaded(
-        providers: _sortedProviders(),
-        selectedFilter: _activeFilter,
-        hasMore: _hasMore,
-      ));
+      emit(
+        HomeServiceListLoaded(
+          providers: _sortedProviders(),
+          selectedFilter: _activeFilter,
+          hasMore: _hasMore,
+        ),
+      );
     } on HomeServiceFailure catch (_) {
       _page--;
-      emit(HomeServiceListLoaded(
-        providers: _sortedProviders(),
-        selectedFilter: _activeFilter,
-        hasMore: _hasMore,
-      ));
+      emit(
+        HomeServiceListLoaded(
+          providers: _sortedProviders(),
+          selectedFilter: _activeFilter,
+          hasMore: _hasMore,
+        ),
+      );
     } catch (_) {
       _page--;
-      emit(HomeServiceListLoaded(
-        providers: _sortedProviders(),
-        selectedFilter: _activeFilter,
-        hasMore: _hasMore,
-      ));
+      emit(
+        HomeServiceListLoaded(
+          providers: _sortedProviders(),
+          selectedFilter: _activeFilter,
+          hasMore: _hasMore,
+        ),
+      );
     } finally {
       _isLoadingMore = false;
     }
@@ -123,11 +133,13 @@ class HomeServiceCubit extends Cubit<HomeServiceState> {
       );
       _loadedProviders = result.items;
       _hasMore = _loadedProviders.length < result.totalCount;
-      emit(HomeServiceListLoaded(
-        providers: _sortedProviders(),
-        selectedFilter: _activeFilter,
-        hasMore: _hasMore,
-      ));
+      emit(
+        HomeServiceListLoaded(
+          providers: _sortedProviders(),
+          selectedFilter: _activeFilter,
+          hasMore: _hasMore,
+        ),
+      );
     } on HomeServiceFailure catch (e) {
       emit(HomeServiceError(e.code, e.message));
     } catch (e) {
@@ -150,11 +162,13 @@ class HomeServiceCubit extends Cubit<HomeServiceState> {
   void applyFilter(int filterIndex) {
     _activeFilter = filterIndex;
     if (_loadedProviders.isNotEmpty || state is HomeServiceListLoaded) {
-      emit(HomeServiceListLoaded(
-        providers: _sortedProviders(),
-        selectedFilter: _activeFilter,
-        hasMore: _hasMore,
-      ));
+      emit(
+        HomeServiceListLoaded(
+          providers: _sortedProviders(),
+          selectedFilter: _activeFilter,
+          hasMore: _hasMore,
+        ),
+      );
     }
   }
 

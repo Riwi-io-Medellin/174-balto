@@ -41,7 +41,9 @@ class HomeServiceBookingCubit extends Cubit<HomeServiceBookingState> {
         pets: pets,
         selectedPet: pets.length == 1 ? pets.first : null,
         services: activeServices,
-        selectedService: activeServices.length == 1 ? activeServices.first : null,
+        selectedService: activeServices.length == 1
+            ? activeServices.first
+            : null,
         selectedDate: today,
       );
       emit(initial);
@@ -132,11 +134,13 @@ class HomeServiceBookingCubit extends Cubit<HomeServiceBookingState> {
       );
       final current = _form;
       if (current != null) {
-        emit(current.copyWith(
-          availableSlots: slots,
-          isLoadingSlots: false,
-          clearSlotsError: true,
-        ));
+        emit(
+          current.copyWith(
+            availableSlots: slots,
+            isLoadingSlots: false,
+            clearSlotsError: true,
+          ),
+        );
       }
     } on HomeServiceFailure catch (e) {
       final current = _form;
@@ -146,10 +150,12 @@ class HomeServiceBookingCubit extends Cubit<HomeServiceBookingState> {
     } catch (e) {
       final current = _form;
       if (current != null) {
-        emit(current.copyWith(
-          isLoadingSlots: false,
-          slotsError: 'Could not load available slots.',
-        ));
+        emit(
+          current.copyWith(
+            isLoadingSlots: false,
+            slotsError: 'Could not load available slots.',
+          ),
+        );
       }
     }
   }
@@ -166,8 +172,12 @@ class HomeServiceBookingCubit extends Cubit<HomeServiceBookingState> {
         petId: s.selectedPet!.id,
         slotStart: s.selectedSlot!.start,
         durationMinutes: s.selectedDuration,
-        serviceAddress: s.serviceAddress.trim().isEmpty ? null : s.serviceAddress.trim(),
-        specialInstructions: s.instructions.trim().isEmpty ? null : s.instructions.trim(),
+        serviceAddress: s.serviceAddress.trim().isEmpty
+            ? null
+            : s.serviceAddress.trim(),
+        specialInstructions: s.instructions.trim().isEmpty
+            ? null
+            : s.instructions.trim(),
       );
       emit(HomeServiceBookingSuccess(booking));
     } on HomeServiceBookingFailure catch (e) {
@@ -199,11 +209,13 @@ class HomeServiceBookingCubit extends Cubit<HomeServiceBookingState> {
         date: _formatDate(saved.selectedDate!),
         durationMinutes: saved.selectedDuration,
       );
-      emit(recovering.copyWith(
-        availableSlots: slots,
-        isLoadingSlots: false,
-        hadConflict: true,
-      ));
+      emit(
+        recovering.copyWith(
+          availableSlots: slots,
+          isLoadingSlots: false,
+          hadConflict: true,
+        ),
+      );
     } catch (_) {
       emit(recovering.copyWith(isLoadingSlots: false, hadConflict: true));
     }

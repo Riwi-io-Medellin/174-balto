@@ -8,16 +8,18 @@ class CoachRemoteDataSource {
 
   final Dio _dio;
 
-  Future<String> sendMessage(
-    String message,
-    List<CoachMessage> history,
-  ) async {
+  Future<String> sendMessage(String message, List<CoachMessage> history) async {
     final response = await _dio.post<dynamic>(
       '/chat',
       data: {
         'Message': message,
         'History': history
-            .map((m) => {'Role': m.role == CoachRole.user ? 'user' : 'assistant', 'Content': m.content})
+            .map(
+              (m) => {
+                'Role': m.role == CoachRole.user ? 'user' : 'assistant',
+                'Content': m.content,
+              },
+            )
             .toList(),
       },
     );
@@ -42,7 +44,9 @@ class CoachRemoteDataSource {
     }
     if (status == 503) {
       throw CoachFailure(
-          'SERVICE_UNAVAILABLE', 'The coach is not available right now.');
+        'SERVICE_UNAVAILABLE',
+        'The coach is not available right now.',
+      );
     }
 
     throw CoachFailure('CHAT_FAILED', 'Unexpected response ($status).');

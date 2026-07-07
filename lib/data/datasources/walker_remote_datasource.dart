@@ -19,8 +19,10 @@ class WalkerRemoteDataSource {
     if (available != null) queryParams['available'] = available;
     if (workLocation != null) queryParams['workLocation'] = workLocation;
 
-    final response =
-        await _dio.get<dynamic>('/walkers/', queryParameters: queryParams);
+    final response = await _dio.get<dynamic>(
+      '/walkers/',
+      queryParameters: queryParams,
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
@@ -33,10 +35,7 @@ class WalkerRemoteDataSource {
     if (data is Map<String, dynamic> &&
         data['code'] is String &&
         data['error'] is String) {
-      throw WalkerFailure(
-        data['code'] as String,
-        data['error'] as String,
-      );
+      throw WalkerFailure(data['code'] as String, data['error'] as String);
     }
 
     throw WalkerFailure('FETCH_FAILED', 'Unexpected response ($status).');
@@ -62,8 +61,10 @@ class WalkerRemoteDataSource {
       'pageSize': pageSize,
     };
 
-    final response =
-        await _dio.get<dynamic>('/walkers/search', queryParameters: queryParams);
+    final response = await _dio.get<dynamic>(
+      '/walkers/search',
+      queryParameters: queryParams,
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
@@ -74,10 +75,7 @@ class WalkerRemoteDataSource {
     if (data is Map<String, dynamic> &&
         data['code'] is String &&
         data['error'] is String) {
-      throw WalkerFailure(
-        data['code'] as String,
-        data['error'] as String,
-      );
+      throw WalkerFailure(data['code'] as String, data['error'] as String);
     }
 
     throw WalkerFailure('SEARCH_FAILED', 'Unexpected response ($status).');
@@ -109,10 +107,7 @@ class WalkerRemoteDataSource {
     if (data is Map<String, dynamic> &&
         data['code'] is String &&
         data['error'] is String) {
-      throw WalkerFailure(
-        data['code'] as String,
-        data['error'] as String,
-      );
+      throw WalkerFailure(data['code'] as String, data['error'] as String);
     }
 
     throw WalkerFailure('DETAIL_FAILED', 'Unexpected response ($status).');

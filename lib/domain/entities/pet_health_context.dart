@@ -24,20 +24,29 @@ class PetHealthContext extends Equatable {
   final String? documentType;
 
   Map<String, dynamic> toJson() => {
-        'petId': petId,
-        'petContext': {
-          'name': name,
-          'species': species,
-          'breed': breed,
-          'age': age,
-          'sex': sex,
-          'weightKg': weightKg,
-        },
-        'documentType': documentType,
-        'symptoms': symptoms,
-      };
+    'petId': petId,
+    'petContext': {
+      'name': name,
+      'species': species,
+      'breed': breed,
+      'age': age,
+      'sex': sex,
+      'weightKg': weightKg,
+    },
+    'documentType': documentType,
+    'symptoms': symptoms,
+  };
 
   @override
-  List<Object?> get props =>
-      [petId, name, species, breed, age, sex, weightKg, symptoms, documentType];
+  List<Object?> get props => [
+    petId,
+    name,
+    species,
+    breed,
+    age,
+    sex,
+    weightKg,
+    symptoms,
+    documentType,
+  ];
 }

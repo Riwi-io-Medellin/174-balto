@@ -26,16 +26,16 @@ class AvailabilitySlotDto {
   final String endTime;
 
   Map<String, dynamic> toJson() => {
-        'dayOfWeek': dayOfWeek,
-        'startTime': startTime,
-        'endTime': endTime,
-      };
+    'dayOfWeek': dayOfWeek,
+    'startTime': startTime,
+    'endTime': endTime,
+  };
 
   AvailabilitySlot toEntity() => AvailabilitySlot(
-        dayOfWeek: dayOfWeek,
-        startTime: startTime,
-        endTime: endTime,
-      );
+    dayOfWeek: dayOfWeek,
+    startTime: startTime,
+    endTime: endTime,
+  );
 
   /// Strips seconds from "HH:mm:ss" → "HH:mm".
   static String _normalizeTime(String time) {

@@ -55,33 +55,32 @@ class LiveWalkActive extends LiveWalkState {
     int? elapsedSeconds,
     double? distanceKm,
     DateTime? lastUpdateAt,
-  }) =>
-      LiveWalkActive(
-        walkerName: walkerName,
-        walkerAvatarUrl: walkerAvatarUrl,
-        walkerRating: walkerRating,
-        petName: petName,
-        sessionId: sessionId,
-        currentPosition: currentPosition ?? this.currentPosition,
-        routePoints: routePoints ?? this.routePoints,
-        elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
-        distanceKm: distanceKm ?? this.distanceKm,
-        lastUpdateAt: lastUpdateAt ?? this.lastUpdateAt,
-      );
+  }) => LiveWalkActive(
+    walkerName: walkerName,
+    walkerAvatarUrl: walkerAvatarUrl,
+    walkerRating: walkerRating,
+    petName: petName,
+    sessionId: sessionId,
+    currentPosition: currentPosition ?? this.currentPosition,
+    routePoints: routePoints ?? this.routePoints,
+    elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
+    distanceKm: distanceKm ?? this.distanceKm,
+    lastUpdateAt: lastUpdateAt ?? this.lastUpdateAt,
+  );
 
   @override
   List<Object?> get props => [
-        walkerName,
-        walkerAvatarUrl,
-        walkerRating,
-        petName,
-        sessionId,
-        currentPosition,
-        routePoints,
-        elapsedSeconds,
-        distanceKm,
-        lastUpdateAt,
-      ];
+    walkerName,
+    walkerAvatarUrl,
+    walkerRating,
+    petName,
+    sessionId,
+    currentPosition,
+    routePoints,
+    elapsedSeconds,
+    distanceKm,
+    lastUpdateAt,
+  ];
 }
 
 class LiveWalkCompleted extends LiveWalkState {

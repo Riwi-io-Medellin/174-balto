@@ -10,8 +10,9 @@ class HomeServiceAvailabilityRemoteDataSource {
   final Dio _dio;
 
   Future<List<AvailabilitySlotDto>> getMyAvailability() async {
-    final response =
-        await _dio.get<dynamic>('/home-services/providers/me/availability');
+    final response = await _dio.get<dynamic>(
+      '/home-services/providers/me/availability',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 

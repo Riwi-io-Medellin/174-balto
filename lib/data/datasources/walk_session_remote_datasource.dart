@@ -26,7 +26,10 @@ class WalkSessionRemoteDataSource {
   }
 
   Future<void> addLocation(
-      String sessionId, double latitude, double longitude) async {
+    String sessionId,
+    double latitude,
+    double longitude,
+  ) async {
     final response = await _dio.post<dynamic>(
       '/walk-sessions/$sessionId/location',
       data: {'latitude': latitude, 'longitude': longitude},
@@ -37,7 +40,10 @@ class WalkSessionRemoteDataSource {
   }
 
   Future<void> finishSession(
-      String sessionId, double totalDistanceMeters, int totalDurationSeconds) async {
+    String sessionId,
+    double totalDistanceMeters,
+    int totalDurationSeconds,
+  ) async {
     final response = await _dio.post<dynamic>(
       '/walk-sessions/$sessionId/finish',
       data: {
@@ -57,10 +63,12 @@ class WalkSessionRemoteDataSource {
     if (status == 200 && data is List) {
       return data
           .cast<Map<String, dynamic>>()
-          .map((p) => LatLng(
-                (p['latitude'] as num).toDouble(),
-                (p['longitude'] as num).toDouble(),
-              ))
+          .map(
+            (p) => LatLng(
+              (p['latitude'] as num).toDouble(),
+              (p['longitude'] as num).toDouble(),
+            ),
+          )
           .toList();
     }
     _throwFailure(status, data);
@@ -77,8 +85,7 @@ class WalkSessionRemoteDataSource {
   }
 
   Future<List<WalkMedia>> getSessionMedia(String sessionId) async {
-    final response =
-        await _dio.get<dynamic>('/walk-sessions/$sessionId/media');
+    final response = await _dio.get<dynamic>('/walk-sessions/$sessionId/media');
     final status = response.statusCode ?? 0;
     final data = response.data;
     // ignore: avoid_print
@@ -98,7 +105,9 @@ class WalkSessionRemoteDataSource {
         final m = raw as Map<String, dynamic>;
         // ignore: avoid_print
         print('[WalkSession] media item: $m');
-        final dateStr = (m['uploadedAt'] ?? m['createdAt'] ?? m['created_at'] ?? '') as String;
+        final dateStr =
+            (m['uploadedAt'] ?? m['createdAt'] ?? m['created_at'] ?? '')
+                as String;
         return WalkMedia(
           id: (m['id'] ?? '').toString(),
           url: (m['url'] ?? m['mediaUrl'] ?? '') as String,
@@ -149,14 +158,13 @@ class WalkSessionRemoteDataSource {
     if (data is Map<String, dynamic> &&
         data['code'] is String &&
         data['error'] is String) {
-      throw WalkSessionFailure(
-        data['code'] as String,
-        data['error'] as String,
-      );
+      throw WalkSessionFailure(data['code'] as String, data['error'] as String);
     }
     // ignore: avoid_print
     print('[WalkSession] HTTP $status — body: $data');
     throw WalkSessionFailure(
-        'REQUEST_FAILED', 'Server error ($status). Check logs for details.');
+      'REQUEST_FAILED',
+      'Server error ($status). Check logs for details.',
+    );
   }
 }

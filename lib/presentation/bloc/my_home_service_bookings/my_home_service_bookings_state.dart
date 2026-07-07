@@ -31,26 +31,33 @@ class MyHomeServiceBookingsLoaded extends MyHomeServiceBookingsState {
   final String? successMessage;
   final String? errorMessage;
 
-  List<HomeServiceBooking> get pending => (bookings
-        .where((b) => b.status == HomeServiceBookingStatus.pending)
-        .toList()
-      ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
+  List<HomeServiceBooking> get pending =>
+      (bookings
+          .where((b) => b.status == HomeServiceBookingStatus.pending)
+          .toList()
+        ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
 
-  List<HomeServiceBooking> get upcoming => (bookings
-        .where((b) =>
-            b.status == HomeServiceBookingStatus.accepted ||
-            b.status == HomeServiceBookingStatus.inProgress)
-        .toList()
-      ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
+  List<HomeServiceBooking> get upcoming =>
+      (bookings
+          .where(
+            (b) =>
+                b.status == HomeServiceBookingStatus.accepted ||
+                b.status == HomeServiceBookingStatus.inProgress,
+          )
+          .toList()
+        ..sort((a, b) => a.slotStart.compareTo(b.slotStart)));
 
-  List<HomeServiceBooking> get history => (bookings
-        .where((b) =>
-            b.status == HomeServiceBookingStatus.completed ||
-            b.status == HomeServiceBookingStatus.clientCancelled ||
-            b.status == HomeServiceBookingStatus.providerCancelled ||
-            b.status == HomeServiceBookingStatus.rejected)
-        .toList()
-      ..sort((a, b) => b.slotStart.compareTo(a.slotStart)));
+  List<HomeServiceBooking> get history =>
+      (bookings
+          .where(
+            (b) =>
+                b.status == HomeServiceBookingStatus.completed ||
+                b.status == HomeServiceBookingStatus.clientCancelled ||
+                b.status == HomeServiceBookingStatus.providerCancelled ||
+                b.status == HomeServiceBookingStatus.rejected,
+          )
+          .toList()
+        ..sort((a, b) => b.slotStart.compareTo(a.slotStart)));
 
   bool get isEmpty => pending.isEmpty && upcoming.isEmpty && history.isEmpty;
 
@@ -65,14 +72,20 @@ class MyHomeServiceBookingsLoaded extends MyHomeServiceBookingsState {
     return MyHomeServiceBookingsLoaded(
       bookings: bookings ?? this.bookings,
       isPerformingAction: isPerformingAction ?? this.isPerformingAction,
-      successMessage:
-          clearSuccess ? null : (successMessage ?? this.successMessage),
+      successMessage: clearSuccess
+          ? null
+          : (successMessage ?? this.successMessage),
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 
   @override
-  List<Object?> get props => [bookings, isPerformingAction, successMessage, errorMessage];
+  List<Object?> get props => [
+    bookings,
+    isPerformingAction,
+    successMessage,
+    errorMessage,
+  ];
 }
 
 class MyHomeServiceBookingsError extends MyHomeServiceBookingsState {

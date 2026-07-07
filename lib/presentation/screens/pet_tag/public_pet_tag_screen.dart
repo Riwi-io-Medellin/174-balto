@@ -51,13 +51,18 @@ class _PublicPetTagScreenState extends State<PublicPetTagScreen> {
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
         if (mounted) {
-          BaltoToast.error(context, 'Location permission is required to share your location.');
+          BaltoToast.error(
+            context,
+            'Location permission is required to share your location.',
+          );
         }
         return;
       }
 
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
 
       await sl<PublicPetTagRepository>().shareLocation(
@@ -67,10 +72,16 @@ class _PublicPetTagScreenState extends State<PublicPetTagScreen> {
       );
 
       if (!mounted) return;
-      BaltoToast.success(context, 'Your location was sent to ${pet.ownerName}.');
+      BaltoToast.success(
+        context,
+        'Your location was sent to ${pet.ownerName}.',
+      );
     } catch (e) {
       if (!mounted) return;
-      BaltoToast.error(context, 'Could not share your location. ${e.toString()}');
+      BaltoToast.error(
+        context,
+        'Could not share your location. ${e.toString()}',
+      );
     } finally {
       if (mounted) setState(() => _sharingLocation = false);
     }
@@ -201,7 +212,9 @@ class _PublicPetTagScreenState extends State<PublicPetTagScreen> {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: _sharingLocation ? null : () => _shareLocation(pet),
+                  onPressed: _sharingLocation
+                      ? null
+                      : () => _shareLocation(pet),
                   icon: _sharingLocation
                       ? const SizedBox(
                           width: 16,

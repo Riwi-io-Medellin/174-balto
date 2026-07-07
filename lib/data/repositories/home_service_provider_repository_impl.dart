@@ -5,7 +5,8 @@ import '../../domain/entities/home_service_provider.dart';
 import '../../domain/repositories/home_service_provider_repository.dart';
 import '../datasources/home_service_remote_datasource.dart';
 
-class HomeServiceProviderRepositoryImpl implements HomeServiceProviderRepository {
+class HomeServiceProviderRepositoryImpl
+    implements HomeServiceProviderRepository {
   HomeServiceProviderRepositoryImpl(this._remote);
 
   final HomeServiceRemoteDataSource _remote;

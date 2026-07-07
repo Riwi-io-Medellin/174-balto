@@ -65,7 +65,9 @@ class WalkerAvailabilityRemoteDataSource {
   }
 
   Future<List<AvailabilityExceptionDto>> getMyExceptions() async {
-    final response = await _dio.get<dynamic>('/walkers/me/availability/exceptions');
+    final response = await _dio.get<dynamic>(
+      '/walkers/me/availability/exceptions',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 

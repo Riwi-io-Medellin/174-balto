@@ -3,8 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_shadows.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
+import '../../widgets/balto_dialog.dart';
 import '../../widgets/skeletons/walker_bookings_skeleton.dart';
 import '../../../domain/entities/walk_booking.dart';
 import '../../bloc/walker_booking/walker_booking_cubit.dart';
@@ -37,13 +41,9 @@ class _WalkerBookingsView extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          title: const Text(
+          title: Text(
             'My Bookings',
-            style: TextStyle(
-              color: _green,
-              fontWeight: FontWeight.w700,
-              fontSize: 18,
-            ),
+            style: AppTextStyles.h3.copyWith(color: _green),
           ),
           iconTheme: const IconThemeData(color: _green),
           bottom: const TabBar(
@@ -296,18 +296,12 @@ class _BookingCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         border: Border.all(
           color: isFarAway ? const Color(0xFFFFD97A) : Colors.grey.shade200,
           width: isFarAway ? 1.5 : 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: AppShadows.subtle,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -411,7 +405,7 @@ class _BookingCard extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFF8EC),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.radius8,
                   border: Border.all(color: const Color(0xFFFFD97A)),
                 ),
                 child: Row(
@@ -425,10 +419,8 @@ class _BookingCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         '${distKm.toStringAsFixed(1)} km from your accepted walk — accepting may be difficult.',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFFB87300),
-                          fontWeight: FontWeight.w500,
+                        style: AppTextStyles.caption.copyWith(
+                          color: const Color(0xFFB87300),
                         ),
                       ),
                     ),
@@ -459,7 +451,7 @@ class _BookingCard extends StatelessWidget {
                         side: const BorderSide(color: _orange),
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: AppRadius.radius8,
                         ),
                       ),
                       child: const Text(
@@ -488,7 +480,7 @@ class _BookingCard extends StatelessWidget {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: AppRadius.radius8,
                         ),
                       ),
                       child: isPerformingAction
@@ -534,7 +526,7 @@ class _BookingCard extends StatelessWidget {
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppRadius.radius8,
                       ),
                       elevation: 0,
                     ),
@@ -564,7 +556,7 @@ class _BookingCard extends StatelessWidget {
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppRadius.radius8,
                       ),
                       elevation: 0,
                     ),
@@ -589,7 +581,7 @@ class _BookingCard extends StatelessWidget {
                     side: const BorderSide(color: _orange),
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: AppRadius.radius8,
                     ),
                   ),
                   child: isPerformingAction
@@ -641,24 +633,12 @@ class _BookingCard extends StatelessWidget {
     String content,
     VoidCallback onConfirm,
   ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(title),
-        content: Text(content),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Confirm'),
-          ),
-        ],
-      ),
+    final confirmed = await BaltoDialog.confirm(
+      context,
+      title: title,
+      message: content,
     );
-    if (confirmed == true) onConfirm();
+    if (confirmed) onConfirm();
   }
 }
 
@@ -683,16 +663,9 @@ class _StatusBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
-      ),
+      child: Text(label, style: AppTextStyles.micro.copyWith(color: color)),
     );
   }
 }

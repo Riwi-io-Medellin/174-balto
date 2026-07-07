@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_shadows.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/entities/availability_slot.dart';
 import '../../../domain/entities/available_slot.dart';
@@ -61,7 +64,7 @@ class _WalkerProfilePageState extends State<WalkerProfilePage> {
           final isLoadingDetail = state is WalkerLoading;
 
           return Scaffold(
-            backgroundColor: const Color(0xFFF5F6FA),
+            backgroundColor: AppColors.background,
             bottomNavigationBar: _BookingBar(walker: walker),
             body: CustomScrollView(
               slivers: [
@@ -152,7 +155,7 @@ class _WalkerAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       pinned: true,
-      backgroundColor: const Color(0xFFF5F6FA),
+      backgroundColor: AppColors.background,
       elevation: 0,
       scrolledUnderElevation: 0,
       leading: IconButton(
@@ -218,12 +221,10 @@ class _ProfileHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          const Text(
+          Text(
             'WALKER PROFILE',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF8A93A0),
+            style: AppTextStyles.micro.copyWith(
+              color: const Color(0xFF8A93A0),
               letterSpacing: 1.4,
             ),
           ),
@@ -280,20 +281,18 @@ class _ProfileHeader extends StatelessWidget {
                   ),
               ],
               if (walker.isVerified)
-                const Row(
+                Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.verified_rounded,
                       size: 16,
                       color: AppColors.navCoach,
                     ),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text(
                       'Verified',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
+                      style: AppTextStyles.label.copyWith(
                         color: AppColors.navCoach,
                       ),
                     ),
@@ -325,7 +324,7 @@ class _GalleryStrip extends StatelessWidget {
         itemCount: images.length,
         separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (_, i) => ClipRRect(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.radius14,
           child: Image.network(
             images[i],
             width: 220,
@@ -363,7 +362,7 @@ class _AboutCard extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -393,10 +392,8 @@ class _AboutCard extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 'About $firstName',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF1F2937),
+                style: AppTextStyles.titleSmall.copyWith(
+                  color: const Color(0xFF1F2937),
                 ),
               ),
             ],
@@ -437,15 +434,13 @@ class _SpecialtyChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: const Color(0xFFF0F2F5),
-        borderRadius: BorderRadius.circular(99),
+        borderRadius: AppRadius.radiusPill,
         border: Border.all(color: const Color(0xFFE0E4EC)),
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF4A5568),
+        style: AppTextStyles.captionStrong.copyWith(
+          color: const Color(0xFF4A5568),
         ),
       ),
     );
@@ -554,7 +549,7 @@ class _StatTile extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: data.bgColor,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -605,7 +600,7 @@ class _ServiceAreaCard extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.radius16,
           child: SizedBox(
             height: 160,
             width: double.infinity,
@@ -655,7 +650,7 @@ class _ServiceAreaCard extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.92),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppRadius.radius8,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.1),
@@ -784,7 +779,7 @@ class _WalkerReviewsSection extends StatelessWidget {
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: AppRadius.radius12,
                     ),
                   ),
                 ),
@@ -844,7 +839,7 @@ class _WeeklyScheduleSection extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -872,12 +867,10 @@ class _WeeklyScheduleSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              const Text(
+              Text(
                 'Weekly Schedule',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF1F2937),
+                style: AppTextStyles.titleSmall.copyWith(
+                  color: const Color(0xFF1F2937),
                 ),
               ),
             ],
@@ -923,10 +916,8 @@ class _WeeklyScheduleSection extends StatelessWidget {
                     width: 80,
                     child: Text(
                       _daysFull[day],
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF1F2937),
+                      style: AppTextStyles.label.copyWith(
+                        color: const Color(0xFF1F2937),
                       ),
                     ),
                   ),
@@ -942,7 +933,7 @@ class _WeeklyScheduleSection extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.navWalkers.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: AppRadius.radius8,
                             border: Border.all(
                               color: AppColors.navWalkers.withValues(
                                 alpha: 0.25,
@@ -951,9 +942,7 @@ class _WeeklyScheduleSection extends StatelessWidget {
                           ),
                           child: Text(
                             '${_fmt(s.startTime)} – ${_fmt(s.endTime)}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                            style: AppTextStyles.captionStrong.copyWith(
                               color: AppColors.navWalkers,
                             ),
                           ),
@@ -1014,16 +1003,14 @@ class _AvailabilitySlotsSection extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.navWalkers.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: AppRadius.radius10,
                     border: Border.all(
                       color: AppColors.navWalkers.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Text(
                     _formatTime(s.start),
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                    style: AppTextStyles.label.copyWith(
                       color: AppColors.navWalkers,
                     ),
                   ),
@@ -1058,13 +1045,7 @@ class _BookingBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
           color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 16,
-              offset: const Offset(0, -4),
-            ),
-          ],
+          boxShadow: AppShadows.sheet,
         ),
         child: Row(
           children: [
@@ -1111,16 +1092,14 @@ class _BookingBar extends StatelessWidget {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1F2937),
+                backgroundColor: AppColors.textPrimary,
                 foregroundColor: Colors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 28,
                   vertical: 14,
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
               ),
               child: const Text(
                 'Book a Walk',

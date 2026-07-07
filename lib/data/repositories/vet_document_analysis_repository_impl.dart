@@ -5,7 +5,8 @@ import '../../domain/entities/vet_document_analysis.dart';
 import '../../domain/repositories/vet_document_analysis_repository.dart';
 import '../datasources/vet_document_analysis_remote_datasource.dart';
 
-class VetDocumentAnalysisRepositoryImpl implements VetDocumentAnalysisRepository {
+class VetDocumentAnalysisRepositoryImpl
+    implements VetDocumentAnalysisRepository {
   VetDocumentAnalysisRepositoryImpl(this._remote);
 
   final VetDocumentAnalysisRemoteDataSource _remote;
@@ -20,7 +21,8 @@ class VetDocumentAnalysisRepositoryImpl implements VetDocumentAnalysisRepository
     } on VetDocumentAnalysisFailure {
       rethrow;
     } on DioException catch (e) {
-      final isTimeout = e.type == DioExceptionType.connectionTimeout ||
+      final isTimeout =
+          e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.sendTimeout ||
           e.type == DioExceptionType.receiveTimeout;
       throw VetDocumentAnalysisFailure(

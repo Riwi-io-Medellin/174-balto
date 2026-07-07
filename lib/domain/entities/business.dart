@@ -60,30 +60,30 @@ class Business extends Equatable {
   bool get isVerified => verificationStatus == 'approved';
 
   Business copyWith({double? distanceKm}) => Business(
-        id: id,
-        ownerUserId: ownerUserId,
-        name: name,
-        nit: nit,
-        email: email,
-        phone: phone,
-        type: type,
-        location: location,
-        address: address,
-        verificationStatus: verificationStatus,
-        createdAt: createdAt,
-        instagramUrl: instagramUrl,
-        facebookUrl: facebookUrl,
-        description: description,
-        photoUrl: photoUrl,
-        rating: rating,
-        reviewCount: reviewCount,
-        latitude: latitude,
-        longitude: longitude,
-        isOpen: isOpen,
-        distanceKm: distanceKm ?? this.distanceKm,
-        services: services,
-        openingHours: openingHours,
-      );
+    id: id,
+    ownerUserId: ownerUserId,
+    name: name,
+    nit: nit,
+    email: email,
+    phone: phone,
+    type: type,
+    location: location,
+    address: address,
+    verificationStatus: verificationStatus,
+    createdAt: createdAt,
+    instagramUrl: instagramUrl,
+    facebookUrl: facebookUrl,
+    description: description,
+    photoUrl: photoUrl,
+    rating: rating,
+    reviewCount: reviewCount,
+    latitude: latitude,
+    longitude: longitude,
+    isOpen: isOpen,
+    distanceKm: distanceKm ?? this.distanceKm,
+    services: services,
+    openingHours: openingHours,
+  );
 
   @override
   List<Object?> get props => [id];
@@ -138,8 +138,9 @@ class BusinessHour extends Equatable {
     'Saturday',
   ];
 
-  String get dayLabel =>
-      dayOfWeek >= 0 && dayOfWeek < dayLabels.length ? dayLabels[dayOfWeek] : '';
+  String get dayLabel => dayOfWeek >= 0 && dayOfWeek < dayLabels.length
+      ? dayLabels[dayOfWeek]
+      : '';
 
   @override
   List<Object?> get props => [id, dayOfWeek, startTime, endTime, isActive];

@@ -31,7 +31,11 @@ class PublicPetTagRepositoryImpl implements PublicPetTagRepository {
     required double longitude,
   }) async {
     try {
-      await _remote.shareLocation(petId: petId, latitude: latitude, longitude: longitude);
+      await _remote.shareLocation(
+        petId: petId,
+        latitude: latitude,
+        longitude: longitude,
+      );
     } on PublicPetTagFailure {
       rethrow;
     } on DioException catch (e) {

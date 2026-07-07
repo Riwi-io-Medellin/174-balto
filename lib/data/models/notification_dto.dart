@@ -38,19 +38,21 @@ class AppNotificationDto {
       entityType: json['entityType'] as String?,
       metadata: json['metadata'] as String?,
       isRead: json['isRead'] as bool,
-      readAt: json['readAt'] != null ? DateTime.parse(json['readAt'] as String) : null,
+      readAt: json['readAt'] != null
+          ? DateTime.parse(json['readAt'] as String)
+          : null,
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
   }
 
   AppNotification toEntity() => AppNotification(
-        id: id,
-        type: type,
-        title: title,
-        body: body,
-        entityId: entityId,
-        entityType: entityType,
-        isRead: isRead,
-        createdAt: createdAt,
-      );
+    id: id,
+    type: type,
+    title: title,
+    body: body,
+    entityId: entityId,
+    entityType: entityType,
+    isRead: isRead,
+    createdAt: createdAt,
+  );
 }

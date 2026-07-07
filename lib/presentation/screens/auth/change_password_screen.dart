@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/repositories/auth_repository.dart';
 
@@ -20,7 +23,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _obscureConfirm = true;
   bool _saving = false;
 
-  static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _inputFill = Color(0xFFEEF3F3);
   static const Color _textDark = Color(0xFF1A1A2E);
@@ -55,7 +57,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       filled: true,
       fillColor: _inputFill,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -77,14 +79,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       Navigator.of(context).pop();
     } on AuthFailure catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -108,7 +110,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: AppRadius.radius20,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.06),
@@ -120,14 +122,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Center(
+                Center(
                   child: Text(
                     'Change Password',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: _textDark,
-                    ),
+                    style: AppTextStyles.h1.copyWith(color: _textDark),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -144,8 +142,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     onToggle: () =>
                         setState(() => _obscureCurrent = !_obscureCurrent),
                   ),
-                  validator: (v) =>
-                      v == null || v.isEmpty ? 'Required' : null,
+                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 20),
                 _fieldLabel('New Password'),
@@ -158,8 +155,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     hint: 'New password',
                     icon: Icons.lock_reset_outlined,
                     obscured: _obscureNew,
-                    onToggle: () =>
-                        setState(() => _obscureNew = !_obscureNew),
+                    onToggle: () => setState(() => _obscureNew = !_obscureNew),
                   ),
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Required';
@@ -194,10 +190,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   child: ElevatedButton(
                     onPressed: _saving ? null : _save,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _primary,
+                      backgroundColor: AppColors.navWalks,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: AppRadius.radius14,
                       ),
                       elevation: 0,
                     ),

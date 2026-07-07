@@ -48,13 +48,13 @@ class ProfileLoaded extends ProfileState {
 
   @override
   List<Object?> get props => [
-        user,
-        pets,
-        walkCount,
-        walkerProfile,
-        businessProfile,
-        unreadNotificationCount,
-      ];
+    user,
+    pets,
+    walkCount,
+    walkerProfile,
+    businessProfile,
+    unreadNotificationCount,
+  ];
 }
 
 class ProfileError extends ProfileState {

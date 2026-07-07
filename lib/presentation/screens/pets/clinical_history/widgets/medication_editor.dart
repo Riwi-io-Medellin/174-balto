@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/constants/app_radius.dart';
 import '../../../../../domain/entities/pet_clinical_draft.dart';
 
 /// Editable medication list: name, dose, frequency, duration.
@@ -34,7 +35,7 @@ class _MedicationEditorState extends State<MedicationEditor> {
     fillColor: _inputFill,
     isDense: true,
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: AppRadius.radius10,
       borderSide: BorderSide.none,
     ),
     contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
@@ -69,7 +70,7 @@ class _MedicationEditorState extends State<MedicationEditor> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: AppRadius.radius14,
               border: Border.all(color: const Color(0xFFE0E4EC)),
             ),
             child: Column(
@@ -166,9 +167,7 @@ class _MedicationEditorState extends State<MedicationEditor> {
           ),
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: widget.accentColor),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: AppRadius.radius12),
             padding: const EdgeInsets.symmetric(vertical: 10),
           ),
         ),

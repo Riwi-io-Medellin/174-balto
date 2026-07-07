@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'core/constants/app_colors.dart';
 import 'core/di/injection.dart';
 import 'core/services/push_notification_service.dart';
 import 'core/storage/token_storage.dart';
@@ -18,8 +20,15 @@ final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  bool firebaseAvailable = false;
+  try {
+    await Firebase.initializeApp();
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    firebaseAvailable = true;
+  } catch (_) {
+    // Firebase no disponible en Linux desktop
+  }
 
   setupDependencies();
   final tokenStorage = sl<TokenStorage>();
@@ -49,23 +58,105 @@ class BaltoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const seed = Color(0xFF3A80C2);
     final base = ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3A80C2)),
+      colorScheme: ColorScheme.fromSeed(seedColor: seed),
       useMaterial3: true,
+      scaffoldBackgroundColor: AppColors.background,
     );
+    final textTheme = GoogleFonts.interTextTheme(
+      base.textTheme,
+    ).apply(fontFamilyFallback: const ['Ubuntu', 'Roboto']);
     return MaterialApp(
       title: 'Balto',
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: base.copyWith(
-        textTheme: GoogleFonts.interTextTheme(
-          base.textTheme,
-        ).apply(fontFamilyFallback: const ['Ubuntu', 'Roboto']),
+        textTheme: textTheme,
         primaryTextTheme: GoogleFonts.interTextTheme(
           base.primaryTextTheme,
         ).apply(fontFamilyFallback: const ['Ubuntu', 'Roboto']),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: AppColors.surface,
+          foregroundColor: AppColors.textPrimary,
+          elevation: 0,
+          centerTitle: false,
+          titleTextStyle: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+          ),
+          iconTheme: IconThemeData(color: AppColors.textPrimary, size: 20),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.navWalks,
+            foregroundColor: AppColors.surface,
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppColors.buttonRadius),
+            ),
+            textStyle: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: AppColors.inputFill,
+          hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppColors.inputRadius),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppColors.inputRadius),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppColors.inputRadius),
+            borderSide: const BorderSide(color: AppColors.navWalks, width: 1.5),
+          ),
+        ),
+        cardTheme: CardThemeData(
+          color: AppColors.surface,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppColors.cardRadius),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        ),
       ),
       home: isLoggedIn ? const MainShell() : const LoginScreen(),
+      builder: (context, child) {
+        // Single source of truth for the status bar icon style across every
+        // screen. Previously only the one screen with a real `Scaffold.appBar`
+        // got this inferred implicitly, leaving the rest at the mercy of
+        // whatever the previously visited screen left behind.
+        final mediaQuery = MediaQuery.of(context);
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light,
+          ),
+          child: MediaQuery(
+            data: mediaQuery.copyWith(
+              textScaler: mediaQuery.textScaler.clamp(
+                minScaleFactor: 0.9,
+                maxScaleFactor: 1.3,
+              ),
+            ),
+            child: child!,
+          ),
+        );
+      },
     );
   }
 }
@@ -111,7 +202,7 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.background,
       body: _buildBody(),
       bottomNavigationBar: BaltoBottomNavBar(
         currentIndex: _currentIndex,

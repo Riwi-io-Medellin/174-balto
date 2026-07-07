@@ -37,6 +37,13 @@ class Me extends Equatable {
   final List<BusinessSummary> businesses;
 
   @override
-  List<Object?> get props =>
-      [id, firstName, lastName, email, isWalker, walkerStatus, businesses];
+  List<Object?> get props => [
+    id,
+    firstName,
+    lastName,
+    email,
+    isWalker,
+    walkerStatus,
+    businesses,
+  ];
 }

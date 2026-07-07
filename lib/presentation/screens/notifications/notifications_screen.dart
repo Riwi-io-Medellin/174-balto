@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../domain/entities/notification.dart';
 import '../../../domain/repositories/notification_repository.dart';
@@ -21,8 +24,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _textDark = Color(0xFF1A1A2E);
   static const Color _textMuted = Color(0xFF6B7280);
-  static const Color _textLight = Color(0xFF9AA0B2);
-  static const Color _primary = Color(0xFF3A80C2);
   static const Color _unreadBg = Color(0xFFF0F7FF);
 
   @override
@@ -196,13 +197,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           if (_notifications.any((n) => !n.isRead))
             TextButton(
               onPressed: _markAllAsRead,
-              child: const Text(
+              child: Text(
                 'Mark all read',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: _primary,
-                ),
+                style: AppTextStyles.label.copyWith(color: AppColors.navWalks),
               ),
             ),
         ],
@@ -247,10 +244,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               ElevatedButton(
                 onPressed: _load,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: _primary,
+                  backgroundColor: AppColors.navWalks,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: AppRadius.radius12,
                   ),
                 ),
                 child: const Text('Retry'),
@@ -271,7 +268,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               Icon(
                 Icons.notifications_none,
                 size: 64,
-                color: _textLight.withValues(alpha: 0.5),
+                color: AppColors.textMuted.withValues(alpha: 0.5),
               ),
               const SizedBox(height: 16),
               const Text(
@@ -318,7 +315,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: notification.isRead ? Colors.white : _unreadBg,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.radius14,
           border: Border.all(
             color: notification.isRead
                 ? const Color(0xFFF1F3F6)
@@ -333,7 +330,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               height: 40,
               decoration: BoxDecoration(
                 color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.radius12,
               ),
               child: Icon(icon, size: 20, color: color),
             ),
@@ -359,7 +356,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       const SizedBox(width: 8),
                       Text(
                         _formatDate(notification.createdAt),
-                        style: const TextStyle(fontSize: 11, color: _textLight),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.textMuted,
+                        ),
                       ),
                     ],
                   ),

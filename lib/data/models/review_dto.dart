@@ -32,12 +32,12 @@ class ReviewDto {
   }
 
   Review toEntity() => Review(
-        id: id,
-        userId: userId,
-        userName: userName,
-        userAvatarUrl: userAvatarUrl,
-        rating: rating,
-        comment: comment,
-        createdAt: createdAt,
-      );
+    id: id,
+    userId: userId,
+    userName: userName,
+    userAvatarUrl: userAvatarUrl,
+    rating: rating,
+    comment: comment,
+    createdAt: createdAt,
+  );
 }

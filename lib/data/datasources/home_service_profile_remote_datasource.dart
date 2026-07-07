@@ -93,8 +93,10 @@ class HomeServiceProfileRemoteDataSource {
     if (latitude != null) body['latitude'] = latitude;
     if (longitude != null) body['longitude'] = longitude;
 
-    final response =
-        await _dio.put<dynamic>('/home-services/providers/me', data: body);
+    final response = await _dio.put<dynamic>(
+      '/home-services/providers/me',
+      data: body,
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 

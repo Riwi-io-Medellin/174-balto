@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_radius.dart';
 import 'skeleton_box.dart';
 
 class HomeSkeleton extends StatelessWidget {
@@ -71,7 +72,7 @@ class HomeSkeleton extends StatelessWidget {
           height: 72,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: AppRadius.radius14,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           child: const Row(
@@ -116,7 +117,7 @@ class HomeSkeleton extends StatelessWidget {
             height: 88,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: AppRadius.radius16,
             ),
             padding: const EdgeInsets.all(14),
             child: const Row(

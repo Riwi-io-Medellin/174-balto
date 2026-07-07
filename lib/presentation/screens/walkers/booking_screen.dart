@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_shadows.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/available_slot.dart';
@@ -60,7 +63,7 @@ class _BookingScreenState extends State<BookingScreen> {
         },
         builder: (context, state) {
           return Scaffold(
-            backgroundColor: const Color(0xFFF5F6FA),
+            backgroundColor: AppColors.background,
             appBar: AppBar(
               backgroundColor: const Color(0xFF1F2937),
               foregroundColor: Colors.white,
@@ -257,15 +260,15 @@ class _FormBody extends StatelessWidget {
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.radius12,
               borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.radius12,
               borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: AppRadius.radius12,
               borderSide: const BorderSide(
                 color: AppColors.navWalkers,
                 width: 1.5,
@@ -299,7 +302,7 @@ class _ExclusiveWalkToggle extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isExclusive ? const Color(0xFFFFF8EC) : Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.radius14,
           border: Border.all(
             color: isExclusive
                 ? const Color(0xFFFFD97A)
@@ -333,9 +336,7 @@ class _ExclusiveWalkToggle extends StatelessWidget {
                 children: [
                   Text(
                     'Priority (Solo) Walk',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
+                    style: AppTextStyles.bodyBold.copyWith(
                       color: isExclusive
                           ? const Color(0xFFB87300)
                           : const Color(0xFF1F2937),
@@ -378,10 +379,8 @@ class _SectionTitle extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF1F2937),
+          style: AppTextStyles.titleSmall.copyWith(
+            color: const Color(0xFF1F2937),
           ),
         ),
         if (subtitle != null) ...[
@@ -458,7 +457,7 @@ class _PetCard extends StatelessWidget {
           color: isSelected
               ? AppColors.navWalkers.withValues(alpha: 0.08)
               : Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.radius16,
           border: Border.all(
             color: isSelected ? AppColors.navWalkers : const Color(0xFFE0E4EC),
             width: isSelected ? 2 : 1,
@@ -478,9 +477,7 @@ class _PetCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               pet.name,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
+              style: AppTextStyles.micro.copyWith(
                 color: isSelected
                     ? AppColors.navWalkers
                     : const Color(0xFF1F2937),
@@ -541,7 +538,7 @@ class _AddPetCard extends StatelessWidget {
         width: 80,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.radius16,
           border: Border.all(
             color: const Color(0xFFE0E4EC),
             style: BorderStyle.solid,
@@ -595,7 +592,7 @@ class _DurationSelector extends StatelessWidget {
                 height: 48,
                 decoration: BoxDecoration(
                   color: isSelected ? AppColors.navWalkers : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: AppRadius.radius12,
                   border: Border.all(
                     color: isSelected
                         ? AppColors.navWalkers
@@ -605,9 +602,7 @@ class _DurationSelector extends StatelessWidget {
                 child: Center(
                   child: Text(
                     '$min min',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w700,
+                    style: AppTextStyles.bodyBold.copyWith(
                       color: isSelected
                           ? Colors.white
                           : const Color(0xFF5A6473),
@@ -681,7 +676,7 @@ class _DateSelector extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.radius12,
           border: Border.all(color: const Color(0xFFE0E4EC)),
         ),
         child: Row(
@@ -694,10 +689,8 @@ class _DateSelector extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               _label(),
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF1F2937),
+              style: AppTextStyles.bodyStrong.copyWith(
+                color: const Color(0xFF1F2937),
               ),
             ),
             const Spacer(),
@@ -741,7 +734,7 @@ class _SlotSelector extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.radius12,
           border: Border.all(color: const Color(0xFFE0E4EC)),
         ),
         child: Row(
@@ -769,7 +762,7 @@ class _SlotSelector extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: AppRadius.radius12,
           border: Border.all(color: const Color(0xFFE0E4EC)),
         ),
         child: const Column(
@@ -806,7 +799,7 @@ class _SlotSelector extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               color: isSelected ? AppColors.navWalkers : Colors.white,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: AppRadius.radius10,
               border: Border.all(
                 color: isSelected
                     ? AppColors.navWalkers
@@ -879,13 +872,7 @@ class _BookingFooter extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 16,
-              offset: const Offset(0, -4),
-            ),
-          ],
+          boxShadow: AppShadows.sheet,
         ),
         child: Row(
           children: [
@@ -927,7 +914,7 @@ class _BookingFooter extends StatelessWidget {
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: AppRadius.radius14,
                   ),
                 ),
                 child: Text(
@@ -969,7 +956,7 @@ class _PickupAddressCard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: AppRadius.radius14,
           border: Border.all(color: const Color(0xFFE0E4EC)),
         ),
         child: Row(
@@ -1021,11 +1008,9 @@ class _PickupAddressCard extends StatelessWidget {
                   ),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'Edit',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                style: AppTextStyles.label.copyWith(
                   color: AppColors.navWalkers,
                 ),
               ),
@@ -1039,7 +1024,7 @@ class _PickupAddressCard extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: const Color(0xFFFFF8EC),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: AppRadius.radius14,
         border: Border.all(color: const Color(0xFFFFD97A)),
       ),
       child: Row(
@@ -1079,7 +1064,7 @@ class _PickupAddressCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
                 color: const Color(0xFFB87300),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: AppRadius.radius8,
               ),
               child: const Text(
                 'Set address',
@@ -1155,9 +1140,7 @@ class _NoPetsView extends StatelessWidget {
                   horizontal: 24,
                   vertical: 14,
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
               ),
               icon: const Icon(Icons.add_rounded),
               label: const Text(

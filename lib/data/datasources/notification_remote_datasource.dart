@@ -13,10 +13,7 @@ class NotificationRemoteDataSource {
     int page = 1,
     int pageSize = 20,
   }) async {
-    final queryParams = <String, dynamic>{
-      'page': page,
-      'pageSize': pageSize,
-    };
+    final queryParams = <String, dynamic>{'page': page, 'pageSize': pageSize};
     if (unreadOnly == true) {
       queryParams['unreadOnly'] = true;
     }
@@ -110,7 +107,10 @@ class NotificationRemoteDataSource {
     );
   }
 
-  Future<void> registerDeviceToken({required String token, required String platform}) async {
+  Future<void> registerDeviceToken({
+    required String token,
+    required String platform,
+  }) async {
     final response = await _dio.post<dynamic>(
       '/notifications/device-token',
       data: {'token': token, 'platform': platform},

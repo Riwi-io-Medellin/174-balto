@@ -11,7 +11,7 @@ class AvailabilityException extends Equatable {
   final String date; // "yyyy-MM-dd"
   final bool isUnavailable;
   final String? startTime; // "HH:mm" when isUnavailable is false
-  final String? endTime;   // "HH:mm" when isUnavailable is false
+  final String? endTime; // "HH:mm" when isUnavailable is false
 
   @override
   List<Object?> get props => [date, isUnavailable, startTime, endTime];

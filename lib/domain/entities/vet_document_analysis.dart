@@ -48,11 +48,11 @@ class AbnormalValue extends Equatable {
   final String interpretation;
 
   factory AbnormalValue.fromJson(Map<String, dynamic> json) => AbnormalValue(
-        label: json['label'] as String,
-        value: json['value'] as String,
-        referenceRange: json['referenceRange'] as String?,
-        interpretation: json['interpretation'] as String,
-      );
+    label: json['label'] as String,
+    value: json['value'] as String,
+    referenceRange: json['referenceRange'] as String?,
+    interpretation: json['interpretation'] as String,
+  );
 
   @override
   List<Object?> get props => [label, value, referenceRange, interpretation];
@@ -76,7 +76,9 @@ class VetDocumentAnalysisHistoryItem extends Equatable {
       id: json['id'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String).toLocal(),
       documentType: json['documentType'] as String?,
-      result: VetDocumentAnalysisResult.fromJson(json['result'] as Map<String, dynamic>),
+      result: VetDocumentAnalysisResult.fromJson(
+        json['result'] as Map<String, dynamic>,
+      ),
     );
   }
 
@@ -122,13 +124,13 @@ class VetDocumentAnalysisResult extends Equatable {
 
   @override
   List<Object?> get props => [
-        summary,
-        keyFindings,
-        abnormalValues,
-        possibleConcerns,
-        urgencyLevel,
-        questionsForVet,
-        missingInformation,
-        disclaimer,
-      ];
+    summary,
+    keyFindings,
+    abnormalValues,
+    possibleConcerns,
+    urgencyLevel,
+    questionsForVet,
+    missingInformation,
+    disclaimer,
+  ];
 }

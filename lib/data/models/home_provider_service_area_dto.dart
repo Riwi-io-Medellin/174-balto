@@ -21,8 +21,10 @@ class HomeProviderServiceAreaDto {
 
   static List<HomeProviderServiceAreaDto> fromJsonList(List<dynamic> json) =>
       json
-          .map((e) =>
-              HomeProviderServiceAreaDto.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) =>
+                HomeProviderServiceAreaDto.fromJson(e as Map<String, dynamic>),
+          )
           .toList();
 
   final String id;
@@ -32,17 +34,17 @@ class HomeProviderServiceAreaDto {
   final double radiusKm;
 
   Map<String, dynamic> toJson() => {
-        'label': label,
-        'latitude': latitude,
-        'longitude': longitude,
-        'radiusKm': radiusKm,
-      };
+    'label': label,
+    'latitude': latitude,
+    'longitude': longitude,
+    'radiusKm': radiusKm,
+  };
 
   HomeProviderServiceArea toEntity() => HomeProviderServiceArea(
-        id: id,
-        label: label,
-        latitude: latitude,
-        longitude: longitude,
-        radiusKm: radiusKm,
-      );
+    id: id,
+    label: label,
+    latitude: latitude,
+    longitude: longitude,
+    radiusKm: radiusKm,
+  );
 }

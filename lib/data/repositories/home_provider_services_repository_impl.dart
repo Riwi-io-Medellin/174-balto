@@ -12,7 +12,8 @@ class HomeProviderServicesRepositoryImpl
 
   @override
   Future<List<HomeProviderServiceItem>> getByProviderId(
-      String providerId) async {
+    String providerId,
+  ) async {
     try {
       final dtos = await _remote.getByProviderId(providerId);
       return dtos.map((dto) => dto.toEntity()).toList();

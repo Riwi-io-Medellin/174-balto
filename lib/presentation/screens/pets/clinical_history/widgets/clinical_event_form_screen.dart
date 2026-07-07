@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/constants/app_radius.dart';
+import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/di/injection.dart';
 import '../../../../../core/widgets/balto_toast.dart';
 import '../../../../../domain/entities/pet.dart';
 import '../../../../../domain/entities/pet_clinical_draft.dart';
 import '../../../../../domain/entities/pet_clinical_event.dart';
 import '../../../../../domain/repositories/pet_clinical_repository.dart';
+import '../../../../widgets/balto_dialog.dart';
 import 'medication_editor.dart';
 
 /// Full, editable clinical history form.
@@ -271,27 +274,15 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
   }
 
   Future<void> _cancel() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Discard changes?'),
-        content: const Text('The reviewed information will not be saved.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Keep editing'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            style: TextButton.styleFrom(
-              foregroundColor: const Color(0xFFD05A24),
-            ),
-            child: const Text('Discard'),
-          ),
-        ],
-      ),
+    final confirmed = await BaltoDialog.confirm(
+      context,
+      title: 'Discard changes?',
+      message: 'The reviewed information will not be saved.',
+      confirmLabel: 'Discard',
+      cancelLabel: 'Keep editing',
+      destructive: true,
     );
-    if (confirmed == true && mounted) Navigator.of(context).pop(false);
+    if (confirmed && mounted) Navigator.of(context).pop(false);
   }
 
   InputDecoration _decoration(String hint, {IconData? icon}) {
@@ -303,7 +294,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
       fillColor: _inputFill,
       isDense: true,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: AppRadius.radius10,
         borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
@@ -367,7 +358,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -395,11 +386,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
           ),
           title: Text(
             title,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: _textDark,
-            ),
+            style: AppTextStyles.bodyBold.copyWith(color: _textDark),
           ),
           childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
           children: children,
@@ -429,17 +416,19 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
               width: double.infinity,
               color: const Color(0xFFE8F5EE),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.info_outline_rounded, size: 16, color: _accent),
-                  SizedBox(width: 8),
+                  const Icon(
+                    Icons.info_outline_rounded,
+                    size: 16,
+                    color: _accent,
+                  ),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Review and edit everything before saving. No field is locked.',
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: AppTextStyles.captionStrong.copyWith(
                         color: _accent,
-                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -641,7 +630,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                         side: const BorderSide(color: Color(0xFFE0E4EC)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: AppRadius.radius14,
                         ),
                       ),
                       child: const Text('Cancel'),
@@ -657,7 +646,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: AppRadius.radius14,
                         ),
                         elevation: 0,
                       ),
@@ -694,7 +683,7 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
       decoration: _decoration('Event type', icon: Icons.category_outlined),
       style: const TextStyle(fontSize: 14, color: _textDark),
       dropdownColor: Colors.white,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: AppRadius.radius12,
       items: PetClinicalEventType.values
           .map(
             (v) => DropdownMenuItem(

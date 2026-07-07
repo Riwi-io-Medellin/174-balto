@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/constants/app_radius.dart';
+
 class QuickCareTile extends StatelessWidget {
   const QuickCareTile({
     super.key,
@@ -22,7 +24,7 @@ class QuickCareTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: backgroundColor,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: AppRadius.radius16,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,

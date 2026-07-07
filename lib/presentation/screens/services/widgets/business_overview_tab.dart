@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../domain/entities/business.dart';
 
 const _bodyStyle = TextStyle(
@@ -114,10 +115,8 @@ class _HoursSection extends StatelessWidget {
                   width: 100,
                   child: Text(
                     h.dayLabel,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF1F2937),
+                    style: AppTextStyles.label.copyWith(
+                      color: const Color(0xFF1F2937),
                     ),
                   ),
                 ),

@@ -18,7 +18,10 @@ class PublicPetTagRemoteDataSource {
     }
 
     if (status == 404) {
-      throw PublicPetTagFailure('PET_NOT_FOUND', 'This tag is not linked to a pet.');
+      throw PublicPetTagFailure(
+        'PET_NOT_FOUND',
+        'This tag is not linked to a pet.',
+      );
     }
 
     throw PublicPetTagFailure(
@@ -40,7 +43,10 @@ class PublicPetTagRemoteDataSource {
     if (status == 204) return;
 
     if (status == 404) {
-      throw PublicPetTagFailure('PET_NOT_FOUND', 'This tag is not linked to a pet.');
+      throw PublicPetTagFailure(
+        'PET_NOT_FOUND',
+        'This tag is not linked to a pet.',
+      );
     }
 
     throw PublicPetTagFailure(

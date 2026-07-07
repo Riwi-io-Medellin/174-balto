@@ -20,6 +20,13 @@ class Review extends Equatable {
   final DateTime createdAt;
 
   @override
-  List<Object?> get props =>
-      [id, userId, userName, userAvatarUrl, rating, comment, createdAt];
+  List<Object?> get props => [
+    id,
+    userId,
+    userName,
+    userAvatarUrl,
+    rating,
+    comment,
+    createdAt,
+  ];
 }

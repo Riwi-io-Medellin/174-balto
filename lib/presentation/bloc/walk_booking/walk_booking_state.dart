@@ -100,20 +100,20 @@ class WalkBookingForm extends WalkBookingState {
 
   @override
   List<Object?> get props => [
-        pets,
-        selectedPet,
-        selectedDuration,
-        selectedDate,
-        availableSlots,
-        selectedSlot,
-        instructions,
-        isLoadingSlots,
-        slotsError,
-        hadConflict,
-        ownerAddress,
-        ownerCity,
-        isExclusive,
-      ];
+    pets,
+    selectedPet,
+    selectedDuration,
+    selectedDate,
+    availableSlots,
+    selectedSlot,
+    instructions,
+    isLoadingSlots,
+    slotsError,
+    hadConflict,
+    ownerAddress,
+    ownerCity,
+    isExclusive,
+  ];
 }
 
 class WalkBookingSubmitting extends WalkBookingState {

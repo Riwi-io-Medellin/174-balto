@@ -38,13 +38,13 @@ class HomeProviderServiceDto {
   final bool isActive;
 
   HomeProviderServiceItem toEntity() => HomeProviderServiceItem(
-        id: id,
-        serviceTypeId: serviceTypeId,
-        serviceTypeCode: serviceTypeCode,
-        serviceTypeName: serviceTypeName,
-        price: price,
-        priceUnit: priceUnit,
-        description: description,
-        isActive: isActive,
-      );
+    id: id,
+    serviceTypeId: serviceTypeId,
+    serviceTypeCode: serviceTypeCode,
+    serviceTypeName: serviceTypeName,
+    price: price,
+    priceUnit: priceUnit,
+    description: description,
+    isActive: isActive,
+  );
 }

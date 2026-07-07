@@ -24,10 +24,7 @@ class WalkChatLoaded extends WalkChatState {
   final List<ChatMessage> messages;
   final String? sendError;
 
-  WalkChatLoaded copyWith({
-    List<ChatMessage>? messages,
-    String? sendError,
-  }) =>
+  WalkChatLoaded copyWith({List<ChatMessage>? messages, String? sendError}) =>
       WalkChatLoaded(
         currentUserId: currentUserId,
         messages: messages ?? this.messages,

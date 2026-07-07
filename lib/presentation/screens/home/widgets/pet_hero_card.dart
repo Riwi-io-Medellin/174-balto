@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/app_radius.dart';
+import '../../../../core/constants/app_text_styles.dart';
 import '../../../../domain/entities/pet.dart';
 import '../../../../domain/entities/vet_document_analysis.dart';
 import '../../../widgets/app_network_image.dart';
@@ -99,7 +101,7 @@ class _PetCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 2),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: AppRadius.radius24,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.18),
@@ -116,7 +118,7 @@ class _PetCard extends StatelessWidget {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: AppRadius.radius24,
           child: SizedBox(
             height: 220,
             width: double.infinity,
@@ -260,10 +262,8 @@ class _PetCard extends StatelessWidget {
                 children: [
                   Text(
                     _subtitle,
-                    style: const TextStyle(
-                      fontSize: 12,
+                    style: AppTextStyles.caption.copyWith(
                       color: Colors.white70,
-                      fontWeight: FontWeight.w500,
                       letterSpacing: 0.2,
                     ),
                     maxLines: 1,
@@ -312,7 +312,7 @@ class _GlassChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(99),
+        borderRadius: AppRadius.radiusPill,
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.30),
           width: 1,
@@ -320,9 +320,7 @@ class _GlassChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
+        style: AppTextStyles.micro.copyWith(
           color: Colors.white,
           letterSpacing: 0.3,
         ),
@@ -371,7 +369,7 @@ class _StatusPill extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.18),
-        borderRadius: BorderRadius.circular(99),
+        borderRadius: AppRadius.radiusPill,
         border: Border.all(
           color: Colors.white.withValues(alpha: 0.30),
           width: 1,
@@ -419,7 +417,7 @@ class _DotRow extends StatelessWidget {
           height: 7,
           decoration: BoxDecoration(
             color: active ? const Color(0xFF1BAA71) : const Color(0xFFCBD5E0),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: AppRadius.radius4,
           ),
         );
       }),

@@ -13,7 +13,10 @@ abstract class NotificationRepository {
 
   Future<void> markAllAsRead();
 
-  Future<void> registerDeviceToken({required String token, required String platform});
+  Future<void> registerDeviceToken({
+    required String token,
+    required String platform,
+  });
 
   Future<void> removeDeviceToken(String token);
 }

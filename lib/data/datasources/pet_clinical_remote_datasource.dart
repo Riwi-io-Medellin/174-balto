@@ -72,8 +72,9 @@ class PetClinicalRemoteDataSource {
   }
 
   Future<List<dynamic>> getTips(String petId) async {
-    final response =
-        await _dio.get<dynamic>('/pets/$petId/clinical-record/tips');
+    final response = await _dio.get<dynamic>(
+      '/pets/$petId/clinical-record/tips',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
@@ -83,11 +84,18 @@ class PetClinicalRemoteDataSource {
     throw _failureFrom(data, status, 'GET_TIPS_FAILED');
   }
 
-  PetClinicalFailure _failureFrom(dynamic data, int status, String fallbackCode) {
+  PetClinicalFailure _failureFrom(
+    dynamic data,
+    int status,
+    String fallbackCode,
+  ) {
     if (data is Map<String, dynamic> &&
         data['code'] is String &&
         data['error'] is String) {
-      return PetClinicalFailure(data['code'] as String, data['error'] as String);
+      return PetClinicalFailure(
+        data['code'] as String,
+        data['error'] as String,
+      );
     }
     return PetClinicalFailure(fallbackCode, 'Unexpected response ($status).');
   }

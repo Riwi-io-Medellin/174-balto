@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_radius.dart';
 import '../../core/di/injection.dart';
 import '../../domain/repositories/feedback_repository.dart';
 
@@ -104,7 +105,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
             height: 4,
             decoration: BoxDecoration(
               color: const Color(0xFFE0E4EC),
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: AppRadius.radius2,
             ),
           ),
           const SizedBox(height: 20),
@@ -152,9 +153,9 @@ class _ReviewSheetState extends State<ReviewSheet> {
               hintText: 'Share your experience (optional)',
               hintStyle: const TextStyle(color: Color(0xFFB0B8C1)),
               filled: true,
-              fillColor: const Color(0xFFF5F6FA),
+              fillColor: AppColors.background,
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.radius12,
                 borderSide: BorderSide.none,
               ),
               contentPadding: const EdgeInsets.all(16),
@@ -176,9 +177,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
                 disabledBackgroundColor: const Color(0xFFE0E4EC),
                 disabledForegroundColor: const Color(0xFFB0B8C1),
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.radius12),
               ),
               child: _isSubmitting
                   ? const SizedBox(
@@ -216,7 +215,7 @@ void showReviewSheet({
     context: context,
     isScrollControlled: true,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r20)),
     ),
     builder: (_) => ReviewSheet(
       targetId: targetId,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/constants/app_radius.dart';
 import 'skeleton_box.dart';
 
 class ProfileSkeleton extends StatelessWidget {
@@ -36,7 +37,7 @@ class ProfileSkeleton extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.radius16,
               ),
               padding: const EdgeInsets.all(20),
               child: const Row(
@@ -50,7 +51,7 @@ class ProfileSkeleton extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: AppRadius.radius16,
               ),
               padding: const EdgeInsets.all(16),
               child: const Row(
@@ -71,7 +72,7 @@ class ProfileSkeleton extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.radius14,
               ),
               child: Column(children: List.generate(2, (i) => _petRow(i))),
             ),
@@ -83,7 +84,7 @@ class ProfileSkeleton extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: AppRadius.radius14,
               ),
               child: Column(children: List.generate(3, (i) => _infoRow(i))),
             ),

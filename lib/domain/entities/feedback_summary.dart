@@ -18,6 +18,11 @@ class FeedbackSummary extends Equatable {
   final List<Review> reviews;
 
   @override
-  List<Object?> get props =>
-      [targetId, targetType, averageRating, totalReviews, reviews];
+  List<Object?> get props => [
+    targetId,
+    targetType,
+    averageRating,
+    totalReviews,
+    reviews,
+  ];
 }

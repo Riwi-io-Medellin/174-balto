@@ -26,7 +26,8 @@ final List<Walk> kMockWalks = [
     durationMinutes: 45,
     status: WalkStatus.upcoming,
     meetingLocation: 'Riverside Park, Gate 3',
-    notes: 'Luna gets excited around other dogs — please keep her on a short leash until she settles.',
+    notes:
+        'Luna gets excited around other dogs — please keep her on a short leash until she settles.',
   ),
   Walk(
     id: 'w003',

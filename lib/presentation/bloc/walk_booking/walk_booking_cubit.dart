@@ -144,27 +144,28 @@ class WalkBookingCubit extends Cubit<WalkBookingState> {
       );
       final current = _form;
       if (current != null) {
-        emit(current.copyWith(
-          availableSlots: slots,
-          isLoadingSlots: false,
-          clearSlotsError: true,
-        ));
+        emit(
+          current.copyWith(
+            availableSlots: slots,
+            isLoadingSlots: false,
+            clearSlotsError: true,
+          ),
+        );
       }
     } on WalkerFailure catch (e) {
       final current = _form;
       if (current != null) {
-        emit(current.copyWith(
-          isLoadingSlots: false,
-          slotsError: e.message,
-        ));
+        emit(current.copyWith(isLoadingSlots: false, slotsError: e.message));
       }
     } catch (e) {
       final current = _form;
       if (current != null) {
-        emit(current.copyWith(
-          isLoadingSlots: false,
-          slotsError: 'Could not load available slots.',
-        ));
+        emit(
+          current.copyWith(
+            isLoadingSlots: false,
+            slotsError: 'Could not load available slots.',
+          ),
+        );
       }
     }
   }
@@ -180,8 +181,9 @@ class WalkBookingCubit extends Cubit<WalkBookingState> {
         petId: s.selectedPet!.id,
         slotStart: s.selectedSlot!.start,
         durationMinutes: s.selectedDuration,
-        specialInstructions:
-            s.instructions.trim().isEmpty ? null : s.instructions.trim(),
+        specialInstructions: s.instructions.trim().isEmpty
+            ? null
+            : s.instructions.trim(),
         isExclusive: s.isExclusive,
       );
       emit(WalkBookingSuccess(booking));
@@ -214,16 +216,15 @@ class WalkBookingCubit extends Cubit<WalkBookingState> {
         date: _formatDate(saved.selectedDate!),
         durationMinutes: saved.selectedDuration,
       );
-      emit(recovering.copyWith(
-        availableSlots: slots,
-        isLoadingSlots: false,
-        hadConflict: true,
-      ));
+      emit(
+        recovering.copyWith(
+          availableSlots: slots,
+          isLoadingSlots: false,
+          hadConflict: true,
+        ),
+      );
     } catch (_) {
-      emit(recovering.copyWith(
-        isLoadingSlots: false,
-        hadConflict: true,
-      ));
+      emit(recovering.copyWith(isLoadingSlots: false, hadConflict: true));
     }
   }
 

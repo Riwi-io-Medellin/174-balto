@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/repositories/home_service_profile_repository.dart';
@@ -32,7 +34,7 @@ class _BecomeHomeServiceProviderScreenState
   final _descriptionCtrl = TextEditingController();
 
   static const Color _accent = AppColors.homeServices;
-  static const Color _bg = Color(0xFFF5F6FA);
+  static const Color _bg = AppColors.background;
   static const Color _textDark = Color(0xFF1F2937);
   static const Color _textMid = Color(0xFF5A6473);
   static const Color _textMuted = Color(0xFF8A93A0);
@@ -124,15 +126,15 @@ class _BecomeHomeServiceProviderScreenState
       filled: true,
       fillColor: Colors.white,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: const BorderSide(color: Color(0xFFE0E4EC)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: const BorderSide(color: _accent, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -159,11 +161,7 @@ class _BecomeHomeServiceProviderScreenState
           widget.isReapply
               ? 'Re-submit Application'
               : 'Become a Home Service Provider',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: _textDark,
-          ),
+          style: AppTextStyles.h3.copyWith(color: _textDark),
         ),
         centerTitle: true,
       ),
@@ -229,7 +227,7 @@ class _BecomeHomeServiceProviderScreenState
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -310,12 +308,7 @@ class _BecomeHomeServiceProviderScreenState
           const SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: _textMid,
-              height: 1.4,
-            ),
+            style: AppTextStyles.micro.copyWith(color: _textMid, height: 1.4),
             textAlign: TextAlign.center,
           ),
         ],
@@ -349,7 +342,7 @@ class _BecomeHomeServiceProviderScreenState
         height: 180,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.radius16,
           border: Border.all(
             color: const Color(0xFFDDE1EA),
             width: 1.5,
@@ -396,7 +389,7 @@ class _BecomeHomeServiceProviderScreenState
     return Stack(
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.radius16,
           child: Image.file(
             File(_pickedDocument!.path),
             width: double.infinity,
@@ -413,18 +406,16 @@ class _BecomeHomeServiceProviderScreenState
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
               decoration: BoxDecoration(
                 color: Colors.black.withValues(alpha: 0.55),
-                borderRadius: BorderRadius.circular(99),
+                borderRadius: AppRadius.radiusPill,
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.edit_rounded, size: 14, color: Colors.white),
-                  SizedBox(width: 6),
+                  const Icon(Icons.edit_rounded, size: 14, color: Colors.white),
+                  const SizedBox(width: 6),
                   Text(
                     'Change',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                    style: AppTextStyles.captionStrong.copyWith(
                       color: Colors.white,
                     ),
                   ),
@@ -440,7 +431,7 @@ class _BecomeHomeServiceProviderScreenState
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
               color: _accent,
-              borderRadius: BorderRadius.circular(99),
+              borderRadius: AppRadius.radiusPill,
             ),
             child: const Row(
               mainAxisSize: MainAxisSize.min,
@@ -483,7 +474,7 @@ class _BecomeHomeServiceProviderScreenState
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -495,13 +486,9 @@ class _BecomeHomeServiceProviderScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Photo requirements',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: _textDark,
-            ),
+            style: AppTextStyles.bodyBold.copyWith(color: _textDark),
           ),
           const SizedBox(height: 12),
           ...items.map(
@@ -554,9 +541,7 @@ class _BecomeHomeServiceProviderScreenState
           backgroundColor: _accent,
           foregroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
           disabledBackgroundColor: _accent.withValues(alpha: 0.45),
         ),
         child: _submitting

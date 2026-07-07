@@ -10,16 +10,19 @@ class HomeProviderServicesRemoteDataSource {
 
   /// GET /home-services/providers/{id}/services
   Future<List<HomeProviderServiceDto>> getByProviderId(
-      String providerId) async {
-    final response = await _dio
-        .get<dynamic>('/home-services/providers/$providerId/services');
+    String providerId,
+  ) async {
+    final response = await _dio.get<dynamic>(
+      '/home-services/providers/$providerId/services',
+    );
     final status = response.statusCode ?? 0;
     final data = response.data;
 
     if (status == 200 && data is List) {
       return data
-          .map((e) =>
-              HomeProviderServiceDto.fromJson(e as Map<String, dynamic>))
+          .map(
+            (e) => HomeProviderServiceDto.fromJson(e as Map<String, dynamic>),
+          )
           .toList();
     }
 

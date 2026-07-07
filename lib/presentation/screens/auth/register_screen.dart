@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../main.dart';
@@ -51,7 +53,6 @@ class _RegisterViewState extends State<_RegisterView> {
 
   static const List<String> _idTypes = ['CC', 'CE', 'Passport', 'TI'];
 
-  static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _inputFill = Color(0xFFEEF3F3);
   static const Color _textDark = Color(0xFF1A1A2E);
@@ -173,14 +174,14 @@ class _RegisterViewState extends State<_RegisterView> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          width: 54,
-          height: 54,
-          decoration: BoxDecoration(
-            color: _primary,
-            borderRadius: BorderRadius.circular(14),
+        ClipRRect(
+          borderRadius: AppRadius.radius14,
+          child: Image.asset(
+            'assets/icon/app_icon.png',
+            width: 54,
+            height: 54,
+            fit: BoxFit.cover,
           ),
-          child: const Icon(Icons.pets, color: Colors.white, size: 30),
         ),
         const SizedBox(width: 12),
         const Text(
@@ -188,7 +189,7 @@ class _RegisterViewState extends State<_RegisterView> {
           style: TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: _primary,
+            color: AppColors.navWalks,
           ),
         ),
       ],
@@ -200,7 +201,7 @@ class _RegisterViewState extends State<_RegisterView> {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -340,7 +341,7 @@ class _RegisterViewState extends State<_RegisterView> {
       filled: true,
       fillColor: _inputFill,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -471,7 +472,7 @@ class _RegisterViewState extends State<_RegisterView> {
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: _inputFill,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -525,7 +526,7 @@ class _RegisterViewState extends State<_RegisterView> {
   Widget _termsRow() {
     return InkWell(
       onTap: () => setState(() => _acceptTerms = !_acceptTerms),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: AppRadius.radius8,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6),
         child: Row(
@@ -537,10 +538,8 @@ class _RegisterViewState extends State<_RegisterView> {
               child: Checkbox(
                 value: _acceptTerms,
                 onChanged: (v) => setState(() => _acceptTerms = v ?? false),
-                activeColor: _primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
-                ),
+                activeColor: AppColors.navWalks,
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.radius4),
                 side: const BorderSide(color: Color(0xFFCDD2E0), width: 1.5),
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
@@ -555,7 +554,7 @@ class _RegisterViewState extends State<_RegisterView> {
                     TextSpan(
                       text: 'Terms of Service',
                       style: TextStyle(
-                        color: _primary,
+                        color: AppColors.navWalks,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -563,7 +562,7 @@ class _RegisterViewState extends State<_RegisterView> {
                     TextSpan(
                       text: 'Privacy Policy',
                       style: TextStyle(
-                        color: _primary,
+                        color: AppColors.navWalks,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -584,11 +583,9 @@ class _RegisterViewState extends State<_RegisterView> {
       child: ElevatedButton(
         onPressed: isLoading ? null : _submit,
         style: ElevatedButton.styleFrom(
-          backgroundColor: _primary,
+          backgroundColor: AppColors.navWalks,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
           elevation: 0,
         ),
         child: isLoading
@@ -688,7 +685,7 @@ class _RegisterViewState extends State<_RegisterView> {
               TextSpan(
                 text: 'Sign In',
                 style: TextStyle(
-                  color: _primary,
+                  color: AppColors.navWalks,
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),
@@ -757,7 +754,7 @@ class _SocialButton extends StatelessWidget {
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.radius12),
         side: const BorderSide(color: Color(0xFFDDE1F0), width: 1.5),
         backgroundColor: Colors.white,
       ),

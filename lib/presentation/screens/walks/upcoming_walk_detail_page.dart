@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/walk.dart';
 
@@ -12,7 +14,7 @@ class UpcomingWalkDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
+      backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
           _DetailAppBar(walk: walk),
@@ -61,7 +63,7 @@ class _DetailAppBar extends StatelessWidget {
       pinned: true,
       expandedHeight: 200,
       backgroundColor: Colors.white,
-      foregroundColor: const Color(0xFF1A1A2E),
+      foregroundColor: AppColors.textPrimary,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       flexibleSpace: FlexibleSpaceBar(
@@ -75,7 +77,7 @@ class _DetailAppBar extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1A1A2E),
+                color: AppColors.textPrimary,
               ),
             ),
             const Text(
@@ -139,7 +141,7 @@ class _StatusCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.navWalks.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         border: Border.all(color: AppColors.navWalks.withValues(alpha: 0.2)),
       ),
       child: Row(
@@ -166,17 +168,13 @@ class _StatusCard extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 15,
-                  color: Color(0xFF1A1A2E),
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 2),
               Text(
                 timeLeft,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: AppColors.navWalks,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTextStyles.label.copyWith(color: AppColors.navWalks),
               ),
             ],
           ),
@@ -305,7 +303,7 @@ class _WalkerCard extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 15,
-                        color: Color(0xFF1A1A2E),
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(width: 6),
@@ -334,11 +332,7 @@ class _WalkerCard extends StatelessWidget {
               const SizedBox(width: 3),
               Text(
                 walk.walkerRating.toStringAsFixed(1),
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: Color(0xFF1A1A2E),
-                ),
+                style: AppTextStyles.bodyBold,
               ),
             ],
           ),
@@ -386,9 +380,7 @@ class _CancelButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.alert,
           side: BorderSide(color: AppColors.alert.withValues(alpha: 0.5)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
         ),
         child: const Text(
           'Cancel Walk',
@@ -418,7 +410,7 @@ class _Card extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: AppRadius.radius16,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -434,14 +426,7 @@ class _Card extends StatelessWidget {
             children: [
               Icon(icon, color: iconColor, size: 18),
               const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 14,
-                  color: Color(0xFF1A1A2E),
-                ),
-              ),
+              Text(title, style: AppTextStyles.bodyBold),
             ],
           ),
           const SizedBox(height: 14),
@@ -483,7 +468,7 @@ class _InfoRow extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF1A1A2E),
+                color: AppColors.textPrimary,
               ),
             ),
           ),

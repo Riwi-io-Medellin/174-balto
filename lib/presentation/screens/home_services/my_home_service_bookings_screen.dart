@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_radius.dart';
+import '../../../core/constants/app_shadows.dart';
+import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/entities/home_service_booking.dart';
 import '../../bloc/my_home_service_bookings/my_home_service_bookings_cubit.dart';
 import '../../bloc/my_home_service_bookings/my_home_service_bookings_state.dart';
+import '../../widgets/balto_dialog.dart';
 
 class MyHomeServiceBookingsScreen extends StatelessWidget {
   const MyHomeServiceBookingsScreen({super.key});
@@ -34,13 +38,9 @@ class _MyHomeServiceBookingsView extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
-          title: const Text(
+          title: Text(
             'My Home Services',
-            style: TextStyle(
-              color: _accent,
-              fontWeight: FontWeight.w700,
-              fontSize: 18,
-            ),
+            style: AppTextStyles.h3.copyWith(color: _accent),
           ),
           iconTheme: const IconThemeData(color: _accent),
           bottom: const TabBar(
@@ -179,15 +179,9 @@ class _BookingCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: AppRadius.radius12,
         border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: AppShadows.subtle,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -282,7 +276,7 @@ class _BookingCard extends StatelessWidget {
                     side: const BorderSide(color: _orange),
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: AppRadius.radius8,
                     ),
                   ),
                   child: isPerformingAction
@@ -329,24 +323,13 @@ class _BookingCard extends StatelessWidget {
   }
 
   Future<void> _confirmCancel(BuildContext context, String bookingId) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Cancel this booking?'),
-        content: const Text('The provider will be notified.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Back'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Confirm'),
-          ),
-        ],
-      ),
+    final confirmed = await BaltoDialog.confirm(
+      context,
+      title: 'Cancel this booking?',
+      message: 'The provider will be notified.',
+      cancelLabel: 'Back',
     );
-    if (confirmed == true && context.mounted) {
+    if (confirmed && context.mounted) {
       context.read<MyHomeServiceBookingsCubit>().cancelBooking(bookingId);
     }
   }
@@ -382,16 +365,9 @@ class _StatusBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: AppRadius.radius20,
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
-      ),
+      child: Text(label, style: AppTextStyles.micro.copyWith(color: color)),
     );
   }
 }
