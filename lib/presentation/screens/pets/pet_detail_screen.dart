@@ -372,6 +372,10 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                 ),
                 const SizedBox(height: 12),
                 _infoRow(Icons.cake_outlined, 'Age', age),
+                if (pet.sex != null) ...[
+                  const SizedBox(height: 12),
+                  _infoRow(Icons.male_outlined, 'Sex', pet.sex!),
+                ],
                 if (pet.weight != null) ...[
                   const SizedBox(height: 12),
                   _infoRow(

@@ -48,7 +48,7 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
 
   List<String> _tabsFor(Business b) => [
     'Overview',
-    if (b.isVeterinary || b.isStore) 'Services',
+    if (b.isVeterinary || b.isStore || b.hasMarket) 'Services',
     'Reviews',
   ];
 
@@ -231,14 +231,48 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
         ),
       );
     }
+    final services = b.serviceItems;
+    final products = b.productItems;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (services.isNotEmpty) ...[
+            if (products.isNotEmpty) _marketSectionLabel('Services'),
+            _marketItemsList(services),
+          ],
+          if (services.isNotEmpty && products.isNotEmpty)
+            const SizedBox(height: 20),
+          if (products.isNotEmpty) ...[
+            if (services.isNotEmpty) _marketSectionLabel('Products'),
+            _marketItemsList(products),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _marketSectionLabel(String label) => Padding(
+    padding: const EdgeInsets.only(bottom: 10),
+    child: Text(
+      label,
+      style: const TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w800,
+        color: Color(0xFF8A93A0),
+      ),
+    ),
+  );
+
+  Widget _marketItemsList(List<BusinessServiceItem> items) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.all(20),
-      itemCount: b.services.length,
+      itemCount: items.length,
       separatorBuilder: (_, _) => const SizedBox(height: 12),
       itemBuilder: (_, i) {
-        final s = b.services[i];
+        final s = items[i];
         return Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
