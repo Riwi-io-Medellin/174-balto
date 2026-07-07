@@ -151,6 +151,7 @@ class _FaqScreenState extends State<FaqScreen> {
       childrenPadding: const EdgeInsets.only(left: 56, right: 4, bottom: 12),
       shape: const Border(),
       collapsedShape: const Border(),
+      trailing: const SizedBox.shrink(),
       onExpansionChanged: (_) => _onItemTap(index),
       leading: Container(
         width: 42,

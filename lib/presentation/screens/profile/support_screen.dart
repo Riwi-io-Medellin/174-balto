@@ -38,30 +38,11 @@ class SupportScreen extends StatelessWidget {
               ),
             ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildSupportItem(
-                icon: Icons.help_outline,
-                title: 'Help Center',
-                subtitle: 'Guides and tutorials',
-                url: 'https://balto-help.example.com',
-              ),
-              _divider(),
-              _buildSupportItem(
-                icon: Icons.headset_mic_outlined,
-                title: 'Contact Support',
-                subtitle: 'support@balto.app',
-                url: 'mailto:support@balto.app',
-              ),
-              _divider(),
-              _buildSupportItem(
-                icon: Icons.chat_bubble_outline,
-                title: 'FAQs',
-                subtitle: 'Frequently asked questions',
-                url: 'https://balto-faq.example.com',
-              ),
-            ],
+          child: _buildSupportItem(
+            icon: Icons.email_outlined,
+            title: 'Email us',
+            subtitle: 'support@balto.app',
+            url: 'mailto:support@balto.app',
           ),
         ),
       ),
@@ -123,12 +104,5 @@ class SupportScreen extends StatelessWidget {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
-  }
-
-  Widget _divider() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4),
-      child: Divider(height: 1, color: Color(0xFFE0E4F0)),
-    );
   }
 }

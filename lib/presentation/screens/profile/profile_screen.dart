@@ -30,7 +30,6 @@ import 'edit_profile_screen.dart';
 import 'faq_screen.dart';
 import 'help_center_screen.dart';
 import 'privacy_settings_screen.dart';
-import 'profile_settings_screen.dart';
 import 'support_screen.dart';
 import '../notifications/notifications_screen.dart';
 
@@ -178,35 +177,9 @@ class _ProfileViewState extends State<_ProfileView> {
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         final name = state is ProfileLoaded ? state.user.firstName : 'there';
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Welcome back, $name 👋',
-              style: const TextStyle(fontSize: 13, color: _textMid),
-            ),
-            GestureDetector(
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const ProfileSettingsScreen(),
-                ),
-              ),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: AppRadius.radius12,
-                  border: Border.all(color: const Color(0xFFE5E7EB)),
-                ),
-                child: const Icon(
-                  Icons.tune,
-                  size: 18,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ),
-          ],
+        return Text(
+          'Welcome back, $name 👋',
+          style: const TextStyle(fontSize: 13, color: _textMid),
         );
       },
     );
