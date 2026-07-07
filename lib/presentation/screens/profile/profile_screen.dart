@@ -75,6 +75,7 @@ class _ProfileViewState extends State<_ProfileView> {
     return BaltoScreenScaffold(
       header: _buildHeader(),
       body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -125,8 +126,8 @@ class _ProfileViewState extends State<_ProfileView> {
                 ),
               ),
             ]),
+            const SizedBox(height: 18),
             // TODO: Re-implement when subscription system is ready
-            // const SizedBox(height: 18),
             // _buildPremiumCard(),
             // const SizedBox(height: 18),
             _buildSectionTitle('SUPPORT'),
@@ -209,12 +210,12 @@ class _ProfileViewState extends State<_ProfileView> {
                   color: AppColors.textPrimary,
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               Text(
                 email,
                 style: const TextStyle(fontSize: 12, color: _textMid),
               ),
-              const SizedBox(height: 1),
+              const SizedBox(height: 3),
               Text(
                 errorMessage ??
                     (createdAt != null
