@@ -21,6 +21,9 @@ class Pet extends Equatable {
     this.lostLongitude,
     this.lostAt,
     this.latestHealthUrgency,
+    this.tagScanLatitude,
+    this.tagScanLongitude,
+    this.tagScanAt,
   });
 
   final String id;
@@ -42,6 +45,9 @@ class Pet extends Equatable {
   final double? lostLongitude;
   final DateTime? lostAt;
   final String? latestHealthUrgency;
+  final double? tagScanLatitude;
+  final double? tagScanLongitude;
+  final DateTime? tagScanAt;
 
   Pet copyWith({
     bool? isLost,
@@ -49,6 +55,9 @@ class Pet extends Equatable {
     double? lostLongitude,
     DateTime? lostAt,
     String? latestHealthUrgency,
+    double? tagScanLatitude,
+    double? tagScanLongitude,
+    DateTime? tagScanAt,
   }) {
     return Pet(
       id: id,
@@ -70,6 +79,9 @@ class Pet extends Equatable {
       lostLongitude: lostLongitude ?? this.lostLongitude,
       lostAt: lostAt ?? this.lostAt,
       latestHealthUrgency: latestHealthUrgency ?? this.latestHealthUrgency,
+      tagScanLatitude: tagScanLatitude ?? this.tagScanLatitude,
+      tagScanLongitude: tagScanLongitude ?? this.tagScanLongitude,
+      tagScanAt: tagScanAt ?? this.tagScanAt,
     );
   }
 
@@ -94,5 +106,8 @@ class Pet extends Equatable {
     lostLongitude,
     lostAt,
     latestHealthUrgency,
+    tagScanLatitude,
+    tagScanLongitude,
+    tagScanAt,
   ];
 }

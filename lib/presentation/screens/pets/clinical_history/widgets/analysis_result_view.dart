@@ -53,8 +53,10 @@ class AnalysisResultView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
+                          flex: 2,
                           child: Text(
                             v.label,
                             style: const TextStyle(
@@ -63,11 +65,16 @@ class AnalysisResultView extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Text(
-                          v.value,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: _textDark,
+                        const SizedBox(width: 10),
+                        Expanded(
+                          flex: 3,
+                          child: Text(
+                            v.value,
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: _textDark,
+                            ),
                           ),
                         ),
                       ],

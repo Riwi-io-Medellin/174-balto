@@ -6,6 +6,7 @@ class TokenStorage {
   static const _accessKey = 'auth_access_token';
   static const _refreshKey = 'auth_refresh_token';
   static const _rememberKey = 'auth_remember_me';
+  static const _coachHistoryKey = 'coach_chat_history';
 
   final FlutterSecureStorage _storage;
 
@@ -33,5 +34,6 @@ class TokenStorage {
     await _storage.delete(key: _accessKey);
     await _storage.delete(key: _refreshKey);
     await _storage.delete(key: _rememberKey);
+    await _storage.delete(key: _coachHistoryKey);
   }
 }

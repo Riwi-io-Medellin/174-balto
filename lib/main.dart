@@ -32,10 +32,10 @@ void main() async {
 
   setupDependencies();
   final tokenStorage = sl<TokenStorage>();
-  final rememberMe = await tokenStorage.readRememberMe();
-  if (rememberMe != true) {
-    await tokenStorage.clear();
-  }
+  // Session survives process death (OS backgrounding/kill, back-button
+  // minimize) regardless of "remember me" — that flag only controls
+  // whether login pre-fills, it must never wipe a still-valid refresh
+  // token on cold start.
   final token = await tokenStorage.readAccessToken();
 
   runApp(BaltoApp(isLoggedIn: token != null));
