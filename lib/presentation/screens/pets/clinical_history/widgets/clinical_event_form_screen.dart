@@ -9,8 +9,10 @@ import '../../../../../core/widgets/balto_toast.dart';
 import '../../../../../domain/entities/pet.dart';
 import '../../../../../domain/entities/pet_clinical_draft.dart';
 import '../../../../../domain/entities/pet_clinical_event.dart';
+import '../../../../../domain/entities/vet_document_analysis.dart';
 import '../../../../../domain/repositories/pet_clinical_repository.dart';
 import '../../../../widgets/balto_dialog.dart';
+import 'analysis_result_view.dart';
 import 'medication_editor.dart';
 
 /// Full, editable clinical history form.
@@ -20,10 +22,12 @@ class ClinicalEventFormScreen extends StatefulWidget {
     super.key,
     required this.pet,
     required this.draft,
+    this.analysis,
   });
 
   final Pet pet;
   final ClinicalExtractionDraft draft;
+  final VetDocumentAnalysisResult? analysis;
 
   @override
   State<ClinicalEventFormScreen> createState() =>
@@ -439,6 +443,13 @@ class _ClinicalEventFormScreenState extends State<ClinicalEventFormScreen> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                 children: [
+                  if (widget.analysis != null)
+                    _section(
+                      title: 'AI health insight',
+                      icon: Icons.medical_information_outlined,
+                      initiallyExpanded: true,
+                      children: [AnalysisResultView(result: widget.analysis!)],
+                    ),
                   _section(
                     title: 'Pet details',
                     icon: Icons.pets_rounded,

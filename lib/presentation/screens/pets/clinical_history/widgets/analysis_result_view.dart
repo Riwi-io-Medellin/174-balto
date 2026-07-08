@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_radius.dart';
-import '../../../../core/constants/app_text_styles.dart';
-import '../../../../domain/entities/vet_document_analysis.dart';
+import '../../../../../core/constants/app_radius.dart';
+import '../../../../../core/constants/app_text_styles.dart';
+import '../../../../../domain/entities/vet_document_analysis.dart';
 import 'urgency_badge.dart';
 
 class AnalysisResultView extends StatelessWidget {

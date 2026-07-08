@@ -7,19 +7,24 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/utils/vet_document_validators.dart';
 import '../../../../core/widgets/balto_toast.dart';
 import '../../../../domain/entities/pet.dart';
+import '../../../../domain/entities/pet_clinical_draft.dart';
 import '../../../../domain/entities/pet_clinical_record.dart';
+import '../../../../domain/entities/pet_health_context.dart';
+import '../../../../domain/entities/vet_document_analysis.dart';
 import '../../../../domain/repositories/pet_clinical_repository.dart';
 import '../../../../domain/repositories/upload_repository.dart';
+import '../../../../domain/repositories/vet_document_analysis_repository.dart';
 import 'widgets/clinical_event_form_screen.dart';
 import 'widgets/clinical_timeline.dart';
 import 'widgets/clinical_tips_section.dart';
 
 /// Clinical History module within the pet's profile.
-/// Flow: upload documents -> AI analyzes -> editable form -> save
-/// -> timeline + tips. The generated official document can be downloaded
-/// from the Health Document Analysis screen.
+/// Flow: upload documents -> AI extracts a structured draft and produces an
+/// advisory health read -> editable form (with the AI insight shown inline)
+/// -> save -> timeline + tips.
 class PetClinicalHistoryScreen extends StatefulWidget {
   const PetClinicalHistoryScreen({super.key, required this.pet});
 
@@ -35,15 +40,6 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
   static const _bg = Color(0xFFF0F4F4);
   static const _textDark = Color(0xFF1A1A2E);
   static const _textMuted = Color(0xFF6B7280);
-
-  static const _allowedExtensions = [
-    'jpg',
-    'jpeg',
-    'png',
-    'webp',
-    'gif',
-    'pdf',
-  ];
 
   bool _loading = true;
   bool _processing = false;
@@ -110,13 +106,30 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
     if (mounted) setState(() => _processing = false);
   }
 
+  /// Best-effort advisory read of the uploaded documents — never blocks or
+  /// fails the structured extraction/save flow.
+  Future<VetDocumentAnalysisResult?> _tryAnalyze(
+    PetHealthContext context,
+    List<String> fileUrls,
+  ) async {
+    if (!validatePetContext(context).isValid) return null;
+    try {
+      return await sl<VetDocumentAnalysisRepository>().analyze(
+        context: context,
+        fileUrls: fileUrls,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _uploadDocuments() async {
     FilePickerResult? result;
     try {
       result = await FilePicker.platform.pickFiles(
         allowMultiple: true,
         type: FileType.custom,
-        allowedExtensions: _allowedExtensions,
+        allowedExtensions: supportedVetDocumentExtensions,
       );
     } catch (_) {
       if (!mounted) return;
@@ -125,14 +138,28 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
     }
     if (result == null || result.files.isEmpty) return;
 
+    final pickedFiles = result.files
+        .where((f) => f.path != null)
+        .map(
+          (f) => PickedFileInfo(path: f.path!, name: f.name, sizeBytes: f.size),
+        )
+        .toList();
+    final filesValidation = validateFiles(pickedFiles);
+    if (!filesValidation.isValid) {
+      BaltoToast.warning(context, filesValidation.error!);
+      return;
+    }
+
     _startProcessingMessages();
     try {
       final documentIds = <String>[];
+      final fileUrls = <String>[];
       for (final file in result.files) {
         final path = file.path;
         if (path == null) continue;
         final extension = (file.extension ?? '').toLowerCase();
         final url = await sl<UploadRepository>().uploadFile(path, file.name);
+        fileUrls.add(url);
         final documentId = await sl<PetClinicalRepository>()
             .registerSourceDocument(
               petId: widget.pet.id,
@@ -150,17 +177,37 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
         return;
       }
 
-      final draft = await sl<PetClinicalRepository>().runExtraction(
+      final petContext = PetHealthContext(
         petId: widget.pet.id,
-        documentIds: documentIds,
+        name: widget.pet.name,
+        species: widget.pet.species ?? '',
+        breed: widget.pet.breed,
+        age: widget.pet.birthDate != null
+            ? DateTime.now().year - widget.pet.birthDate!.year
+            : null,
+        sex: widget.pet.sex,
+        weightKg: widget.pet.weight,
       );
+
+      final results = await Future.wait([
+        sl<PetClinicalRepository>().runExtraction(
+          petId: widget.pet.id,
+          documentIds: documentIds,
+        ),
+        _tryAnalyze(petContext, fileUrls),
+      ]);
+      final draft = results[0] as ClinicalExtractionDraft;
+      final analysis = results[1] as VetDocumentAnalysisResult?;
       _stopProcessingMessages();
       if (!mounted) return;
 
       final saved = await Navigator.of(context).push<bool>(
         MaterialPageRoute(
-          builder: (_) =>
-              ClinicalEventFormScreen(pet: widget.pet, draft: draft),
+          builder: (_) => ClinicalEventFormScreen(
+            pet: widget.pet,
+            draft: draft,
+            analysis: analysis,
+          ),
         ),
       );
       if (saved == true) await _load();
