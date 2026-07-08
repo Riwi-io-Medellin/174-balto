@@ -1,25 +1,32 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_radius.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/utils/vet_document_validators.dart';
 import '../../../../core/widgets/balto_toast.dart';
 import '../../../../domain/entities/pet.dart';
+import '../../../../domain/entities/pet_clinical_draft.dart';
 import '../../../../domain/entities/pet_clinical_record.dart';
+import '../../../../domain/entities/pet_health_context.dart';
+import '../../../../domain/entities/vet_document_analysis.dart';
 import '../../../../domain/repositories/pet_clinical_repository.dart';
 import '../../../../domain/repositories/upload_repository.dart';
+import '../../../../domain/repositories/vet_document_analysis_repository.dart';
 import 'widgets/clinical_event_form_screen.dart';
 import 'widgets/clinical_timeline.dart';
 import 'widgets/clinical_tips_section.dart';
 
 /// Clinical History module within the pet's profile.
-/// Flow: upload documents -> AI analyzes -> editable form -> save
-/// -> timeline + tips. The generated official document can be downloaded
-/// from the Health Document Analysis screen.
+/// Flow: upload documents -> AI extracts a structured draft and produces an
+/// advisory health read -> editable form (with the AI insight shown inline)
+/// -> save -> timeline + tips.
 class PetClinicalHistoryScreen extends StatefulWidget {
   const PetClinicalHistoryScreen({super.key, required this.pet});
 
@@ -36,21 +43,13 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
   static const _textDark = Color(0xFF1A1A2E);
   static const _textMuted = Color(0xFF6B7280);
 
-  static const _allowedExtensions = [
-    'jpg',
-    'jpeg',
-    'png',
-    'webp',
-    'gif',
-    'pdf',
-  ];
-
   bool _loading = true;
   bool _processing = false;
   String _processingMessage = 'Analyzing document...';
   PetClinicalRecord? _record;
   List<PetClinicalTip> _tips = [];
   Timer? _processingTimer;
+  final List<PickedFileInfo> _pickedFiles = [];
 
   @override
   void initState() {
@@ -110,35 +109,144 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
     if (mounted) setState(() => _processing = false);
   }
 
-  Future<void> _uploadDocuments() async {
+  /// Best-effort advisory read of the uploaded documents — never blocks or
+  /// fails the structured extraction/save flow.
+  Future<VetDocumentAnalysisResult?> _tryAnalyze(
+    PetHealthContext context,
+    List<String> fileUrls,
+  ) async {
+    if (!validatePetContext(context).isValid) return null;
+    try {
+      return await sl<VetDocumentAnalysisRepository>().analyze(
+        context: context,
+        fileUrls: fileUrls,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? image;
+    try {
+      image = await ImagePicker().pickImage(source: source, imageQuality: 85);
+    } catch (_) {
+      if (!mounted) return;
+      BaltoToast.error(context, 'Could not open the camera/gallery.');
+      return;
+    }
+    if (image == null || !mounted) return;
+    final size = await File(image.path).length();
+    if (!mounted) return;
+    setState(() {
+      _pickedFiles.add(
+        PickedFileInfo(path: image!.path, name: image.name, sizeBytes: size),
+      );
+    });
+  }
+
+  Future<void> _pickPdf() async {
     FilePickerResult? result;
     try {
       result = await FilePicker.platform.pickFiles(
-        allowMultiple: true,
         type: FileType.custom,
-        allowedExtensions: _allowedExtensions,
+        allowedExtensions: ['pdf'],
       );
     } catch (_) {
       if (!mounted) return;
       BaltoToast.error(context, 'Could not open the file picker.');
       return;
     }
-    if (result == null || result.files.isEmpty) return;
+    final file = result?.files.firstOrNull;
+    if (file == null || file.path == null || !mounted) return;
+    setState(() {
+      _pickedFiles.add(
+        PickedFileInfo(
+          path: file.path!,
+          name: file.name,
+          sizeBytes: file.size,
+        ),
+      );
+    });
+  }
+
+  void _removeFile(int index) => setState(() => _pickedFiles.removeAt(index));
+
+  void _showFileSourceSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.r20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE0E0E0),
+                borderRadius: AppRadius.radius2,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.camera_alt_rounded),
+              title: const Text('Take a photo'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_rounded),
+              title: const Text('Choose from gallery'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.picture_as_pdf_rounded),
+              title: const Text('Choose a PDF'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickPdf();
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _analyzeDocuments() async {
+    final filesValidation = validateFiles(_pickedFiles);
+    if (!filesValidation.isValid) {
+      BaltoToast.warning(context, filesValidation.error!);
+      return;
+    }
+    final pickedFiles = List<PickedFileInfo>.from(_pickedFiles);
 
     _startProcessingMessages();
     try {
       final documentIds = <String>[];
-      for (final file in result.files) {
-        final path = file.path;
-        if (path == null) continue;
-        final extension = (file.extension ?? '').toLowerCase();
-        final url = await sl<UploadRepository>().uploadFile(path, file.name);
+      final fileUrls = <String>[];
+      for (final file in pickedFiles) {
+        final url = await sl<UploadRepository>().uploadFile(
+          file.path,
+          file.name,
+        );
+        fileUrls.add(url);
         final documentId = await sl<PetClinicalRepository>()
             .registerSourceDocument(
               petId: widget.pet.id,
               fileUrl: url,
               fileName: file.name,
-              fileType: extension,
+              fileType: file.extension,
             );
         documentIds.add(documentId);
       }
@@ -150,20 +258,43 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
         return;
       }
 
-      final draft = await sl<PetClinicalRepository>().runExtraction(
+      final petContext = PetHealthContext(
         petId: widget.pet.id,
-        documentIds: documentIds,
+        name: widget.pet.name,
+        species: widget.pet.species ?? '',
+        breed: widget.pet.breed,
+        age: widget.pet.birthDate != null
+            ? DateTime.now().year - widget.pet.birthDate!.year
+            : null,
+        sex: widget.pet.sex,
+        weightKg: widget.pet.weight,
       );
+
+      final results = await Future.wait([
+        sl<PetClinicalRepository>().runExtraction(
+          petId: widget.pet.id,
+          documentIds: documentIds,
+        ),
+        _tryAnalyze(petContext, fileUrls),
+      ]);
+      final draft = results[0] as ClinicalExtractionDraft;
+      final analysis = results[1] as VetDocumentAnalysisResult?;
       _stopProcessingMessages();
       if (!mounted) return;
 
       final saved = await Navigator.of(context).push<bool>(
         MaterialPageRoute(
-          builder: (_) =>
-              ClinicalEventFormScreen(pet: widget.pet, draft: draft),
+          builder: (_) => ClinicalEventFormScreen(
+            pet: widget.pet,
+            draft: draft,
+            analysis: analysis,
+          ),
         ),
       );
-      if (saved == true) await _load();
+      if (saved == true) {
+        setState(() => _pickedFiles.clear());
+        await _load();
+      }
     } on PetClinicalFailure catch (e) {
       _stopProcessingMessages();
       if (!mounted) return;
@@ -272,12 +403,12 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Add a medical document',
+                      'Add medical documents',
                       style: AppTextStyles.bodyBold.copyWith(color: _textDark),
                     ),
                     const SizedBox(height: 2),
                     const Text(
-                      'PDF or images. AI extracts the data automatically.',
+                      'PDF or images, several at once. AI extracts the data automatically.',
                       style: TextStyle(fontSize: 12, color: _textMuted),
                     ),
                   ],
@@ -285,14 +416,40 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
               ),
             ],
           ),
+          if (_pickedFiles.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            ..._pickedFiles.asMap().entries.map(
+              (e) => _fileTile(e.key, e.value),
+            ),
+          ],
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _processing ? null : _uploadDocuments,
+            child: OutlinedButton.icon(
+              onPressed: _processing ? null : _showFileSourceSheet,
               icon: const Icon(Icons.add_rounded),
               label: const Text(
-                'Upload clinical history',
+                'Add photo or PDF',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: _accent,
+                side: const BorderSide(color: _accent),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _processing || _pickedFiles.isEmpty
+                  ? null
+                  : _analyzeDocuments,
+              icon: const Icon(Icons.auto_awesome_rounded),
+              label: const Text(
+                'Analyze Documents',
                 style: TextStyle(fontWeight: FontWeight.w700),
               ),
               style: ElevatedButton.styleFrom(
@@ -303,6 +460,39 @@ class _PetClinicalHistoryScreenState extends State<PetClinicalHistoryScreen> {
                 elevation: 0,
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _fileTile(int index, PickedFileInfo file) {
+    final isPdf = file.extension == 'pdf';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: _bg,
+        borderRadius: AppRadius.radius12,
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            isPdf ? Icons.picture_as_pdf_rounded : Icons.image_rounded,
+            color: _accent,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              file.name,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 13, color: _textDark),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close, size: 18),
+            onPressed: _processing ? null : () => _removeFile(index),
           ),
         ],
       ),

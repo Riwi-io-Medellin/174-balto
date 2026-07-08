@@ -21,6 +21,9 @@ class PetDto {
     this.lostLongitude,
     this.lostAt,
     this.latestHealthUrgency,
+    this.tagScanLatitude,
+    this.tagScanLongitude,
+    this.tagScanAt,
   });
 
   final String id;
@@ -42,6 +45,9 @@ class PetDto {
   final double? lostLongitude;
   final DateTime? lostAt;
   final String? latestHealthUrgency;
+  final double? tagScanLatitude;
+  final double? tagScanLongitude;
+  final DateTime? tagScanAt;
 
   factory PetDto.fromJson(Map<String, dynamic> json) {
     return PetDto(
@@ -68,6 +74,11 @@ class PetDto {
           ? DateTime.parse(json['lostAt'] as String).toLocal()
           : null,
       latestHealthUrgency: json['latestHealthUrgency'] as String?,
+      tagScanLatitude: (json['tagScanLatitude'] as num?)?.toDouble(),
+      tagScanLongitude: (json['tagScanLongitude'] as num?)?.toDouble(),
+      tagScanAt: json['tagScanAt'] != null
+          ? DateTime.parse(json['tagScanAt'] as String).toLocal()
+          : null,
     );
   }
 
@@ -102,5 +113,8 @@ class PetDto {
     lostLongitude: lostLongitude,
     lostAt: lostAt,
     latestHealthUrgency: latestHealthUrgency,
+    tagScanLatitude: tagScanLatitude,
+    tagScanLongitude: tagScanLongitude,
+    tagScanAt: tagScanAt,
   );
 }

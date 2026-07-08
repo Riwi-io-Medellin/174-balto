@@ -12,6 +12,7 @@ import '../../../domain/repositories/business_repository.dart';
 import '../../../domain/repositories/upload_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
+import 'business_hours_screen.dart';
 import 'business_market_items_screen.dart';
 
 class EditBusinessProfileScreen extends StatefulWidget {
@@ -245,6 +246,15 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
                   ),
                   const SizedBox(height: 8),
                   _buildGallerySection(),
+                  const SizedBox(height: 28),
+                  _sectionTitle('Hours'),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Set the days and times customers can find you open.',
+                    style: TextStyle(fontSize: 12, color: _textMuted),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildManageHoursButton(),
                   const SizedBox(height: 28),
                   _sectionTitle('Market'),
                   const SizedBox(height: 4),
@@ -501,6 +511,34 @@ class _EditBusinessProfileScreenState extends State<EditBusinessProfileScreen> {
           ),
           Switch(value: value, onChanged: onChanged, activeThumbColor: _green),
         ],
+      ),
+    );
+  }
+
+  Widget _buildManageHoursButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: _businessId == null
+            ? null
+            : () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        BusinessHoursScreen(businessId: _businessId!),
+                  ),
+                );
+              },
+        icon: const Icon(Icons.schedule_rounded, size: 18),
+        label: const Text('Manage hours'),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: _green,
+          side: const BorderSide(color: _green),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       ),
     );
   }

@@ -11,6 +11,7 @@ abstract class PetRepository {
     String? description,
     String? photoUrl,
     double? weight,
+    String? sex,
   });
   Future<Pet> update({
     required String id,
@@ -21,6 +22,7 @@ abstract class PetRepository {
     String? description,
     String? photoUrl,
     double? weight,
+    String? sex,
   });
   Future<void> delete(String id);
   Future<Pet> reportLost({

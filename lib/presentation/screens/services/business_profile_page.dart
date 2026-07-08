@@ -25,6 +25,148 @@ class BusinessProfilePage extends StatefulWidget {
   State<BusinessProfilePage> createState() => _BusinessProfilePageState();
 }
 
+class _GalleryStrip extends StatelessWidget {
+  const _GalleryStrip({required this.images});
+
+  final List<String> images;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: SizedBox(
+        height: 96,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          itemCount: images.length,
+          separatorBuilder: (_, _) => const SizedBox(width: 10),
+          itemBuilder: (_, i) => ClipRRect(
+            borderRadius: AppRadius.radius14,
+            child: Image.network(
+              images[i],
+              width: 96,
+              height: 96,
+              fit: BoxFit.cover,
+              errorBuilder: (_, _, _) => Container(
+                width: 96,
+                height: 96,
+                color: const Color(0xFFE9ECF1),
+                child: const Icon(
+                  Icons.image_outlined,
+                  size: 28,
+                  color: Color(0xFFB0B8C1),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Simple image-first card for a service/product — no tap target or detail
+/// view by design, since the Market feature doesn't handle payments yet.
+class _MarketItemCard extends StatelessWidget {
+  const _MarketItemCard({required this.item});
+
+  final BusinessServiceItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final isProduct = item.isProduct;
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppRadius.radius16,
+        border: Border.all(color: const Color(0xFFEDEFF3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AspectRatio(
+            aspectRatio: 1.15,
+            child: _MarketItemImage(
+              photoUrl: item.photoUrl,
+              isProduct: isProduct,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.serviceType,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.bodyBold.copyWith(
+                    fontSize: 13.5,
+                    color: const Color(0xFF1F2937),
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '\$${item.price.toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.navWalkers,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Shows the item's photo, or a soft default illustration matching its kind
+/// (service vs product) so a card is never left blank.
+class _MarketItemImage extends StatelessWidget {
+  const _MarketItemImage({required this.photoUrl, required this.isProduct});
+
+  final String? photoUrl;
+  final bool isProduct;
+
+  @override
+  Widget build(BuildContext context) {
+    if (photoUrl != null && photoUrl!.isNotEmpty) {
+      return Image.network(
+        photoUrl!,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => _defaultImage(),
+      );
+    }
+    return _defaultImage();
+  }
+
+  Widget _defaultImage() {
+    return Container(
+      color: isProduct
+          ? const Color(0xFFFCEFE0)
+          : AppColors.navWalkers.withValues(alpha: 0.10),
+      alignment: Alignment.center,
+      child: Icon(
+        isProduct ? Icons.shopping_bag_rounded : Icons.storefront_rounded,
+        size: 34,
+        color: isProduct ? const Color(0xFFE8A84C) : AppColors.navWalkers,
+      ),
+    );
+  }
+}
+
 class _BusinessProfilePageState extends State<BusinessProfilePage> {
   int _tab = 0;
   late final BusinessCubit _businessCubit;
@@ -76,6 +218,12 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
               slivers: [
                 _buildSliverAppBar(b),
                 SliverToBoxAdapter(child: BusinessProfileHeader(business: b)),
+                if (b.gallery.isNotEmpty)
+                  SliverToBoxAdapter(
+                    child: _GalleryStrip(
+                      images: b.gallery.map((g) => g.fileUrl).toList(),
+                    ),
+                  ),
                 if (isLoadingDetail)
                   const SliverToBoxAdapter(
                     child: Padding(
@@ -268,57 +416,17 @@ class _BusinessProfilePageState extends State<BusinessProfilePage> {
   );
 
   Widget _marketItemsList(List<BusinessServiceItem> items) {
-    return ListView.separated(
+    return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 12),
-      itemBuilder: (_, i) {
-        final s = items[i];
-        return Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8F9FB),
-            borderRadius: AppRadius.radius14,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      s.serviceType,
-                      style: AppTextStyles.bodyBold.copyWith(
-                        color: const Color(0xFF1F2937),
-                      ),
-                    ),
-                    if (s.description != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        s.description!,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF5A6473),
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    Text(
-                      '\$${s.price.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.navWalkers,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.78,
+      ),
+      itemBuilder: (_, i) => _MarketItemCard(item: items[i]),
     );
   }
 

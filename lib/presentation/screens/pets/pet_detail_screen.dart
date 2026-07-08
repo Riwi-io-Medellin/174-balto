@@ -15,10 +15,9 @@ import '../../../domain/repositories/pet_repository.dart';
 import '../../../domain/repositories/vet_document_analysis_repository.dart';
 import '../../bloc/profile/profile_cubit.dart';
 import '../../bloc/profile/profile_state.dart';
-import '../vet_document_analysis/vet_document_analysis_screen.dart';
-import '../vet_document_analysis/widgets/analysis_result_view.dart';
-import '../vet_document_analysis/widgets/urgency_badge.dart';
 import 'clinical_history/pet_clinical_history_screen.dart';
+import 'clinical_history/widgets/analysis_result_view.dart';
+import 'clinical_history/widgets/urgency_badge.dart';
 import 'edit_pet_screen.dart';
 
 class PetDetailScreen extends StatefulWidget {
@@ -50,15 +49,6 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
 
   Future<List<VetDocumentAnalysisHistoryItem>> _loadHistory() =>
       sl<VetDocumentAnalysisRepository>().getHistory(widget.petId);
-
-  Future<void> _openAnalysisScreen(Pet pet) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => VetDocumentAnalysisScreen(pet: pet)),
-    );
-    if (!mounted) return;
-    setState(() => _historyFuture = _loadHistory());
-    await context.read<ProfileCubit>().load();
-  }
 
   void _openHistoryItem(VetDocumentAnalysisHistoryItem item) {
     Navigator.of(context).push(
@@ -405,21 +395,6 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
             width: double.infinity,
             height: 52,
             child: OutlinedButton.icon(
-              onPressed: () => _openAnalysisScreen(pet),
-              icon: const Icon(Icons.medical_information_outlined),
-              label: const Text('Health Document Analysis'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.aiCoach,
-                side: const BorderSide(color: AppColors.aiCoach),
-                shape: RoundedRectangleBorder(borderRadius: AppRadius.radius14),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: OutlinedButton.icon(
               onPressed: () => _writeNfcTag(context, pet),
               icon: const Icon(Icons.nfc_rounded),
               label: const Text('Write NFC Tag'),
@@ -548,9 +523,14 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
 
   Widget _clinicalHistoryCard(BuildContext context, Pet pet) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => PetClinicalHistoryScreen(pet: pet)),
-      ),
+      onTap: () async {
+        await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => PetClinicalHistoryScreen(pet: pet)),
+        );
+        if (!context.mounted) return;
+        setState(() => _historyFuture = _loadHistory());
+        await context.read<ProfileCubit>().load();
+      },
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(16),

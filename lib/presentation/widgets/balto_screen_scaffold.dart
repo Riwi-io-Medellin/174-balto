@@ -40,10 +40,10 @@ class BaltoScreenScaffold extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppDimens.screenPaddingH,
+              padding: EdgeInsets.fromLTRB(
+                AppDimens.horizontalPadding(context),
                 AppDimens.screenPaddingTop,
-                AppDimens.screenPaddingH,
+                AppDimens.horizontalPadding(context),
                 0,
               ),
               child: header,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_radius.dart';
-import '../../../../domain/entities/vet_document_analysis.dart';
+import '../../../../../core/constants/app_radius.dart';
+import '../../../../../domain/entities/vet_document_analysis.dart';
 
 class UrgencyBadge extends StatelessWidget {
   const UrgencyBadge({super.key, required this.urgencyLevel});

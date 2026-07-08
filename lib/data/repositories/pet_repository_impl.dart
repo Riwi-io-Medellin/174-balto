@@ -48,6 +48,7 @@ class PetRepositoryImpl implements PetRepository {
     String? description,
     String? photoUrl,
     double? weight,
+    String? sex,
   }) async {
     try {
       final request = <String, dynamic>{
@@ -59,6 +60,7 @@ class PetRepositoryImpl implements PetRepository {
         'description': ?description,
         'photoUrl': ?photoUrl,
         'weight': ?weight,
+        'sex': ?sex,
       };
       final dto = await _remote.create(request);
       return dto.toEntity();
@@ -82,6 +84,7 @@ class PetRepositoryImpl implements PetRepository {
     String? description,
     String? photoUrl,
     double? weight,
+    String? sex,
   }) async {
     try {
       final request = <String, dynamic>{
@@ -93,6 +96,7 @@ class PetRepositoryImpl implements PetRepository {
         'description': ?description,
         'photoUrl': ?photoUrl,
         'weight': ?weight,
+        'sex': ?sex,
       };
       final dto = await _remote.update(id, request);
       return dto.toEntity();

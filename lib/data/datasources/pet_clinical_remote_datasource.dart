@@ -33,6 +33,10 @@ class PetClinicalRemoteDataSource {
     final response = await _dio.post<dynamic>(
       '/pets/$petId/clinical-record/documents/extract',
       data: {'documentIds': documentIds},
+      options: Options(
+        sendTimeout: const Duration(seconds: 60),
+        receiveTimeout: const Duration(seconds: 60),
+      ),
     );
     final status = response.statusCode ?? 0;
     final data = response.data;
