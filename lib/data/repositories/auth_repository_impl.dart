@@ -31,6 +31,7 @@ class AuthRepositoryImpl implements AuthRepository {
         idType: idType,
         phone: phone,
       );
+      await _tokenStorage.clear();
       await _tokenStorage.save(
         accessToken: dto.accessToken,
         refreshToken: dto.refreshToken,
@@ -53,6 +54,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     try {
       final dto = await _remote.login(email: email, password: password);
+      await _tokenStorage.clear();
       await _tokenStorage.save(
         accessToken: dto.accessToken,
         refreshToken: dto.refreshToken,
