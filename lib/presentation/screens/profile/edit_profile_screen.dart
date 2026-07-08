@@ -312,7 +312,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        padding: EdgeInsets.fromLTRB(
+          24,
+          32,
+          24,
+          32 + MediaQuery.paddingOf(context).bottom,
+        ),
         child: Form(
           key: _formKey,
           child: Container(

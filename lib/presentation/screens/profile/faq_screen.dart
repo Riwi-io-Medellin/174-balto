@@ -50,7 +50,12 @@ class _FaqScreenState extends State<FaqScreen> {
         elevation: 0,
       ),
       body: ListView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.fromLTRB(
+          24,
+          24,
+          24,
+          24 + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           Container(
             width: double.infinity,

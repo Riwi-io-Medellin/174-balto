@@ -7,6 +7,7 @@ import '../../../core/di/injection.dart';
 import '../../../domain/entities/notification.dart';
 import '../../../domain/repositories/notification_repository.dart';
 import '../pets/lost_pet_report_screen.dart';
+import '../pets/tag_scan_location_screen.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -68,6 +69,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => LostPetReportScreen(petId: notification.entityId!),
+        ),
+      );
+    } else if ((notification.type == 'pet_location_shared' ||
+            notification.type == 'pet_tag_scanned') &&
+        notification.entityId != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => TagScanLocationScreen(petId: notification.entityId!),
         ),
       );
     }
