@@ -6,10 +6,16 @@ import 'package:geolocator/geolocator.dart';
 class WalkerLiveWalkService {
   StreamSubscription<Position>? _positionSub;
   final _positionController = StreamController<Position>.broadcast();
+  final _errorController = StreamController<String>.broadcast();
 
   Stream<Position> get positionStream => _positionController.stream;
+  Stream<String> get errorStream => _errorController.stream;
 
   Future<void> start() async {
+    if (!await Geolocator.isLocationServiceEnabled()) {
+      throw const LocationServiceDisabledException();
+    }
+
     final LocationSettings settings;
 
     if (Platform.isAndroid) {
@@ -34,7 +40,10 @@ class WalkerLiveWalkService {
 
     _positionSub = Geolocator.getPositionStream(
       locationSettings: settings,
-    ).listen(_positionController.add);
+    ).listen(
+      _positionController.add,
+      onError: (Object e) => _errorController.add(e.toString()),
+    );
   }
 
   Future<void> stop() async {
@@ -45,5 +54,6 @@ class WalkerLiveWalkService {
   void dispose() {
     _positionSub?.cancel();
     _positionController.close();
+    _errorController.close();
   }
 }

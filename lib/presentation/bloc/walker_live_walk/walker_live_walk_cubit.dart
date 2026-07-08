@@ -36,6 +36,7 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
   double _accumulatedDistanceMeters = 0;
 
   StreamSubscription<Position>? _positionSub;
+  StreamSubscription<String>? _errorSub;
   Timer? _elapsedTimer;
 
   Future<void> start() async {
@@ -74,6 +75,15 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
       if (_sessionId != null) ActiveSessionTracker.enter(_sessionId!);
 
       _positionSub = _liveWalkService.positionStream.listen(_onPosition);
+      _errorSub = _liveWalkService.errorStream.listen((msg) {
+        final s = state;
+        // Only surface as a blocking error while still waiting for the first
+        // fix — once the walk is actively tracking, a transient stream error
+        // shouldn't tear down an otherwise-working session.
+        if (s is WalkerLiveWalkActive && s.currentPosition == null) {
+          emit(WalkerLiveWalkError('Could not get your location: $msg'));
+        }
+      });
 
       _elapsedTimer = Timer.periodic(const Duration(seconds: 1), (_) {
         final s = state;
@@ -83,7 +93,10 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
       });
     } catch (e) {
       if (isClosed) return;
-      emit(WalkerLiveWalkError(e.toString()));
+      final message = e is LocationServiceDisabledException
+          ? 'Please turn on device location (GPS) and try again.'
+          : e.toString();
+      emit(WalkerLiveWalkError(message));
     }
   }
 
@@ -240,6 +253,7 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
   Future<void> endWalk() async {
     _elapsedTimer?.cancel();
     await _positionSub?.cancel();
+    await _errorSub?.cancel();
     final activeState = state is WalkerLiveWalkActive
         ? state as WalkerLiveWalkActive
         : null;
@@ -273,6 +287,7 @@ class WalkerLiveWalkCubit extends Cubit<WalkerLiveWalkState> {
   Future<void> close() async {
     _elapsedTimer?.cancel();
     _positionSub?.cancel();
+    _errorSub?.cancel();
     _liveWalkService.dispose();
     if (_sessionId != null) ActiveSessionTracker.leave(_sessionId!);
     return super.close();
