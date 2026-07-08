@@ -95,7 +95,6 @@ import '../../presentation/bloc/home_service_booking/home_service_booking_cubit.
 import '../../presentation/bloc/my_home_service_bookings/my_home_service_bookings_cubit.dart';
 import '../../presentation/bloc/my_walks/my_walks_cubit.dart';
 import '../../presentation/bloc/profile/profile_cubit.dart';
-import '../../presentation/bloc/vet_document_analysis/vet_document_analysis_cubit.dart';
 import '../../presentation/bloc/walk_booking/walk_booking_cubit.dart';
 import '../../presentation/bloc/walker/walker_cubit.dart';
 import '../../presentation/bloc/walker_availability/walker_availability_cubit.dart';
@@ -412,12 +411,6 @@ void setupDependencies() {
   sl.registerLazySingleton<VetDocumentAnalysisRepository>(
     () => VetDocumentAnalysisRepositoryImpl(
       sl<VetDocumentAnalysisRemoteDataSource>(),
-    ),
-  );
-  sl.registerFactory<VetDocumentAnalysisCubit>(
-    () => VetDocumentAnalysisCubit(
-      uploadRepository: sl<UploadRepository>(),
-      analysisRepository: sl<VetDocumentAnalysisRepository>(),
     ),
   );
 }
