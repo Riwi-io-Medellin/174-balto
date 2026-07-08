@@ -5,9 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_radius.dart';
-import '../../../core/constants/app_text_styles.dart';
 import '../../../core/di/injection.dart';
 import '../../../core/widgets/balto_toast.dart';
 import '../../../domain/repositories/pet_repository.dart';
@@ -32,7 +29,11 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
   bool _saving = false;
   String? _selectedSpecies;
   String? _selectedBreed;
+  String? _selectedSex;
 
+  static const _sexOptions = ['Male', 'Female', 'Unknown'];
+
+  static const Color _primary = Color(0xFF3A80C2);
   static const Color _bg = Color(0xFFF0F4F4);
   static const Color _inputFill = Color(0xFFEEF3F3);
   static const Color _textDark = Color(0xFF1A1A2E);
@@ -114,7 +115,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
       filled: true,
       fillColor: _inputFill,
       border: OutlineInputBorder(
-        borderRadius: AppRadius.radius12,
+        borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -132,16 +133,16 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
       filled: true,
       fillColor: _inputFill,
       border: OutlineInputBorder(
-        borderRadius: AppRadius.radius12,
+        borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: AppRadius.radius12,
+        borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: AppRadius.radius12,
-        borderSide: const BorderSide(color: AppColors.navWalks, width: 1.5),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: _primary, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
     );
@@ -189,6 +190,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
             : _descriptionCtrl.text.trim(),
         photoUrl: photoUrl,
         weight: weight,
+        sex: _selectedSex,
       );
 
       if (!mounted) return;
@@ -223,7 +225,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: AppRadius.radius20,
+              borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.06),
@@ -235,10 +237,14 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
+                const Center(
                   child: Text(
                     'Register Your Pet',
-                    style: AppTextStyles.h1.copyWith(color: _textDark),
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: _textDark,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -260,6 +266,8 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                   _buildBreedDropdown(),
                   const SizedBox(height: 20),
                 ],
+                _buildSexDropdown(),
+                const SizedBox(height: 20),
                 _fieldLabel('Birth Date'),
                 const SizedBox(height: 8),
                 TextFormField(
@@ -320,10 +328,10 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
                   child: ElevatedButton(
                     onPressed: _saving ? null : _save,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.navWalks,
+                      backgroundColor: _primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: AppRadius.radius14,
+                        borderRadius: BorderRadius.circular(14),
                       ),
                       elevation: 0,
                     ),
@@ -370,7 +378,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
           ),
           style: const TextStyle(fontSize: 14, color: _textDark),
           dropdownColor: Colors.white,
-          borderRadius: AppRadius.radius12,
+          borderRadius: BorderRadius.circular(12),
           items: _speciesList
               .map((s) => DropdownMenuItem(value: s, child: Text(s)))
               .toList(),
@@ -378,6 +386,31 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
             _selectedSpecies = value;
             _selectedBreed = null;
           }),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSexDropdown() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _fieldLabel('Sex'),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          initialValue: _selectedSex,
+          isExpanded: true,
+          decoration: _dropdownDecoration(
+            hint: 'Select sex',
+            icon: Icons.male_outlined,
+          ),
+          style: const TextStyle(fontSize: 14, color: _textDark),
+          dropdownColor: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          items: _sexOptions
+              .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+              .toList(),
+          onChanged: (value) => setState(() => _selectedSex = value),
         ),
       ],
     );
@@ -399,7 +432,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
           ),
           style: const TextStyle(fontSize: 14, color: _textDark),
           dropdownColor: Colors.white,
-          borderRadius: AppRadius.radius12,
+          borderRadius: BorderRadius.circular(12),
           items: breeds
               .map((b) => DropdownMenuItem(value: b, child: Text(b)))
               .toList(),
@@ -416,7 +449,7 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
           Stack(
             children: [
               ClipRRect(
-                borderRadius: AppRadius.radius16,
+                borderRadius: BorderRadius.circular(16),
                 child: Image.file(
                   File(_pickedImage!.path),
                   width: double.infinity,
@@ -453,27 +486,23 @@ class _CreatePetScreenState extends State<CreatePetScreen> {
               height: 120,
               decoration: BoxDecoration(
                 color: _inputFill,
-                borderRadius: AppRadius.radius16,
+                borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: AppColors.navWalks.withValues(alpha: 0.3),
+                  color: _primary.withValues(alpha: 0.3),
                   width: 1.5,
                 ),
               ),
               child: const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.camera_alt_outlined,
-                    size: 32,
-                    color: AppColors.navWalks,
-                  ),
+                  Icon(Icons.camera_alt_outlined, size: 32, color: _primary),
                   SizedBox(height: 8),
                   Text(
                     'Add Photo',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.navWalks,
+                      color: _primary,
                     ),
                   ),
                 ],
